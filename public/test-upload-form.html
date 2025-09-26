@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-group { margin-bottom: 15px; }
+        input, button { padding: 10px; margin: 5px; }
+        .result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; }
+        pre { background: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h2>File Upload Test</h2>
+    
+    <form id="testForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>CSV File:</label>
+            <input type="file" name="csv_file" accept=".csv,.txt" required>
+        </div>
+        <div class="form-group">
+            <label>Batch Name:</label>
+            <input type="text" name="batch_name" placeholder="Test batch">
+        </div>
+        <div class="form-group">
+            <button type="submit">Test Upload</button>
+            <button type="button" onclick="testMainUpload()">Test Main Upload</button>
+        </div>
+    </form>
+    
+    <div id="result" class="result" style="display: none;">
+        <h3>Result:</h3>
+        <pre id="resultContent"></pre>
+    </div>
+    
+    <script>
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            testUpload('/test-upload');
+        });
+        
+        function testMainUpload() {
+            testUpload('/bulk-token/upload');
+        }
+        
+        function testUpload(url) {
+            const formData = new FormData(document.getElementById('testForm'));
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultContent.textContent = 'Uploading...';
+            resultDiv.style.display = 'block';
+            
+            // Get CSRF token
+            fetch('/', { method: 'GET' })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const csrfToken = doc.querySelector('meta[name="csrf-token"]')?.content;
+                    
+                    if (csrfToken) {
+                        return fetch(url, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                    } else {
+                        throw new Error('Could not get CSRF token');
+                    }
+                })
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    resultContent.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    resultContent.textContent = 'Error: ' + error.message;
+                });
+        }
+    </script>
+</body>
+</html>

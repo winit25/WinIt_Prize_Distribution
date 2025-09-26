@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Test</title>
+</head>
+<body>
+    <h2>File Upload Test</h2>
+    <form id="testForm">
+        <input type="file" name="csv_file" accept=".csv" required>
+        <input type="text" name="batch_name" placeholder="Batch name">
+        <button type="submit">Test Upload</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById('result');
+            
+            // Add CSRF token (you'll need to get this from Laravel)
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || 'test-token';
+            
+            fetch('/debug-upload', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                resultDiv.innerHTML = '<pre>Error: ' + error.message + '</pre>';
+            });
+        });
+    </script>
+</body>
+</html>
