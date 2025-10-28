@@ -5,21 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\BatchUpload;
 use App\Models\Recipient;
 use App\Models\Transaction;
-use App\Services\BuyPowerApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
+use App\Rules\NigerianPhoneNumber;
+use App\Rules\MeterNumber;
+use App\Rules\ValidDiscoCode;
+use App\Rules\ValidAmount;
+use App\Jobs\ProcessBatchJob;
 
 class BulkTokenController extends Controller
 {
-    protected BuyPowerApiService $buyPowerService;
+    protected $buyPowerService;
 
-    public function __construct(BuyPowerApiService $buyPowerService)
+    public function __construct()
     {
-        $this->buyPowerService = $buyPowerService;
+        $this->buyPowerService = app('buypower.api');
     }
 
     /**
@@ -94,14 +99,14 @@ class BulkTokenController extends Controller
                 'is_valid' => $file->isValid()
             ]);
             
-            // Store file in uploads directory
-            $filePath = $file->storeAs('uploads', $filename);
+            // Store file in uploads directory using Storage facade
+            $filePath = Storage::disk('local')->putFileAs('uploads', $file, $filename);
             
             if (!$filePath) {
                 throw new \Exception('Failed to store file. File path is null.');
             }
             
-            $fullPath = storage_path('app' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $filePath));
+            $fullPath = Storage::disk('local')->path($filePath);
             
             Log::info('File upload attempt', [
                 'stored_path' => $filePath,
@@ -115,7 +120,9 @@ class BulkTokenController extends Controller
             }
 
             // Parse CSV file
-            $recipients = $this->parseCsvFile($fullPath);
+            $parseResult = $this->parseCsvFile($fullPath);
+            $recipients = $parseResult['recipients'];
+            $skippedRows = $parseResult['skipped_rows'];
 
             if (empty($recipients)) {
                 throw new \Exception('No valid recipients found in CSV file');
@@ -127,7 +134,8 @@ class BulkTokenController extends Controller
                 'batch_name' => $request->batch_name ?? 'Batch ' . date('Y-m-d H:i:s'),
                 'total_recipients' => count($recipients),
                 'total_amount' => array_sum(array_column($recipients, 'amount')),
-                'status' => 'uploaded'
+                'status' => 'uploaded',
+                'user_id' => auth()->id()
             ]);
 
             // Create recipient records
@@ -149,10 +157,12 @@ class BulkTokenController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'CSV file uploaded successfully',
+                'message' => 'CSV file uploaded and parsed successfully! ' . count($recipients) . ' valid recipients found.',
                 'batch_id' => $batchUpload->id,
                 'total_recipients' => count($recipients),
-                'total_amount' => array_sum(array_column($recipients, 'amount'))
+                'total_amount' => array_sum(array_column($recipients, 'amount')),
+                'skipped_rows' => $skippedRows ?? 0,
+                'valid_rows' => count($recipients)
             ]);
 
         } catch (\Exception $e) {
@@ -201,15 +211,14 @@ class BulkTokenController extends Controller
             // Update batch status to processing
             $batch->update(['status' => 'processing']);
 
-            // Dispatch job to process in background
-            \Illuminate\Support\Facades\Artisan::call('buypower:process-batch', [
-                'batch_id' => $batchId
-            ]);
+            // Start processing in background
+            $this->startBatchProcessing($batch);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Batch processing started',
-                'batch_id' => $batchId
+                'message' => 'Token distribution started! Processing ' . $batch->total_recipients . ' recipients...',
+                'batch_id' => $batchId,
+                'total_recipients' => $batch->total_recipients
             ]);
 
         } catch (\Exception $e) {
@@ -263,9 +272,14 @@ class BulkTokenController extends Controller
      */
     public function history()
     {
-        $batches = BatchUpload::with('recipients')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Cache batch history for 1 minute to improve performance
+        $cacheKey = 'batch_history_' . auth()->id() . '_' . request()->get('page', 1);
+        
+        $batches = Cache::remember($cacheKey, 60, function () {
+            return BatchUpload::with('recipients')
+                ->orderBy('created_at', 'desc')
+                ->paginate(20);
+        });
 
         return view('bulk-token.history', compact('batches'));
     }
@@ -301,6 +315,16 @@ class BulkTokenController extends Controller
         $stats['success_rate'] = $total > 0 ? ($stats['successful'] / $total) * 100 : 0;
 
         return view('bulk-token.transactions', compact('transactions', 'stats'));
+    }
+
+    /**
+     * Show transaction details
+     */
+    public function showTransaction($transactionId)
+    {
+        $transaction = Transaction::with(['recipient', 'batchUpload'])->findOrFail($transactionId);
+        
+        return view('bulk-token.transaction-details', compact('transaction'));
     }
 
     /**
@@ -419,6 +443,28 @@ class BulkTokenController extends Controller
                 $customerName = trim($rowData['customer_name'] ?? '') ?: null;
                 $amount = floatval($rowData['amount'] ?? 0);
 
+                // Use custom validation rules
+                $validator = Validator::make([
+                    'phone_number' => $phoneNumber,
+                    'meter_number' => $meterNumber,
+                    'disco' => $disco,
+                    'amount' => $amount
+                ], [
+                    'phone_number' => [new NigerianPhoneNumber()],
+                    'meter_number' => [new MeterNumber()],
+                    'disco' => [new ValidDiscoCode()],
+                    'amount' => [new ValidAmount()]
+                ]);
+
+                if ($validator->fails()) {
+                    Log::warning("Skipping row {$lineNumber} - validation failed", [
+                        'errors' => $validator->errors()->toArray(),
+                        'row' => $rowData
+                    ]);
+                    $skippedRows++;
+                    continue;
+                }
+                
                 if (empty($name) || empty($phoneNumber) || empty($disco) || empty($meterNumber) || $amount <= 0) {
                     Log::warning("Skipping invalid row {$lineNumber}", [
                         'name' => $name,
@@ -426,22 +472,6 @@ class BulkTokenController extends Controller
                         'amount' => $amount,
                         'row' => $rowData
                     ]);
-                    $skippedRows++;
-                    continue;
-                }
-
-                // More flexible phone number validation for Nigerian numbers
-                $cleanPhone = preg_replace('/[^0-9]/', '', $phoneNumber);
-                if (!preg_match('/^(234[789][01]\d{8}|0[789][01]\d{8}|[789][01]\d{8})$/', $cleanPhone)) {
-                    Log::warning("Invalid phone number format at line {$lineNumber}: {$phoneNumber} (cleaned: {$cleanPhone})");
-                    $skippedRows++;
-                    continue;
-                }
-
-                // Validate disco code
-                $validDiscos = ['AEDC', 'BEDC', 'EKEDC', 'EEDC', 'IBEDC', 'IKEDC', 'JEDC', 'KAEDCO', 'KEDCO', 'PHED', 'YEDC'];
-                if (!in_array($disco, $validDiscos)) {
-                    Log::warning("Invalid disco code at line {$lineNumber}: {$disco}. Valid codes: " . implode(', ', $validDiscos));
                     $skippedRows++;
                     continue;
                 }
@@ -488,6 +518,40 @@ class BulkTokenController extends Controller
             fclose($handle);
         }
         
-        return $recipients;
+        return [
+            'recipients' => $recipients,
+            'skipped_rows' => $skippedRows
+        ];
+    }
+
+    /**
+     * Start batch processing for token distribution
+     */
+    protected function startBatchProcessing(BatchUpload $batch)
+    {
+        // Dispatch job to queue for asynchronous processing
+        ProcessBatchJob::dispatch($batch);
+        
+        Log::info("Batch processing job dispatched", [
+            'batch_id' => $batch->id,
+            'total_recipients' => $batch->total_recipients
+        ]);
+    }
+
+    /**
+     * Download sample CSV file
+     */
+    public function downloadSample()
+    {
+        $samplePath = base_path('sample_recipients.csv');
+        
+        if (!file_exists($samplePath)) {
+            abort(404, 'Sample CSV file not found');
+        }
+
+        return response()->download($samplePath, 'sample_recipients.csv', [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="sample_recipients.csv"'
+        ]);
     }
 }

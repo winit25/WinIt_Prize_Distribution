@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'termii' => [
+        'api_key' => env('TERMII_API_KEY'),
+        'base_url' => env('TERMII_BASE_URL', 'https://api.ng.termii.com'),
+        'sender_id' => env('TERMII_SENDER_ID', 'WinIt'),
+        'timeout' => env('TERMII_TIMEOUT', 30),
+    ],
+
 ];

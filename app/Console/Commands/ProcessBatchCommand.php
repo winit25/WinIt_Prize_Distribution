@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\BatchUpload;
 use App\Models\Recipient;
 use App\Models\Transaction;
-use App\Services\BuyPowerApiService;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,12 +26,12 @@ class ProcessBatchCommand extends Command
      */
     protected $description = 'Process a batch of token transactions via BuyPower API';
 
-    protected BuyPowerApiService $buyPowerService;
+    protected NotificationService $notificationService;
 
-    public function __construct(BuyPowerApiService $buyPowerService)
+    public function __construct(NotificationService $notificationService)
     {
         parent::__construct();
-        $this->buyPowerService = $buyPowerService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -133,7 +133,10 @@ class ProcessBatchCommand extends Command
                 // Generate unique reference for this transaction
                 $reference = 'BP_' . $batch->id . '_' . $recipient->id . '_' . time();
                 
-                $result = $this->buyPowerService->sendToken(
+                // Get BuyPower API service from container (supports mock/real switching)
+                $buyPowerService = app('buypower.api');
+                
+                $result = $buyPowerService->sendToken(
                     $recipient->phone_number,
                     (float) $recipient->amount,
                     $recipient->disco,
@@ -167,6 +170,9 @@ class ProcessBatchCommand extends Command
                         'processed_at' => now()
                     ]);
                     
+                    // Send success notification
+                    $this->sendTransactionNotification($transaction, 'success', "Successfully sent ₦{$recipient->amount} electricity token to {$recipient->phone_number}. Token: {$result['token']}");
+                    
                     $this->line("✓ Sent ₦{$recipient->amount} to {$recipient->phone_number}");
                     return; // Success, exit retry loop
                 } else {
@@ -176,6 +182,9 @@ class ProcessBatchCommand extends Command
                             'error_message' => $result['error'],
                             'processed_at' => now()
                         ]);
+                        
+                        // Send failure notification
+                        $this->sendTransactionNotification($transaction, 'error', "Failed to send ₦{$recipient->amount} electricity token to {$recipient->phone_number}. Error: {$result['error']}");
                         
                         $this->line("✗ Failed to send to {$recipient->phone_number}: {$result['error']}");
                     } else {
@@ -191,6 +200,27 @@ class ProcessBatchCommand extends Command
                 $this->line("⚠ Exception on attempt {$attempt} for {$recipient->phone_number}: {$e->getMessage()}");
                 sleep(2);
             }
+        }
+    }
+
+    /**
+     * Send transaction notification
+     */
+    private function sendTransactionNotification(Transaction $transaction, string $type, string $message): void
+    {
+        try {
+            $this->notificationService->sendTransactionNotifications(
+                $transaction,
+                $message,
+                true,  // Enable SMS notifications
+                true   // Enable email notifications
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to send transaction notification', [
+                'transaction_id' => $transaction->id,
+                'type' => $type,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SecureLoggingService;
+use App\Services\CircuitBreakerService;
 use Exception;
 
 class BuyPowerApiService
@@ -11,29 +13,43 @@ class BuyPowerApiService
     protected string $baseUrl;
     protected string $apiKey;
     protected int $timeout;
+    protected CircuitBreakerService $circuitBreaker;
 
     public function __construct()
     {
         $this->baseUrl = config('buypower.api_url', 'https://api.buypower.ng/v2');
         $this->apiKey = config('buypower.api_key');
         $this->timeout = config('buypower.timeout', 30);
+        $this->circuitBreaker = new CircuitBreakerService('buypower');
     }
 
     /**
      * Create electricity order
      */
-    public function createElectricityOrder(string $phoneNumber, string $disco, float $amount, string $meterNumber, string $meterType = 'prepaid', string $customerName = null, string $address = null, string $reference = null): array
+    public function createElectricityOrder(string $phoneNumber, string $disco, float $amount, string $meterNumber, string $meterType = 'prepaid', ?string $customerName = null, ?string $address = null, ?string $reference = null): array
+    {
+        return $this->circuitBreaker->execute(function () use ($phoneNumber, $disco, $amount, $meterNumber, $meterType, $customerName, $address, $reference) {
+            return $this->performCreateOrder($phoneNumber, $disco, $amount, $meterNumber, $meterType, $customerName, $address, $reference);
+        }, ['phone' => $phoneNumber, 'amount' => $amount]);
+    }
+
+    /**
+     * Perform the actual create order API call
+     */
+    protected function performCreateOrder(string $phoneNumber, string $disco, float $amount, string $meterNumber, string $meterType = 'prepaid', ?string $customerName = null, ?string $address = null, ?string $reference = null): array
     {
         try {
             $reference = $reference ?? $this->generateReference();
             
             $payload = [
-                'phone' => $this->formatPhoneNumber($phoneNumber),
-                'disco' => strtoupper($disco),
-                'amount' => number_format($amount, 2, '.', ''),
-                'meterNumber' => $meterNumber,
-                'meterType' => strtolower($meterType),
                 'orderId' => $reference,
+                'vendType' => strtolower($meterType),
+                'amount' => number_format($amount, 2, '.', ''),
+                'phone' => $this->formatPhoneNumber($phoneNumber),
+                'meter' => $meterNumber,
+                'disco' => $this->mapDiscoCode($disco),
+                'vertical' => 'ELECTRICITY',
+                'paymentType' => 'B2B',
             ];
             
             // Add optional fields if provided
@@ -44,25 +60,28 @@ class BuyPowerApiService
                 $payload['address'] = $address;
             }
 
-            Log::info('BuyPower Create Order Request', [
-                'url' => $this->baseUrl . '/electricity/create-order',
-                'payload' => $payload
-            ]);
+            SecureLoggingService::logApiRequest(
+                $this->baseUrl . '/electricity/create-order',
+                $payload
+            );
 
-            $response = Http::timeout($this->timeout)
+            $response = Http::timeout(10) // Increased timeout for create order
+                ->retry(2, 200) // Retry twice with 200ms delay
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'X-API-Key' => $this->apiKey,
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
+                    'Connection' => 'keep-alive',
                 ])
                 ->post($this->baseUrl . '/electricity/create-order', $payload);
 
             $responseData = $response->json();
             
-            Log::info('BuyPower Create Order Response', [
-                'status' => $response->status(),
-                'data' => $responseData
-            ]);
+            SecureLoggingService::logApiResponse(
+                $this->baseUrl . '/electricity/create-order',
+                $response->status(),
+                $responseData
+            );
 
             if ($response->successful() && isset($responseData['status']) && $responseData['status'] === 'success') {
                 return [
@@ -82,11 +101,11 @@ class BuyPowerApiService
             ];
 
         } catch (Exception $e) {
-            Log::error('BuyPower Create Order Error', [
-                'phone' => $phoneNumber,
-                'amount' => $amount,
-                'error' => $e->getMessage()
-            ]);
+            SecureLoggingService::logApiError(
+                $this->baseUrl . '/electricity/create-order',
+                $e,
+                ['phone' => $phoneNumber, 'amount' => $amount]
+            );
 
             return [
                 'success' => false,
@@ -112,9 +131,10 @@ class BuyPowerApiService
                 'payload' => $payload
             ]);
 
-            $response = Http::timeout($this->timeout)
+            $response = Http::timeout(15) // Increased timeout for vending
+                ->retry(2, 500) // Retry twice with 500ms delay
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'X-API-Key' => $this->apiKey,
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ])
@@ -162,7 +182,7 @@ class BuyPowerApiService
     /**
      * Send token to a phone number (Complete flow: Create Order + Vend)
      */
-    public function sendToken(string $phoneNumber, float $amount, string $disco, string $meterNumber, string $meterType = 'prepaid', string $customerName = null, string $address = null, string $reference = null): array
+    public function sendToken(string $phoneNumber, float $amount, string $disco, string $meterNumber, string $meterType = 'prepaid', ?string $customerName = null, ?string $address = null, ?string $reference = null): array
     {
         // Step 1: Create Order
         $orderResult = $this->createElectricityOrder($phoneNumber, $disco, $amount, $meterNumber, $meterType, $customerName, $address, $reference);
@@ -199,7 +219,7 @@ class BuyPowerApiService
         try {
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'X-API-Key' => $this->apiKey,
                     'Accept' => 'application/json',
                 ])
                 ->get($this->baseUrl . '/electricity/order/' . $orderId);
@@ -256,7 +276,7 @@ class BuyPowerApiService
 
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'X-API-Key' => $this->apiKey,
                     'Accept' => 'application/json',
                 ])
                 ->get($this->baseUrl . '/transactions', $queryParams);
@@ -313,10 +333,12 @@ class BuyPowerApiService
     public function getBalance(): array
     {
         try {
-            $response = Http::timeout($this->timeout)
+            $response = Http::timeout(3) // Optimized timeout to 3 seconds
+                ->retry(2, 100) // Retry twice with 100ms delay
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'X-API-Key' => $this->apiKey,
                     'Accept' => 'application/json',
+                    'Connection' => 'keep-alive',
                 ])
                 ->get($this->baseUrl . '/balance');
 
@@ -339,8 +361,19 @@ class BuyPowerApiService
 
         } catch (Exception $e) {
             Log::error('BuyPower Balance Error', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'type' => get_class($e)
             ]);
+
+            // Handle timeout specifically
+            if (strpos($e->getMessage(), 'timeout') !== false || strpos($e->getMessage(), 'timed out') !== false) {
+                return [
+                    'success' => false,
+                    'error' => 'API timeout - endpoint may not exist or is slow',
+                    'data' => null,
+                    'status_code' => 408
+                ];
+            }
 
             return [
                 'success' => false,
@@ -352,21 +385,43 @@ class BuyPowerApiService
     }
 
     /**
-     * Format phone number to Nigerian format
+     * Format phone number to Nigerian format (08000000000)
      */
     protected function formatPhoneNumber(string $phoneNumber): string
     {
         // Remove all non-numeric characters
         $phone = preg_replace('/[^0-9]/', '', $phoneNumber);
         
-        // Convert to Nigerian format
+        // Convert to Nigerian format (08000000000)
         if (str_starts_with($phone, '234')) {
-            return $phone;
+            return '0' . substr($phone, 3);
         } elseif (str_starts_with($phone, '0')) {
-            return '234' . substr($phone, 1);
+            return $phone;
         } else {
-            return '234' . $phone;
+            return '0' . $phone;
         }
+    }
+
+    /**
+     * Map DISCO codes to valid BuyPower nomenclature
+     */
+    protected function mapDiscoCode(string $disco): string
+    {
+        $discoMapping = [
+            'AEDC' => 'ABUJA',
+            'EKEDC' => 'EKO', 
+            'IKEDC' => 'IKEJA',
+            'IBEDC' => 'IBADAN',
+            'EEDC' => 'ENUGU',
+            'PHED' => 'PH',
+            'JEDC' => 'JOS',
+            'KAEDCO' => 'KADUNA',
+            'KEDCO' => 'KANO',
+            'BEDC' => 'BH',
+        ];
+
+        $upperDisco = strtoupper($disco);
+        return $discoMapping[$upperDisco] ?? $upperDisco;
     }
 
     /**

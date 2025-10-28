@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.sidebar')
 
 @section('title', 'Transaction History')
 
@@ -282,9 +282,88 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-success {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: white;
+    }
+
+    .status-failed {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        color: white;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        color: white;
+    }
+
+    .status-processing {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        color: white;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin-right: 0.25rem;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(18, 18, 104, 0.05);
+    }
+
+    .card {
+        border: 1px solid rgba(18, 18, 104, 0.1);
+        box-shadow: 0 2px 8px rgba(18, 18, 104, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+    }
+</style>
+@endpush
+
 @section('scripts')
 <script>
     let currentToken = '';
+    
+    // Utility functions
+    const utils = {
+        showAlert: function(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container-fluid') || document.body;
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    };
     
     // Filter functionality
     document.getElementById('statusFilter').addEventListener('change', filterTransactions);

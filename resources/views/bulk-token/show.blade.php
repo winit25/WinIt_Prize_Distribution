@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.sidebar')
 
 @section('title', 'Batch Details - ' . $batch->batch_name)
 
@@ -237,8 +237,88 @@
 @endif
 @endsection
 
+@push('styles')
+<style>
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-success {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: white;
+    }
+
+    .status-failed {
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        color: white;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        color: white;
+    }
+
+    .status-processing {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        color: white;
+    }
+
+    .status-uploaded {
+        background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: white;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(18, 18, 104, 0.05);
+    }
+
+    .card {
+        border: 1px solid rgba(18, 18, 104, 0.1);
+        box-shadow: 0 2px 8px rgba(18, 18, 104, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+    }
+</style>
+@endpush
+
 @section('scripts')
 <script>
+    // Utility functions
+    const utils = {
+        showAlert: function(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container-fluid') || document.body;
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    };
+
     function refreshStatus() {
         fetch(`/bulk-token/status/{{ $batch->id }}`)
             .then(response => response.json())
@@ -271,10 +351,15 @@
             return;
         }
         
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                         document.querySelector('input[name="_token"]')?.value || 
+                         window.csrfToken;
+        
         fetch(`/bulk-token/process/${batchId}`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': window.csrfToken,
+                'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json'
             }
         })
@@ -284,11 +369,49 @@
                 utils.showAlert('success', 'Batch processing started! Page will refresh in 3 seconds...');
                 setTimeout(() => location.reload(), 3000);
             } else {
-                utils.showAlert('danger', 'Failed to start processing: ' + data.message);
+                utils.showAlert('danger', 'Failed to start processing: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
             utils.showAlert('danger', 'Failed to start processing: ' + error.message);
+        });
+    }
+
+    function showToken(token) {
+        // Create a simple modal to show the token
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Electricity Token</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <h3 class="text-success mb-3">${token}</h3>
+                        <button class="btn btn-outline-primary" onclick="copyToken('${token}')">
+                            <i class="fas fa-copy"></i> Copy Token
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+        
+        modal.addEventListener('hidden.bs.modal', () => {
+            document.body.removeChild(modal);
+        });
+    }
+
+    function copyToken(token) {
+        navigator.clipboard.writeText(token).then(() => {
+            utils.showAlert('success', 'Token copied to clipboard!');
+        }).catch(() => {
+            utils.showAlert('danger', 'Failed to copy token to clipboard');
         });
     }
 </script>

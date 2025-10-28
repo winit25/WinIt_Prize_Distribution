@@ -1,0 +1,6 @@
+name,address,phone_number,disco,meter_number,meter_type,amount,customer_name
+John Doe,123 Main Street Lagos,08012345678,EKO,12345678901,prepaid,1000,John Customer
+Jane Smith,456 Victoria Island Lagos,08123456789,IKEJA,12345678902,prepaid,2000,Jane Customer
+Mike Johnson,789 Surulere Lagos,07012345678,ABUJA,12345678903,prepaid,1500,Mike Customer
+Sarah Wilson,321 Ikoyi Lagos,09012345678,IBADAN,12345678904,prepaid,2500,Sarah Customer
+David Brown,654 Lekki Lagos,09112345678,ENUGU,12345678905,prepaid,3000,David Customer

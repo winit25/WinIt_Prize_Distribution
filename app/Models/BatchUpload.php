@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BatchUpload extends Model
 {
@@ -16,7 +17,8 @@ class BatchUpload extends Model
         'failed_transactions',
         'total_amount',
         'status',
-        'notes'
+        'notes',
+        'user_id'
     ];
 
     protected $casts = [
@@ -31,6 +33,11 @@ class BatchUpload extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function getCompletionPercentageAttribute(): float
