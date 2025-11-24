@@ -194,6 +194,62 @@
                             <span class="info-label">Causer ID</span>
                             <span class="info-value">{{ $activityLog->causer_id ?? 'N/A' }}</span>
                         </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label">User IP Address</span>
+                            <span class="info-value">
+                                @if($activityLog->ip_address)
+                                    <span class="badge bg-info">{{ $activityLog->ip_address }}</span>
+                                @else
+                                    N/A
+                                @endif
+                            </span>
+                        </div>
+                        
+                        @php
+                            $deviceInfo = $activityLog->device_info;
+                            $deviceType = $deviceInfo['device_type'] ?? 'Unknown';
+                            $browser = $deviceInfo['browser'] ?? 'Unknown';
+                            $os = $deviceInfo['os'] ?? 'Unknown';
+                            
+                            // Set badge color based on device type
+                            $deviceBadgeClass = 'bg-secondary';
+                            if ($deviceType === 'Mobile') {
+                                $deviceBadgeClass = 'bg-primary';
+                            } elseif ($deviceType === 'Tablet') {
+                                $deviceBadgeClass = 'bg-info';
+                            } elseif ($deviceType === 'Desktop') {
+                                $deviceBadgeClass = 'bg-success';
+                            }
+                        @endphp
+                        
+                        <div class="info-item">
+                            <span class="info-label">Device Type</span>
+                            <span class="info-value">
+                                <span class="badge {{ $deviceBadgeClass }}">{{ $deviceType }}</span>
+                            </span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label">Browser</span>
+                            <span class="info-value">{{ $browser }}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label">Operating System</span>
+                            <span class="info-value">{{ $os }}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label">User Agent</span>
+                            <span class="info-value">
+                                @if($activityLog->user_agent)
+                                    <small class="text-muted">{{ Str::limit($activityLog->user_agent, 100) }}</small>
+                                @else
+                                    N/A
+                                @endif
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

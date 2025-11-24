@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - WinIt</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Login - WinIt Prize Distribution</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --winit-navy: rgb(18, 18, 104);
-            --winit-navy-light: rgb(30, 30, 120);
-            --winit-navy-dark: rgb(12, 12, 80);
-            --winit-primary: rgb(18, 18, 104);
-            --winit-secondary: #8b5cf6;
-            --winit-accent: #06b6d4;
+            --winit-navy: #010133;
+            --winit-navy-light: #020247;
+            --winit-navy-dark: #01011b;
+            --winit-primary: #010133;
+            --winit-accent: #17F7B6;
+            --winit-accent-dark: #13d9a0;
+            --winit-secondary: #23A3D6;
             --winit-success: #10b981;
             --winit-warning: #f59e0b;
             --winit-danger: #ef4444;
-            --winit-dark: #1f2937;
+            --winit-dark: #010133;
             --winit-gray: #6b7280;
             --winit-light: #f8fafc;
             --winit-border: #e5e7eb;
@@ -27,7 +29,7 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-dark) 100%);
+            background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -55,7 +57,7 @@
         .login-container {
             background: white;
             border-radius: 2rem;
-            box-shadow: 0 25px 50px rgba(18, 18, 104, 0.3);
+            box-shadow: 0 25px 50px rgba(1, 1, 51, 0.5);
             overflow: hidden;
             max-width: 500px;
             width: 100%;
@@ -66,7 +68,7 @@
         }
 
         .login-header {
-            background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
             padding: 3rem 2rem 2rem;
             text-align: center;
@@ -99,27 +101,19 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            font-size: 3rem;
-            color: white;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             position: relative;
             z-index: 1;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 15px;
         }
 
-        .winit-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 1.8rem;
-            color: var(--winit-navy);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        .login-header .logo img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: contrast(1.3) brightness(1.1);
         }
 
         .login-header h1 {
@@ -161,8 +155,8 @@
         }
 
         .form-control:focus {
-            border-color: var(--winit-navy);
-            box-shadow: 0 0 0 4px rgba(18, 18, 104, 0.1);
+            border-color: var(--winit-accent);
+            box-shadow: 0 0 0 4px rgba(23, 247, 182, 0.15);
             background: white;
             outline: none;
             transform: translateY(-2px);
@@ -188,9 +182,9 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
-            box-shadow: 0 6px 20px rgba(18, 18, 104, 0.3);
+            box-shadow: 0 6px 20px rgba(1, 1, 51, 0.3);
             border: none;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -199,10 +193,10 @@
         }
 
         .btn-primary:hover {
+            background: linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-accent-dark) 100%);
+            color: #010133;
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(18, 18, 104, 0.4);
-            color: white;
-            background: linear-gradient(135deg, var(--winit-navy-dark) 0%, var(--winit-navy) 100%);
+            box-shadow: 0 12px 30px rgba(23, 247, 182, 0.5);
         }
 
         .btn-primary:disabled {
@@ -236,12 +230,12 @@
         }
 
         .form-check-input:checked {
-            background-color: var(--winit-primary);
-            border-color: var(--winit-primary);
+            background-color: var(--winit-accent);
+            border-color: var(--winit-accent);
         }
 
         .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(23, 247, 182, 0.25);
         }
 
         .text-muted {
@@ -249,11 +243,11 @@
         }
 
         .text-primary {
-            color: var(--winit-primary) !important;
+            color: #010133 !important;
         }
 
         .text-primary:hover {
-            color: var(--winit-secondary) !important;
+            color: var(--winit-accent) !important;
         }
 
         @media (max-width: 480px) {
@@ -270,13 +264,12 @@
             .login-header .logo {
                 width: 80px;
                 height: 80px;
-                font-size: 2.5rem;
+                padding: 10px;
             }
             
-            .winit-logo {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+            .login-header .logo img {
+                width: 100%;
+                height: auto;
             }
             
             .login-body {
@@ -299,12 +292,10 @@
     <div class="login-container">
         <div class="login-header">
             <div class="logo">
-                <div class="winit-logo">
-                    W
-                </div>
+                <img src="{{ asset('images/winit-logo.png') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
             </div>
-            <h1>WinIt</h1>
-            <p>BuyPower Token Distribution</p>
+            <h1 style="color: white;">WinIt</h1>
+            <p style="color: rgba(255, 255, 255, 0.9);">BuyPower Token Distribution</p>
         </div>
 
         <div class="login-body">
@@ -327,7 +318,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
 
                 <!-- Email Address -->
@@ -396,5 +387,166 @@
             </form>
         </div>
     </div>
+
+    <script>
+        /**
+         * Generate device fingerprint
+         * Combines multiple browser/device characteristics to create a unique fingerprint
+         */
+        function generateDeviceFingerprint() {
+            const components = [];
+
+            // User Agent
+            components.push(navigator.userAgent || '');
+
+            // Platform
+            components.push(navigator.platform || '');
+
+            // Screen resolution
+            components.push(`${screen.width}x${screen.height}`);
+
+            // Color depth
+            components.push(screen.colorDepth || '');
+
+            // Timezone offset
+            components.push(new Date().getTimezoneOffset());
+
+            // Language
+            components.push(navigator.language || navigator.userLanguage || '');
+
+            // Hardware concurrency (CPU cores)
+            components.push(navigator.hardwareConcurrency || '');
+
+            // Device memory (if available)
+            if (navigator.deviceMemory) {
+                components.push(navigator.deviceMemory);
+            }
+
+            // Canvas fingerprint (simplified)
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillText('Device fingerprint', 2, 2);
+                components.push(canvas.toDataURL().substring(0, 100));
+            } catch (e) {
+                // Canvas not available
+            }
+
+            // WebGL vendor/renderer (if available)
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                        components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+                    }
+                }
+            } catch (e) {
+                // WebGL not available
+            }
+
+            // Combine all components
+            const fingerprintString = components.join('|');
+
+            // Return the full fingerprint string (backend will hash it with SHA256)
+            // This ensures consistency with backend hashing
+            return fingerprintString;
+        }
+        
+        /**
+         * Generate SHA256 hash (for consistency with backend)
+         * Note: This is a simplified version. Backend uses PHP's hash('sha256')
+         * For production, consider using Web Crypto API or a library
+         */
+        async function generateFingerprintHash(fingerprint) {
+            // Use Web Crypto API if available (more secure)
+            if (window.crypto && window.crypto.subtle) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(fingerprint);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            // Fallback: return fingerprint as-is (backend will hash it)
+            return fingerprint;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle 419 CSRF errors with user-friendly message
+            if (window.location.search.includes('419')) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Session Expired:</strong> Please refresh the page and try again.
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+                `;
+                const loginBody = document.querySelector('.login-body');
+                if (loginBody) {
+                    loginBody.insertBefore(alertDiv, loginBody.firstChild);
+                }
+            }
+
+            // Handle device error message - Use textContent to prevent XSS
+            @if($errors->has('device') || session('device_error'))
+                const deviceErrorDiv = document.createElement('div');
+                deviceErrorDiv.className = 'alert alert-danger';
+                const errorMessage = @json($errors->first('device') ?: 'Access denied. This account is tied to another device. Please use your original registered device to login.');
+                
+                // Create elements safely to prevent XSS
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-shield-alt me-2';
+                
+                const strong = document.createElement('strong');
+                strong.textContent = 'Device Access Denied: ';
+                
+                const messageText = document.createTextNode(errorMessage);
+                
+                const br = document.createElement('br');
+                
+                const small = document.createElement('small');
+                small.textContent = 'If you need to change your registered device, please contact your administrator.';
+                
+                deviceErrorDiv.appendChild(icon);
+                deviceErrorDiv.appendChild(strong);
+                deviceErrorDiv.appendChild(messageText);
+                deviceErrorDiv.appendChild(br);
+                deviceErrorDiv.appendChild(small);
+                
+                const loginBody = document.querySelector('.login-body');
+                if (loginBody) {
+                    loginBody.insertBefore(deviceErrorDiv, loginBody.firstChild);
+                }
+            @endif
+
+            // Generate and store device fingerprint
+            const deviceFingerprint = generateDeviceFingerprint();
+            
+            // Store fingerprint in sessionStorage for use across requests
+            sessionStorage.setItem('deviceFingerprint', deviceFingerprint);
+
+            // Clear any stale session data on page load
+            const form = document.getElementById('loginForm');
+            
+            // Intercept form submission to add device fingerprint header
+            form.addEventListener('submit', function(e) {
+                // Create a hidden input to send fingerprint via form
+                // Or use fetch API to send it as header
+                const fingerprintInput = document.createElement('input');
+                fingerprintInput.type = 'hidden';
+                fingerprintInput.name = '_device_fingerprint';
+                fingerprintInput.value = deviceFingerprint;
+                form.appendChild(fingerprintInput);
+
+                // Also store in sessionStorage for AJAX requests
+                sessionStorage.setItem('deviceFingerprint', deviceFingerprint);
+                
+                localStorage.removeItem('loginAttempts');
+            });
+        });
+    </script>
 </body>
 </html>

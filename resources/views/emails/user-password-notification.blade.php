@@ -3,239 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your WinIt Account Credentials</title>
+    <title>Your WinIt Prize Distribution Account Credentials</title>
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, rgb(18, 18, 104) 0%, rgb(30, 30, 120) 100%);
-            min-height: 100vh;
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1f2937;
         }
-        
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 30px rgba(18, 18, 104, 0.3);
-            overflow: hidden;
+        @media screen and (max-width: 600px) {
+            .wrapper {
+                width: 100% !important;
+            }
+            .content {
+                padding: 24px !important;
+            }
         }
-        
-        .header {
-            background: linear-gradient(135deg, rgb(18, 18, 104) 0%, rgb(30, 30, 120) 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 2rem;
-            font-weight: 700;
-            color: rgb(18, 18, 104);
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-size: 1.75rem;
-            font-weight: 700;
-        }
-        
-        .header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-        }
-        
-        .content {
-            padding: 2rem;
-        }
-        
-        .welcome-section {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .welcome-section h2 {
-            color: rgb(18, 18, 104);
-            margin-bottom: 1rem;
-        }
-        
-        .credentials-box {
-            background: #f8fafc;
-            border: 2px solid rgba(18, 18, 104, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .credential-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(18, 18, 104, 0.1);
-        }
-        
-        .credential-item:last-child {
-            border-bottom: none;
-        }
-        
-        .credential-label {
-            font-weight: 600;
-            color: rgb(18, 18, 104);
-        }
-        
-        .credential-value {
-            font-family: 'Courier New', monospace;
-            background: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(18, 18, 104, 0.2);
-            font-weight: 600;
-            color: #374151;
-        }
-        
-        .warning-box {
-            background: rgba(245, 158, 11, 0.1);
-            border: 2px solid #f59e0b;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .warning-box h3 {
-            color: #f59e0b;
-            margin: 0 0 1rem 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .warning-box h3::before {
-            content: "⚠️";
-            margin-right: 0.5rem;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, rgb(18, 18, 104) 0%, rgb(30, 30, 120) 100%);
-            color: white;
-            text-decoration: none;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(18, 18, 104, 0.3);
-        }
-        
-        .footer {
-            background: #f8fafc;
-            padding: 1.5rem 2rem;
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-        
-        .footer p {
-            margin: 0.25rem 0;
-        }
-        
-        .security-note {
-            background: rgba(16, 185, 129, 0.1);
-            border: 2px solid #10b981;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .security-note h3 {
-            color: #10b981;
-            margin: 0 0 1rem 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .security-note h3::before {
-            content: "🔒";
-            margin-right: 0.5rem;
+        a {
+            color: #122168;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
-            <div class="logo">W</div>
-            <h1>WinIt</h1>
-            <p>BuyPower Token Distribution System</p>
-        </div>
-        
-        <div class="content">
-            <div class="welcome-section">
-                <h2>Welcome to WinIt, {{ $user->name }}!</h2>
-                <p>Your account has been created successfully. Please find your login credentials below.</p>
-            </div>
-            
-            <div class="credentials-box">
-                <h3 style="color: rgb(18, 18, 104); margin: 0 0 1rem 0;">Your Login Credentials</h3>
-                
-                <div class="credential-item">
-                    <span class="credential-label">Email Address:</span>
-                    <span class="credential-value">{{ $user->email }}</span>
-                </div>
-                
-                <div class="credential-item">
-                    <span class="credential-label">Temporary Password:</span>
-                    <span class="credential-value">{{ $password }}</span>
-                </div>
-            </div>
-            
-            <div class="warning-box">
-                <h3>Important Security Notice</h3>
-                <p><strong>You must change your password on first login!</strong> This temporary password is only valid for your initial access. For security reasons, you will be required to set a new password immediately after logging in.</p>
-            </div>
-            
-            <div class="security-note">
-                <h3>Security Best Practices</h3>
-                <ul style="margin: 0; padding-left: 1.5rem;">
-                    <li>Choose a strong password with at least 8 characters</li>
-                    <li>Include uppercase, lowercase, numbers, and special characters</li>
-                    <li>Do not share your credentials with anyone</li>
-                    <li>Log out when finished using the system</li>
-                </ul>
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="{{ $loginUrl }}" class="cta-button">Login to Your Account</a>
-            </div>
-            
-            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(18, 18, 104, 0.1);">
-                <h4 style="color: rgb(18, 18, 104); margin-bottom: 1rem;">What's Next?</h4>
-                <ol style="color: #374151; line-height: 1.6;">
-                    <li>Click the login button above or visit: <a href="{{ $loginUrl }}" style="color: rgb(18, 18, 104);">{{ $loginUrl }}</a></li>
-                    <li>Enter your email and temporary password</li>
-                    <li>You'll be prompted to create a new password</li>
-                    <li>Start using the WinIt system!</li>
-                </ol>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p><strong>WinIt - BuyPower Token Distribution System</strong></p>
-            <p>This is an automated message. Please do not reply to this email.</p>
-            <p>If you did not request this account, please contact your system administrator.</p>
-        </div>
-    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f7fb; padding: 24px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="600" class="wrapper" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(18,33,104,0.08);">
+                    <tr>
+                        <td style="padding:32px 32px 24px 32px; text-align:center; background: #0a1628;">
+                            <img src="{{ url('images/winit-logo.png') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 16px auto;">
+                            <h1 style="margin:0; font-size:22px; font-weight:700; color:#ffffff;">WinIt Prize Distribution</h1>
+                            <p style="margin:8px 0 0 0; font-size:14px; color:rgba(255,255,255,0.85);">Secure access credentials</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="content" style="padding:32px 40px;">
+                            <h2 style="margin:0 0 12px 0; font-size:20px; color:#122168;">Hello {{ $user->name }},</h2>
+                            <p style="margin:0 0 20px 0; line-height:1.6;">Welcome to <strong>WinIt Prize Distribution</strong>. Your account is now active. Use the details below to sign in and finish setting up your profile.</p>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f6ff; border:1px solid rgba(18,33,104,0.12); border-radius:12px;">
+                                <tr>
+                                    <td style="padding:18px 20px; border-bottom:1px solid rgba(18,33,104,0.08);">
+                                        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:#6b7280; margin-bottom:6px;">Login Email</div>
+                                        <div style="font-family:'Courier New', monospace; font-size:15px; font-weight:600; color:#1f2937; word-break:break-all;">{{ $user->email }}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:18px 20px;">
+                                        <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:#6b7280; margin-bottom:6px;">Temporary Password</div>
+                                        <div style="font-family:'Courier New', monospace; font-size:15px; font-weight:600; color:#dc2626;">{{ $password }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="margin:24px 0; padding:18px; border-radius:10px; background-color:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35);">
+                                <strong style="display:block; color:#b45309; margin-bottom:6px;">Security Reminder</strong>
+                                <span style="font-size:14px; line-height:1.6; color:#78350f;">This password is valid only once. You will be prompted to set a new password immediately after logging in.</span>
+                            </div>
+
+                            <div style="margin:0 0 18px 0;">
+                                <a href="{{ $loginUrl }}" style="display:inline-block; padding:14px 26px; background: linear-gradient(135deg, #122168 0%, #1f2f7a 100%); color:#ffffff; font-weight:600; font-size:15px; border-radius:40px; text-decoration:none; box-shadow:0 8px 16px rgba(18,33,104,0.25);">Sign in to WinIt</a>
+                            </div>
+
+                            <p style="margin:0 0 16px 0; font-size:14px; line-height:1.6;">If the button above doesn’t work, copy and paste this link into your browser:</p>
+                            <p style="margin:0 0 20px 0; font-size:13px; color:#4b5563; word-break:break-all;"><a href="{{ $loginUrl }}" style="color:#122168;">{{ $loginUrl }}</a></p>
+
+                            <h3 style="margin:0 0 12px 0; font-size:16px; color:#122168;">Next steps</h3>
+                            <ol style="margin:0 0 20px 20px; padding:0; font-size:14px; line-height:1.7; color:#1f2937;">
+                                <li>Log in with the email and temporary password above.</li>
+                                <li>Follow the prompt to create a new, strong password.</li>
+                                <li>Complete your profile and review your permissions.</li>
+                            </ol>
+
+                            <h3 style="margin:0 0 12px 0; font-size:16px; color:#122168;">Password tips</h3>
+                            <ul style="margin:0; padding-left:18px; font-size:14px; line-height:1.7; color:#1f2937;">
+                                <li>Use at least 8 characters with numbers and symbols.</li>
+                                <li>Avoid reusing passwords from other accounts.</li>
+                                <li>Never share your credentials with anyone.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:22px 32px; background-color:#f5f7fb; text-align:center; font-size:12px; line-height:1.6; color:#6b7280;">
+                            <strong style="display:block; color:#122168;">WinIt Prize Distribution</strong>
+                            <span>Automated notification – please do not reply.</span><br>
+                            <span>If you didn’t expect this email, contact your administrator immediately.</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

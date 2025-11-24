@@ -87,7 +87,8 @@ class LoginController extends Controller
     {
         $request->session()->regenerate();
 
-        return redirect()->intended($this->redirectPath());
+        // Always redirect to dashboard after login
+        return redirect()->route('dashboard');
     }
 
     protected function sendFailedLoginResponse(Request $request)

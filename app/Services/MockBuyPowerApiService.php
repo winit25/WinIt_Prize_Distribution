@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Contracts\BuyPowerApiInterface;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
-class MockBuyPowerApiService
+class MockBuyPowerApiService implements BuyPowerApiInterface
 {
     protected string $baseUrl;
     protected string $apiKey;
@@ -37,15 +38,20 @@ class MockBuyPowerApiService
                 'reference' => $reference
             ]);
 
-            // Mock successful response
+            // Mock successful response (mimics BuyPower's /vend endpoint)
+            $token = $this->generateMockToken();
+            $units = $this->calculateMockUnits($reference);
+            
             return [
                 'success' => true,
                 'data' => [
-                    'status' => 'success',
-                    'message' => 'Order created successfully',
+                    'status' => true,
+                    'message' => 'Successful transaction',
+                    'responseCode' => 200,
                     'data' => [
                         'orderId' => $reference,
-                        'status' => 'pending',
+                        'token' => $token,
+                        'units' => $units,
                         'amount' => $amount,
                         'phone' => $phoneNumber,
                         'meter' => $meterNumber,
@@ -54,6 +60,8 @@ class MockBuyPowerApiService
                 ],
                 'reference' => $reference,
                 'order_id' => $reference,
+                'token' => $token,
+                'units' => $units,
                 'status_code' => 200
             ];
 
@@ -124,34 +132,12 @@ class MockBuyPowerApiService
 
     /**
      * Send token to a phone number (Complete flow: Create Order + Vend)
+     * Note: Mock now mimics BuyPower's /vend endpoint which does both in one call
      */
     public function sendToken(string $phoneNumber, float $amount, string $disco, string $meterNumber, string $meterType = 'prepaid', ?string $customerName = null, ?string $address = null, ?string $reference = null): array
     {
-        // Step 1: Create Order
-        $orderResult = $this->createElectricityOrder($phoneNumber, $disco, $amount, $meterNumber, $meterType, $customerName, $address, $reference);
-        
-        if (!$orderResult['success']) {
-            return $orderResult;
-        }
-        
-        $orderId = $orderResult['order_id'];
-        
-        // Step 2: Vend Token
-        $vendResult = $this->vendElectricity($orderId);
-        
-        if ($vendResult['success']) {
-            return [
-                'success' => true,
-                'data' => array_merge($orderResult['data'], $vendResult['data']),
-                'reference' => $orderResult['reference'],
-                'order_id' => $orderId,
-                'token' => $vendResult['token'],
-                'units' => $vendResult['units'],
-                'status_code' => $vendResult['status_code']
-            ];
-        }
-        
-        return $vendResult;
+        // Mock BuyPower's /vend endpoint behavior - single call does everything
+        return $this->createElectricityOrder($phoneNumber, $disco, $amount, $meterNumber, $meterType, $customerName, $address, $reference);
     }
 
     /**

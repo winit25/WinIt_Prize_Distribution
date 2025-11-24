@@ -39,13 +39,15 @@ class HealthController extends Controller
             
         } catch (\Exception $e) {
             Log::error('Health check failed', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             
+            // Don't expose sensitive error details to users
             return response()->json([
                 'status' => 'unhealthy',
                 'timestamp' => now()->toISOString(),
-                'error' => $e->getMessage()
+                'error' => 'Service temporarily unavailable'
             ], 503);
         }
     }
@@ -88,13 +90,15 @@ class HealthController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Status check failed', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
+            // Don't expose sensitive error details to users
             return response()->json([
                 'status' => 'error',
                 'timestamp' => now()->toISOString(),
-                'error' => $e->getMessage()
+                'error' => 'Unable to retrieve system status'
             ], 500);
         }
     }
@@ -134,9 +138,15 @@ class HealthController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error('Metrics check failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Don't expose sensitive error details to users
             return response()->json([
                 'status' => 'error',
-                'error' => $e->getMessage()
+                'error' => 'Unable to retrieve metrics'
             ], 500);
         }
     }
@@ -164,14 +174,29 @@ class HealthController extends Controller
     }
 
     /**
-     * Get system uptime
+     * Get system uptime (secure version - no shell_exec)
      */
     private function getSystemUptime(): string
     {
         try {
-            $uptime = shell_exec('uptime');
-            return trim($uptime) ?: 'Unknown';
+            // Use PHP's built-in functions instead of shell_exec for security
+            // Calculate uptime from process start time or use safe alternatives
+            $startTime = defined('LARAVEL_START') ? LARAVEL_START : time();
+            $uptime = time() - $startTime;
+            
+            $days = floor($uptime / 86400);
+            $hours = floor(($uptime % 86400) / 3600);
+            $minutes = floor(($uptime % 3600) / 60);
+            
+            if ($days > 0) {
+                return "{$days} days, {$hours} hours, {$minutes} minutes";
+            } elseif ($hours > 0) {
+                return "{$hours} hours, {$minutes} minutes";
+            } else {
+                return "{$minutes} minutes";
+            }
         } catch (\Exception $e) {
+            Log::warning('Failed to get uptime', ['error' => $e->getMessage()]);
             return 'Unknown';
         }
     }

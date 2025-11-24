@@ -1,43 +1,75 @@
 @extends('layouts.sidebar')
 
-@section('title', 'Transaction Details')
+@section('title', 'Recipient & Transaction Details - WinIt Prize Distribution')
 
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="fas fa-receipt"></i>
-                Transaction Details
-            </h2>
-            <div>
-                <a href="{{ route('bulk-token.transactions') }}" class="btn btn-outline-secondary me-2">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Transactions
-                </a>
-                @if($transaction->token)
-                    <button class="btn btn-primary" onclick="downloadToken('{{ $transaction->id }}')">
-                        <i class="fas fa-download"></i>
-                        Download Token
-                    </button>
-                @endif
+        <!-- Page Header -->
+        <div class="page-header mb-4" style="
+            background: linear-gradient(135deg, rgb(18, 18, 104) 0%, rgb(30, 30, 120) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+        ">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-2" style="margin: 0; font-weight: 700;">
+                        <i class="fas fa-receipt me-2"></i>
+                        Recipient & Transaction Details
+                    </h2>
+                    <p style="margin: 0; opacity: 0.9; font-size: 1rem;">
+                        Complete information about the recipient and transaction
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ route('bulk-token.transactions') }}" class="btn btn-light me-2" style="
+                        background: rgba(255, 255, 255, 0.2);
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        color: white;
+                        backdrop-filter: blur(10px);
+                    ">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Back to Transactions
+                    </a>
+                    @if($transaction->token)
+                        <button class="btn btn-light" onclick="downloadToken('{{ $transaction->id }}')" style="
+                            background: rgba(255, 255, 255, 0.2);
+                            border: 1px solid rgba(255, 255, 255, 0.3);
+                            color: white;
+                            backdrop-filter: blur(10px);
+                        ">
+                            <i class="fas fa-download me-1"></i>
+                            Download Token
+                        </button>
+                    @endif
+                </div>
             </div>
         </div>
 
         <!-- Transaction Status Card -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-body p-4">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <h4 class="mb-2">Transaction #{{ $transaction->id }}</h4>
-                                <p class="text-muted mb-0">
+                                <h4 class="mb-2" style="color: rgb(18, 18, 104); font-weight: 700;">
+                                    <i class="fas fa-hashtag me-2"></i>Transaction #{{ $transaction->id }}
+                                </h4>
+                                <p class="text-muted mb-0" style="font-family: 'Montserrat', sans-serif;">
+                                    <i class="fas fa-calendar-alt me-1"></i>
                                     Processed on {{ $transaction->processed_at ? $transaction->processed_at->format('M d, Y h:i A') : 'Not processed' }}
                                 </p>
                             </div>
                             <div class="col-md-4 text-end">
-                                <span class="status-badge status-{{ $transaction->status }} fs-5">
+                                <span class="status-badge status-{{ $transaction->status }}" style="font-size: 1.1rem; padding: 0.75rem 1.5rem;">
                                     @if($transaction->status == 'success')
                                         <i class="fas fa-check"></i> Success
                                     @elseif($transaction->status == 'failed')
@@ -59,11 +91,23 @@
         <div class="row">
             <!-- Recipient Information -->
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-user"></i> Recipient Information</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: rgb(18, 18, 104); font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-user me-2"></i>Recipient Information
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <table class="table table-borderless">
                             <tr>
                                 <td><strong>Name:</strong></td>
@@ -88,11 +132,23 @@
 
             <!-- Meter Information -->
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-bolt"></i> Meter Information</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: rgb(18, 18, 104); font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-bolt me-2"></i>Meter Information
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <table class="table table-borderless">
                             <tr>
                                 <td><strong>Disco:</strong></td>
@@ -122,11 +178,23 @@
             <!-- Token Information -->
             @if($transaction->token)
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-key"></i> Token Information</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: rgb(18, 18, 104); font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-key me-2"></i>Token Information
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <div class="text-center">
                             <h3 class="text-success mb-3">{{ $transaction->token }}</h3>
                             <button class="btn btn-outline-primary" onclick="copyToken('{{ $transaction->token }}')">
@@ -147,11 +215,23 @@
 
             <!-- Transaction References -->
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-hashtag"></i> References</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: rgb(18, 18, 104); font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-hashtag me-2"></i>References
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <table class="table table-borderless">
                             @if($transaction->buypower_reference)
                             <tr>
@@ -187,11 +267,23 @@
             <!-- Error Information -->
             @if($transaction->error_message)
             <div class="col-12 mb-4">
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Error Details</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
+                    border: 2px solid rgba(220, 38, 38, 0.3);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+                        border-bottom: 1px solid rgba(220, 38, 38, 0.2);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: #dc2626; font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error Details
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <div class="alert alert-danger">
                             <strong>Error:</strong> {{ $transaction->error_message }}
                         </div>
@@ -202,11 +294,23 @@
 
             <!-- Processing Timeline -->
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-clock"></i> Processing Timeline</h5>
+                <div class="card" style="
+                    background: white;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+                    border: 1px solid rgba(18, 18, 104, 0.1);
+                ">
+                    <div class="card-header" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border-bottom: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 1.5rem 1.5rem 0 0;
+                        padding: 1.25rem;
+                    ">
+                        <h5 class="mb-0" style="color: rgb(18, 18, 104); font-weight: 600; font-family: 'Montserrat', sans-serif;">
+                            <i class="fas fa-clock me-2"></i>Processing Timeline
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <div class="timeline">
                             <div class="timeline-item">
                                 <div class="timeline-marker bg-primary"></div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\BatchUpload;
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -13,9 +14,54 @@ use Illuminate\Support\Facades\DB;
 class NotificationController extends Controller
 {
     /**
-     * Display a listing of notifications.
+     * Display the notifications page.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            // Get notifications from multiple sources
+            $notifications = collect();
+            
+            // 1. Transaction notifications
+            $transactionNotifications = $this->getTransactionNotifications($user);
+            $notifications = $notifications->merge($transactionNotifications);
+            
+            // 2. Batch notifications
+            $batchNotifications = $this->getBatchNotifications($user);
+            $notifications = $notifications->merge($batchNotifications);
+            
+            // 3. System notifications
+            $systemNotifications = $this->getSystemNotifications($user);
+            $notifications = $notifications->merge($systemNotifications);
+            
+            // Sort by created_at descending
+            $notifications = $notifications->sortByDesc('created_at')->values();
+            
+            // Group notifications by type
+            $notificationsByType = $notifications->groupBy('type');
+            
+            return view('notifications.index', compact('notifications', 'notificationsByType'));
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to load notifications page', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return view('notifications.index', [
+                'notifications' => collect(),
+                'notificationsByType' => collect(),
+                'error' => 'Failed to load notifications'
+            ]);
+        }
+    }
+
+    /**
+     * Display a listing of notifications (API endpoint).
+     */
+    public function apiIndex(Request $request): JsonResponse
     {
         try {
             $user = $request->user();
@@ -70,6 +116,11 @@ class NotificationController extends Controller
             // For now, we'll simulate marking as read since we don't have a dedicated notifications table
             // In a real implementation, you'd have a notifications table with read_at timestamps
             
+            Log::info('Notification marked as read', [
+                'user_id' => $user->id ?? 0,
+                'notification_id' => $id
+            ]);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Notification marked as read'
@@ -90,6 +141,39 @@ class NotificationController extends Controller
     }
 
     /**
+     * Mark all notifications as read.
+     */
+    public function markAllAsRead(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            
+            // For now, we'll simulate marking all as read
+            // In a real implementation, you'd update a notifications table
+            
+            Log::info('All notifications marked as read', [
+                'user_id' => $user->id ?? 0
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications marked as read'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to mark all notifications as read', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to mark all notifications as read'
+            ], 500);
+        }
+    }
+
+    /**
      * Get transaction-based notifications.
      */
     private function getTransactionNotifications($user)
@@ -98,7 +182,7 @@ class NotificationController extends Controller
         
         // Get recent transactions for the user's batches
         $transactions = Transaction::whereHas('batchUpload', function($query) use ($user) {
-            $query->where('user_id', $user->id);
+            $query->where('user_id', $user->id ?? 0);
         })
         ->with(['recipient', 'batchUpload'])
         ->orderBy('created_at', 'desc')
@@ -134,7 +218,7 @@ class NotificationController extends Controller
         $notifications = collect();
         
         // Get recent batch uploads
-        $batches = BatchUpload::where('user_id', $user->id)
+        $batches = BatchUpload::where('user_id', $user->id ?? 0)
             ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
@@ -167,25 +251,66 @@ class NotificationController extends Controller
         $notifications = collect();
         
         // Get recent activity logs for the user
-        $activities = ActivityLog::where('causer_id', $user->id)
+        $activities = ActivityLog::where('causer_id', $user->id ?? 0)
             ->where('causer_type', User::class)
             ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
         
         foreach ($activities as $activity) {
+            // Determine notification type based on event
+            $notificationType = 'info';
+            $notificationTitle = 'System Activity';
+            
+            if ($activity->event === 'device_mismatch_security_alert') {
+                $notificationType = 'error';
+                $notificationTitle = 'Security Alert';
+            } elseif (in_array($activity->event, ['user_login', 'user_logout'])) {
+                $notificationType = 'info';
+                $notificationTitle = 'Authentication Activity';
+            } elseif (in_array($activity->event, ['password_changed', 'device_reset', 'device_deactivated'])) {
+                $notificationType = 'warning';
+                $notificationTitle = 'Security Activity';
+            }
+            
             $notification = [
                 'id' => 'activity_' . $activity->id,
-                'type' => 'info',
-                'title' => 'System Activity',
+                'type' => $notificationType,
+                'title' => $notificationTitle,
                 'message' => $activity->description ?? 'System activity recorded',
                 'created_at' => $activity->created_at->toISOString(),
                 'read_at' => null,
                 'activity_id' => $activity->id,
-                'activity_type' => $activity->log_name ?? 'system'
+                'activity_type' => $activity->event ?? 'system'
             ];
             
             $notifications->push($notification);
+        }
+        
+        // If user is super admin, also get security alerts (device mismatch events)
+        if ($user->hasRole('super-admin') || $user->hasRole('Super Admin')) {
+            $securityAlerts = ActivityLog::where('event', 'device_mismatch_security_alert')
+                ->where('causer_id', $user->id)
+                ->where('causer_type', User::class)
+                ->orderBy('created_at', 'desc')
+                ->limit(50)
+                ->get();
+            
+            foreach ($securityAlerts as $alert) {
+                $notification = [
+                    'id' => 'security_alert_' . $alert->id,
+                    'type' => 'error',
+                    'title' => '🔒 Security Alert: Device Mismatch',
+                    'message' => $alert->description ?? 'A user attempted to login from a different device',
+                    'created_at' => $alert->created_at->toISOString(),
+                    'read_at' => null,
+                    'activity_id' => $alert->id,
+                    'activity_type' => 'security_alert',
+                    'properties' => $alert->properties ?? []
+                ];
+                
+                $notifications->push($notification);
+            }
         }
         
         return $notifications;

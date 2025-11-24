@@ -105,16 +105,48 @@ class ProcessBatchCommand extends Command
         $progressBar->finish();
         $this->newLine();
         
+        // Determine final batch status
+        $finalStatus = 'processing';
+        
+        if ($processedCount >= $batch->total_recipients) {
+            // All recipients have been processed
+            if ($successCount > 0) {
+                // At least one successful - mark as completed
+                $finalStatus = 'completed';
+            } else if ($failedCount > 0) {
+                // All failed - mark as failed
+                $finalStatus = 'failed';
+            }
+        } else {
+            // Not all recipients processed - batch is incomplete
+            // Mark as failed if processing didn't complete
+            if ($processedCount > 0) {
+                // Some processing happened but didn't complete
+                // Check failure rate - if >90% failed or no successes, mark as failed
+                $failureRate = ($failedCount / $processedCount) * 100;
+                if ($failureRate >= 90 || $successCount == 0) {
+                    $finalStatus = 'failed';
+                } else {
+                    // Still processing - keep as processing status for retry
+                    $finalStatus = 'processing';
+                }
+            } else {
+                // No recipients processed at all - likely an error
+                $finalStatus = 'failed';
+            }
+        }
+        
         // Update batch statistics
         $batch->update([
             'processed_recipients' => $processedCount,
             'successful_transactions' => $successCount,
             'failed_transactions' => $failedCount,
-            'status' => $processedCount >= $batch->total_recipients ? 'completed' : 'processing'
+            'status' => $finalStatus
         ]);
         
         $this->info("Batch processing completed!");
-        $this->info("Processed: {$processedCount}");
+        $this->info("Final Status: {$finalStatus}");
+        $this->info("Processed: {$processedCount} / {$batch->total_recipients}");
         $this->info("Successful: {$successCount}");
         $this->info("Failed: {$failedCount}");
         
@@ -209,11 +241,20 @@ class ProcessBatchCommand extends Command
     private function sendTransactionNotification(Transaction $transaction, string $type, string $message): void
     {
         try {
+            // Get batch templates and flags if available
+            $batch = $transaction->batchUpload;
+            $smsTemplate = $batch->sms_template ?? null;
+            $emailTemplate = $batch->email_template ?? null;
+            $enableSms = $batch->enable_sms ?? true; // Default to true for backward compatibility
+            $enableEmail = $batch->enable_email ?? true; // Default to true for backward compatibility
+            
             $this->notificationService->sendTransactionNotifications(
                 $transaction,
                 $message,
-                true,  // Enable SMS notifications
-                true   // Enable email notifications
+                $enableSms,  // Enable/disable SMS notifications based on batch setting
+                $enableEmail,  // Enable/disable email notifications based on batch setting
+                $smsTemplate,   // Custom SMS template
+                $emailTemplate  // Custom email template
             );
         } catch (\Exception $e) {
             Log::error('Failed to send transaction notification', [

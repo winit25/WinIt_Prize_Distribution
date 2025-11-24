@@ -14,6 +14,7 @@ class Recipient extends Model
         'customer_name',
         'address',
         'phone_number',
+        'email',
         'disco',
         'meter_number',
         'meter_type',
@@ -21,7 +22,8 @@ class Recipient extends Model
         'status',
         'transaction_reference',
         'error_message',
-        'processed_at'
+        'processed_at',
+        'tariff_class'
     ];
 
     protected $casts = [

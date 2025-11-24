@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -18,14 +19,66 @@ class DashboardController extends Controller
         $cacheKey = 'dashboard_stats_' . auth()->id();
         
         $stats = Cache::remember($cacheKey, 120, function () {
+            // Get comprehensive BuyPower metrics with live data
+            $totalTransactions = Transaction::count();
+            $successfulTransactions = Transaction::where('status', 'success')->count();
+            $totalAmount = Transaction::where('status', 'success')->sum('amount');
+            $totalUnits = Transaction::where('status', 'success')->whereNotNull('units')->sum(DB::raw('CAST(units AS DECIMAL(10,2))'));
+            
+            // Recipient statistics
+            $uniqueRecipients = Recipient::distinct('phone_number')->count();
+            $recipientsWithTokens = Transaction::where('status', 'success')->distinct('recipient_id')->count();
+            
+            // Batch statistics
+            $completedBatches = BatchUpload::where('status', 'completed')->count();
+            $processingBatches = BatchUpload::where('status', 'processing')->count();
+            $failedBatches = BatchUpload::where('status', 'failed')->count();
+            
+            // Disco distribution
+            $discoStats = Transaction::join('recipients', 'transactions.recipient_id', '=', 'recipients.id')
+                ->where('transactions.status', 'success')
+                ->selectRaw('recipients.disco, COUNT(*) as count, SUM(transactions.amount) as total_amount')
+                ->groupBy('recipients.disco')
+                ->get()
+                ->keyBy('disco');
+            
+            // Today's statistics
+            $todayTransactions = Transaction::whereDate('created_at', today())->count();
+            $todayAmount = Transaction::whereDate('created_at', today())->where('status', 'success')->sum('amount');
+            
+            // This month's statistics
+            $monthTransactions = Transaction::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count();
+            $monthAmount = Transaction::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->where('status', 'success')
+                ->sum('amount');
+            
+            // Average transaction amount
+            $avgTransactionAmount = $successfulTransactions > 0 ? $totalAmount / $successfulTransactions : 0;
+            
             return [
                 'totalBatches' => BatchUpload::count(),
+                'completedBatches' => $completedBatches,
+                'processingBatches' => $processingBatches,
+                'failedBatches' => $failedBatches,
                 'totalRecipients' => Recipient::count(),
-                'totalTransactions' => Transaction::count(),
-                'totalAmount' => Transaction::sum('amount'),
-                'successfulTransactions' => Transaction::where('status', 'success')->count(),
+                'uniqueRecipients' => $uniqueRecipients,
+                'recipientsWithTokens' => $recipientsWithTokens,
+                'totalTransactions' => $totalTransactions,
+                'totalAmount' => $totalAmount,
+                'totalUnits' => $totalUnits,
+                'successfulTransactions' => $successfulTransactions,
                 'processingCount' => Transaction::where('status', 'processing')->count(),
                 'failedCount' => Transaction::where('status', 'failed')->count(),
+                'pendingCount' => Transaction::where('status', 'pending')->count(),
+                'discoStats' => $discoStats,
+                'todayTransactions' => $todayTransactions,
+                'todayAmount' => $todayAmount,
+                'monthTransactions' => $monthTransactions,
+                'monthAmount' => $monthAmount,
+                'avgTransactionAmount' => $avgTransactionAmount,
             ];
         });
         

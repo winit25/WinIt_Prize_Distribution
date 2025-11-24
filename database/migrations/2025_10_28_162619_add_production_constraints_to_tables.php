@@ -18,43 +18,34 @@ return new class extends Migration
             if (!$this->indexExists('recipients', 'unique_phone_per_batch')) {
                 $table->unique(['batch_upload_id', 'phone_number'], 'unique_phone_per_batch');
             }
-            
-            // Note: SQLite doesn't support CHECK constraints in ALTER TABLE
-            // These constraints should be enforced at the application level
         });
 
         // Add constraints to transactions table
         Schema::table('transactions', function (Blueprint $table) {
-            // Note: SQLite doesn't support CHECK constraints in ALTER TABLE
-            // These constraints should be enforced at the application level
-            
             // Add index for better performance (only if it doesn't exist)
-            if (!$this->indexExists('transactions', 'status_created_at_index')) {
-                $table->index(['status', 'created_at'], 'status_created_at_index');
+            if (!$this->indexExists('transactions', 'transactions_status_created_at_index')) {
+                $table->index(['status', 'created_at'], 'transactions_status_created_at_index');
             }
-            if (!$this->indexExists('transactions', 'batch_status_index')) {
-                $table->index(['batch_upload_id', 'status'], 'batch_status_index');
+            if (!$this->indexExists('transactions', 'transactions_batch_status_index')) {
+                $table->index(['batch_upload_id', 'status'], 'transactions_batch_status_index');
             }
         });
 
         // Add constraints to batch_uploads table
         Schema::table('batch_uploads', function (Blueprint $table) {
-            // Note: SQLite doesn't support CHECK constraints in ALTER TABLE
-            // These constraints should be enforced at the application level
-            
             // Add index for better performance (only if it doesn't exist)
-            if (!$this->indexExists('batch_uploads', 'status_created_at_index')) {
-                $table->index(['status', 'created_at'], 'status_created_at_index');
+            if (!$this->indexExists('batch_uploads', 'batch_uploads_status_created_at_index')) {
+                $table->index(['status', 'created_at'], 'batch_uploads_status_created_at_index');
             }
-            if (!$this->indexExists('batch_uploads', 'user_status_index')) {
-                $table->index(['user_id', 'status'], 'user_status_index');
+            // Only add user_id index if the column exists
+            if ($this->columnExists('batch_uploads', 'user_id') && !$this->indexExists('batch_uploads', 'batch_uploads_user_status_index')) {
+                $table->index(['user_id', 'status'], 'batch_uploads_user_status_index');
             }
         });
 
         // Add constraints to users table
         Schema::table('users', function (Blueprint $table) {
-            // Note: SQLite doesn't support CHECK constraints in ALTER TABLE
-            // These constraints should be enforced at the application level
+            // Additional constraints can be added here if needed
         });
     }
 
@@ -70,28 +61,66 @@ return new class extends Migration
 
         // Remove constraints from transactions table
         Schema::table('transactions', function (Blueprint $table) {
-            $table->dropIndex('status_created_at_index');
-            $table->dropIndex('batch_status_index');
+            $table->dropIndex('transactions_status_created_at_index');
+            $table->dropIndex('transactions_batch_status_index');
         });
 
         // Remove constraints from batch_uploads table
         Schema::table('batch_uploads', function (Blueprint $table) {
-            $table->dropIndex('status_created_at_index');
-            $table->dropIndex('user_status_index');
+            $table->dropIndex('batch_uploads_status_created_at_index');
+            $table->dropIndex('batch_uploads_user_status_index');
         });
     }
 
     /**
-     * Check if an index exists on a table
+     * Check if an index exists on a table (supports MySQL and SQLite)
      */
     private function indexExists(string $table, string $indexName): bool
     {
-        $indexes = DB::select("PRAGMA index_list({$table})");
-        foreach ($indexes as $index) {
-            if ($index->name === $indexName) {
-                return true;
+        try {
+            $driver = DB::connection()->getDriverName();
+            
+            if ($driver === 'sqlite') {
+                $indexes = DB::select("PRAGMA index_list(`{$table}`)");
+                foreach ($indexes as $index) {
+                    if ($index->name === $indexName) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                // MySQL/MariaDB
+                $indexes = DB::select("SHOW INDEX FROM `{$table}` WHERE Key_name = ?", [$indexName]);
+                return count($indexes) > 0;
             }
+        } catch (\Exception $e) {
+            return false;
         }
-        return false;
+    }
+
+    /**
+     * Check if a column exists in a table (supports MySQL and SQLite)
+     */
+    private function columnExists(string $table, string $columnName): bool
+    {
+        try {
+            $driver = DB::connection()->getDriverName();
+            
+            if ($driver === 'sqlite') {
+                $columns = DB::select("PRAGMA table_info(`{$table}`)");
+                foreach ($columns as $column) {
+                    if ($column->name === $columnName) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                // MySQL/MariaDB
+                $columns = DB::select("SHOW COLUMNS FROM `{$table}` LIKE ?", [$columnName]);
+                return count($columns) > 0;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 };

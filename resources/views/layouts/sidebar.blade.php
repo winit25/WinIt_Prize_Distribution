@@ -4,50 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'WinIt - Prize Distribution System')</title>
+    <title>@yield('title', 'WinIt Prize Distribution - Prize Distribution System')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* WinIt Brand Colors - Updated with deep blue color */
-            --winit-primary: #121268;
-            --winit-primary-light: #1a1a7a;
-            --winit-primary-dark: #0e0e4a;
-            --winit-secondary: #2a2a8a;
-            --winit-accent: #06b6d4;
-            --winit-success: #059669;
-            --winit-warning: #d97706;
-            --winit-danger: #dc2626;
-            --winit-dark: #121268;
-            --winit-gray: #6b7280;
-            --winit-light: #f9fafb;
-            --winit-border: #d1d5db;
+            /* WinIt Brand Colors - Exact colors from https://win-it-web.vercel.app/dashboard */
+            --winit-primary: #4313F7;
+            --winit-primary-light: #5a2bfa;
+            --winit-primary-dark: #3510c9;
+            --winit-secondary: #23A3D6;
+            --winit-accent: #17F7B6;
+            --winit-accent-alt: #13F7B5;
+            --winit-pink: #F71355;
+            --winit-lime: #C7F713;
+            --winit-success: #10B981;
+            --winit-warning: #F59E0B;
+            --winit-danger: #EF4444;
+            --winit-dark: #010133;
+            --winit-dark-alt: #01011B;
+            --winit-gray: #4C4D61;
+            --winit-gray-light: #9899AD;
+            --winit-light: #F7F7F9;
+            --winit-border: #D0D5DD;
             --winit-white: #ffffff;
-            --winit-navy: #121268;
-            --winit-navy-light: #1a1a7a;
-            --winit-blue-50: #f0f0ff;
-            --winit-blue-100: #e0e0ff;
-            --winit-blue-200: #c0c0ff;
-            --winit-blue-500: #4a4a9a;
-            --winit-blue-600: #3a3a8a;
-            --winit-blue-700: #2a2a7a;
-            --winit-blue-800: #1a1a6a;
-            --winit-blue-900: #0e0e4a;
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, var(--winit-light) 0%, #f1f5f9 100%);
+            font-family: 'Montserrat Alternates', 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--winit-light) 0%, #FAFAFB 100%);
             margin: 0;
             padding: 0;
             color: var(--winit-dark);
         }
 
         .sidebar {
-            background: linear-gradient(180deg, var(--winit-primary) 0%, var(--winit-primary-dark) 100%);
-            min-height: 100vh;
-            box-shadow: 4px 0 20px rgba(18, 18, 104, 0.3);
+            background: linear-gradient(135deg, #010133 0%, #01011b 100%);
+            height: 100vh;
+            box-shadow: 4px 0 20px rgba(1, 1, 51, 0.5);
             position: fixed;
             top: 0;
             left: 0;
@@ -55,12 +50,16 @@
             z-index: 1000;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .sidebar-brand {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            flex-shrink: 0;
         }
 
         .sidebar-brand .logo {
@@ -86,6 +85,9 @@
 
         .sidebar-nav {
             padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .nav-item {
@@ -105,15 +107,19 @@
         }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: linear-gradient(135deg, rgba(23, 247, 182, 0.2) 0%, rgba(23, 247, 182, 0.1) 100%);
+            color: var(--winit-accent);
             transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(23, 247, 182, 0.2);
         }
 
         .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: linear-gradient(135deg, rgba(23, 247, 182, 0.25) 0%, rgba(23, 247, 182, 0.15) 100%);
+            color: var(--winit-accent);
             font-weight: 600;
+            box-shadow: 0 2px 8px rgba(23, 247, 182, 0.3);
+            border-left: 4px solid var(--winit-accent);
+            padding-left: calc(1.5rem - 4px);
         }
 
         .nav-link i {
@@ -144,8 +150,14 @@
             margin: 1rem 1.5rem;
         }
 
+        .logout-btn {
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            margin-top: 1rem !important;
+            padding-top: 1rem !important;
+        }
+
         .logout-btn:hover {
-            background: rgba(220, 38, 38, 0.1) !important;
+            background: rgba(239, 68, 68, 0.15) !important;
             color: #fca5a5 !important;
         }
 
@@ -157,6 +169,154 @@
 
         .nav-link span {
             flex: 1;
+        }
+
+        .user-profile-section {
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .user-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: 'Montserrat Alternates', 'Montserrat', sans-serif;
+        }
+
+        .logout-button:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .user-quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .user-status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10B981;
+            border: 2px solid white;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .user-avatar-wrapper {
+            position: relative;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .system-info {
@@ -179,7 +339,7 @@
         }
 
         .modal-header {
-            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-primary-dark) 100%);
+            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-accent) 100%);
             color: white;
             border-radius: 1rem 1rem 0 0;
             border: none;
@@ -239,12 +399,13 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-primary-dark) 100%);
+            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-accent) 100%);
             color: white;
             border-radius: 1.5rem 1.5rem 0 0 !important;
             padding: 1.5rem 2rem;
             border: none;
             font-weight: 600;
+            font-family: 'Montserrat Alternates', 'Montserrat', sans-serif;
         }
 
         .card-body {
@@ -264,22 +425,22 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-primary-dark) 100%);
+            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-accent) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(18, 18, 104, 0.3);
+            box-shadow: 0 4px 12px rgba(67, 19, 247, 0.3);
             border: none;
             font-weight: 600;
             border-radius: 0.75rem;
             padding: 0.75rem 1.5rem;
             transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Montserrat Alternates', 'Montserrat', sans-serif;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(18, 18, 104, 0.4);
+            box-shadow: 0 8px 20px rgba(67, 19, 247, 0.4);
             color: white;
-            background: linear-gradient(135deg, var(--winit-primary-dark) 0%, var(--winit-primary) 100%);
+            background: linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-primary) 100%);
         }
 
         .btn-success {
@@ -409,28 +570,85 @@
             border-left: 4px solid var(--secondary-blue);
         }
 
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: linear-gradient(135deg, var(--winit-primary) 0%, var(--winit-accent) 100%);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            width: 48px;
+            height: 48px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(67, 19, 247, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(67, 19, 247, 0.4);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
             }
 
             .main-content {
                 margin-left: 0;
-                padding: 1rem;
+                padding: 5rem 1rem 1rem 1rem;
             }
         }
     </style>
     @stack('styles')
 </head>
 <body>
-        <!-- Sidebar -->
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <div class="logo">
-                <i class="fas fa-trophy"></i>
-                </div>
-            <h4>WinIt</h4>
+            <div class="logo" style="background: transparent; border: none;">
+                <img src="{{ asset('images/winit-logo.png') }}" alt="WinIt Logo" style="width: 120px; height: auto; display: block; margin: 0 auto;">
             </div>
+            <h4 style="color: white;">WinIt Prize Distribution</h4>
+        </div>
 
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
@@ -474,6 +692,70 @@
                 </li>
                 @endif
 
+                <!-- Airtime Operations Section -->
+                <li class="nav-item mt-3">
+                    <div class="nav-section-header">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Airtime</span>
+                    </div>
+                </li>
+
+                @if(auth()->user()->canUploadCsv())
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-airtime.index') ? 'active' : '' }}" href="{{ route('bulk-airtime.index') }}">
+                        <i class="fas fa-upload"></i>
+                        <span>Upload CSV</span>
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->canViewTransactions())
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-airtime.history') ? 'active' : '' }}" href="{{ route('bulk-airtime.history') }}">
+                        <i class="fas fa-history"></i>
+                        <span>Batch History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-airtime.transactions') ? 'active' : '' }}" href="{{ route('bulk-airtime.transactions') }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>All Transactions</span>
+                    </a>
+                </li>
+                @endif
+
+                <!-- DSTV Operations Section -->
+                <li class="nav-item mt-3">
+                    <div class="nav-section-header">
+                        <i class="fas fa-tv"></i>
+                        <span>DSTV (TV)</span>
+                    </div>
+                </li>
+
+                @if(auth()->user()->canUploadCsv())
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-dstv.index') ? 'active' : '' }}" href="{{ route('bulk-dstv.index') }}">
+                        <i class="fas fa-upload"></i>
+                        <span>Upload CSV</span>
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->canViewTransactions())
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-dstv.history') ? 'active' : '' }}" href="{{ route('bulk-dstv.history') }}">
+                        <i class="fas fa-history"></i>
+                        <span>Batch History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('bulk-dstv.transactions') ? 'active' : '' }}" href="{{ route('bulk-dstv.transactions') }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>All Transactions</span>
+                    </a>
+                </li>
+                @endif
+
                 <!-- Administration Section -->
                 <li class="nav-item mt-3">
                     <div class="nav-section-header">
@@ -491,14 +773,22 @@
                 </li>
                             @endif
 
-        @if(auth()->user()->hasPermission('view-activity-logs'))
+                @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('Super Admin'))
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Permissions</span>
+                    </a>
+                </li>
+                @endif
+
+        <!-- Activity Logs - Available to all authenticated users -->
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}" href="{{ route('activity-logs.index') }}">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Activity Logs</span>
             </a>
         </li>
-        @endif
 
         @if(auth()->user()->hasPermission('view-notifications'))
         <li class="nav-item">
@@ -520,14 +810,17 @@
                 </li>
                 @endif
 
-                <!-- Profile Section -->
+                <!-- Settings Section -->
                 @auth
                 <li class="nav-item mt-3">
-                    <div class="nav-section-divider"></div>
+                    <div class="nav-section-header">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('profile.edit') }}">
-                                <i class="fas fa-user-circle"></i>
+                        <i class="fas fa-user-circle"></i>
                         <span>My Profile</span>
                     </a>
                 </li>
@@ -541,20 +834,63 @@
                     </a>
                 </li>
                 @endif
-
-                <li class="nav-item">
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="nav-link logout-btn" style="background: none; border: none; width: 100%; text-align: left;">
-                        <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                    </button>
-                    </form>
-                </li>
                 @endauth
             </ul>
         </nav>
+        
+        <!-- User Profile Section at Bottom -->
+        @auth
+        <div class="user-profile-section">
+            <div class="user-profile-card">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <span class="user-status-badge" title="Online"></span>
                 </div>
+                <div class="user-info">
+                    <p class="user-name">{{ auth()->user()->name }}</p>
+                    <p class="user-role">
+                        @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('Super Admin'))
+                            <i class="fas fa-shield-alt"></i> Super Admin
+                        @elseif(auth()->user()->hasRole('admin'))
+                            <i class="fas fa-user-shield"></i> Admin
+                        @else
+                            <i class="fas fa-user"></i> {{ ucfirst(auth()->user()->roles->first()->name ?? 'User') }}
+                        @endif
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="user-quick-actions">
+                <a href="{{ route('profile.edit') }}" class="quick-action-btn" title="Profile Settings">
+                    <i class="fas fa-user-cog"></i>
+                    <span class="d-none d-lg-inline">Profile</span>
+                </a>
+                @if(auth()->user()->hasPermission('view-notifications'))
+                <a href="{{ route('notifications.index') }}" class="quick-action-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="d-none d-lg-inline">Alerts</span>
+                </a>
+                @endif
+                @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('Super Admin'))
+                <a href="#" onclick="showSystemInfo(); return false;" class="quick-action-btn" title="System Info">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+                @endif
+            </div>
+            
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+        @endauth
+    </div>
                 
     <!-- Main Content -->
     <div class="main-content">
@@ -649,7 +985,7 @@
         // System Info Modal
         function showSystemInfo() {
             const systemInfo = {
-                'Application': 'WinIt BuyPower System',
+                'Application': 'WinIt Prize Distribution',
                 'Version': '1.0.0',
                 'Environment': '{{ app()->environment() }}',
                 'PHP Version': '{{ PHP_VERSION }}',
@@ -746,11 +1082,140 @@
         
         // Initial load
         updateNotificationBadge();
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('mobileMenuToggle');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Toggle icon
+            const icon = toggleBtn.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Close sidebar when clicking on a nav link (mobile)
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        const sidebar = document.querySelector('.sidebar');
+                        const overlay = document.getElementById('sidebarOverlay');
+                        const toggleBtn = document.getElementById('mobileMenuToggle');
+                        
+                        if (sidebar.classList.contains('active')) {
+                            sidebar.classList.remove('active');
+                            overlay.classList.remove('active');
+                            
+                            const icon = toggleBtn.querySelector('i');
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                    }
+                });
+            });
+        });
     </script>
     
     <script>
         // Set CSRF token for AJAX requests
         window.csrfToken = '{{ csrf_token() }}';
+        
+        /**
+         * Generate device fingerprint (same function as login page)
+         * Returns the full fingerprint string - backend will hash it with SHA256
+         */
+        function generateDeviceFingerprint() {
+            const components = [];
+            components.push(navigator.userAgent || '');
+            components.push(navigator.platform || '');
+            components.push(`${screen.width}x${screen.height}`);
+            components.push(screen.colorDepth || '');
+            components.push(new Date().getTimezoneOffset());
+            components.push(navigator.language || navigator.userLanguage || '');
+            components.push(navigator.hardwareConcurrency || '');
+            if (navigator.deviceMemory) {
+                components.push(navigator.deviceMemory);
+            }
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillText('Device fingerprint', 2, 2);
+                components.push(canvas.toDataURL().substring(0, 100));
+            } catch (e) {}
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                        components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+                    }
+                }
+            } catch (e) {}
+            // Return the full fingerprint string (backend will hash it with SHA256)
+            return components.join('|');
+        }
+        
+        // Generate and store device fingerprint
+        const deviceFingerprint = generateDeviceFingerprint();
+        sessionStorage.setItem('deviceFingerprint', deviceFingerprint);
+        
+        // Intercept all fetch requests to add device fingerprint header
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            const [url, options = {}] = args;
+            const headers = options.headers || {};
+            
+            // Add device fingerprint header
+            if (typeof headers === 'object' && !(headers instanceof Headers)) {
+                headers['X-Device-Fingerprint'] = deviceFingerprint;
+            } else if (headers instanceof Headers) {
+                headers.set('X-Device-Fingerprint', deviceFingerprint);
+            } else {
+                options.headers = {
+                    ...headers,
+                    'X-Device-Fingerprint': deviceFingerprint
+                };
+            }
+            
+            return originalFetch.apply(this, [url, options]);
+        };
+        
+        // Intercept XMLHttpRequest to add device fingerprint header
+        const originalOpen = XMLHttpRequest.prototype.open;
+        const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+        
+        XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+            this._url = url;
+            return originalOpen.apply(this, [method, url, ...rest]);
+        };
+        
+        XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
+            if (name.toLowerCase() === 'x-device-fingerprint') {
+                return; // Don't override if already set
+            }
+            return originalSetRequestHeader.apply(this, [name, value]);
+        };
+        
+        // Add device fingerprint to all XMLHttpRequest sends
+        const originalSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.send = function(...args) {
+            this.setRequestHeader('X-Device-Fingerprint', deviceFingerprint);
+            return originalSend.apply(this, args);
+        };
     </script>
     
     @stack('scripts')

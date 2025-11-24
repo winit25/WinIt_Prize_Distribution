@@ -1,3 +1,4 @@
+@if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('Super Admin'))
 <div class="alert alert-warning">
     <i class="fas fa-exclamation-triangle me-2"></i>
     <strong>Warning:</strong> Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.
@@ -49,3 +50,4 @@
         </div>
     </div>
 </div>
+@endif

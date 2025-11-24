@@ -13,40 +13,125 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create permissions
+        // Create simplified, clear permissions organized by category
         $permissions = [
-            // User Management
-            ['name' => 'manage-users', 'slug' => 'manage-users'],
-            ['name' => 'view-users', 'slug' => 'view-users'],
+            // User Management (Write operations)
+            [
+                'name' => 'manage-users',
+                'slug' => 'manage-users',
+                'display_name' => 'Manage Users',
+                'description' => 'Create, edit, and delete user accounts',
+                'category' => 'user_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'view-users',
+                'slug' => 'view-users',
+                'display_name' => 'View Users',
+                'description' => 'View user list and details',
+                'category' => 'user_management',
+                'is_active' => true
+            ],
             
-            // Bulk Token Operations
-            ['name' => 'upload-csv', 'slug' => 'upload-csv'],
-            ['name' => 'process-batches', 'slug' => 'process-batches'],
-            ['name' => 'view-batches', 'slug' => 'view-batches'],
+            // Batch Management (Critical write operations)
+            [
+                'name' => 'upload-csv',
+                'slug' => 'upload-csv',
+                'display_name' => 'Upload CSV',
+                'description' => 'Upload CSV files for bulk token generation (WRITE)',
+                'category' => 'batch_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'process-batches',
+                'slug' => 'process-batches',
+                'display_name' => 'Process Batches',
+                'description' => 'Trigger batch processing (WRITE)',
+                'category' => 'batch_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'view-batches',
+                'slug' => 'view-batches',
+                'display_name' => 'View Batches',
+                'description' => 'View batch upload history and status',
+                'category' => 'batch_management',
+                'is_active' => true
+            ],
             
             // Transaction Management
-            ['name' => 'view-transactions', 'slug' => 'view-transactions'],
-            ['name' => 'download-tokens', 'slug' => 'download-tokens'],
+            [
+                'name' => 'view-transactions',
+                'slug' => 'view-transactions',
+                'display_name' => 'View Transactions',
+                'description' => 'View transaction history and details',
+                'category' => 'transaction_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'download-tokens',
+                'slug' => 'download-tokens',
+                'display_name' => 'Download Tokens',
+                'description' => 'Download generated token reports',
+                'category' => 'transaction_management',
+                'is_active' => true
+            ],
             
-            // Activity Logs
-            ['name' => 'view-activity-logs', 'slug' => 'view-activity-logs'],
-            ['name' => 'clear-activity-logs', 'slug' => 'clear-activity-logs'],
-            
-            // Notifications
-            ['name' => 'view-notifications', 'slug' => 'view-notifications'],
-            ['name' => 'manage-notifications', 'slug' => 'manage-notifications'],
-            
-            // Dashboard
-            ['name' => 'view-dashboard', 'slug' => 'view-dashboard'],
-            
-            // Profile Management
-            ['name' => 'manage-profile', 'slug' => 'manage-profile'],
+            // System Administration
+            [
+                'name' => 'view-activity-logs',
+                'slug' => 'view-activity-logs',
+                'display_name' => 'View Activity Logs',
+                'description' => 'View system activity and audit logs',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'clear-activity-logs',
+                'slug' => 'clear-activity-logs',
+                'display_name' => 'Clear Activity Logs',
+                'description' => 'Delete activity logs (WRITE)',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'view-notifications',
+                'slug' => 'view-notifications',
+                'display_name' => 'View Notifications',
+                'description' => 'View system notifications',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'manage-notifications',
+                'slug' => 'manage-notifications',
+                'display_name' => 'Manage Notifications',
+                'description' => 'Create and manage notifications (WRITE)',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'view-dashboard',
+                'slug' => 'view-dashboard',
+                'display_name' => 'View Dashboard',
+                'description' => 'Access the main dashboard',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'manage-profile',
+                'slug' => 'manage-profile',
+                'display_name' => 'Manage Profile',
+                'description' => 'Edit own profile and settings',
+                'category' => 'user_management',
+                'is_active' => true
+            ],
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(
-                ['name' => $permission['name']],
-                $permission
+        foreach ($permissions as $permissionData) {
+            Permission::updateOrCreate(
+                ['name' => $permissionData['name']],
+                $permissionData
             );
         }
 
@@ -54,24 +139,28 @@ class PermissionSeeder extends Seeder
         $roles = [
             [
                 'name' => 'super-admin',
+                'slug' => 'super-admin',
                 'display_name' => 'Super Administrator',
                 'description' => 'Full system access with all permissions',
                 'is_active' => true,
             ],
             [
                 'name' => 'admin',
+                'slug' => 'admin',
                 'display_name' => 'Administrator',
                 'description' => 'Administrative access with most permissions except user management',
                 'is_active' => true,
             ],
             [
                 'name' => 'user',
+                'slug' => 'user',
                 'display_name' => 'Standard User',
                 'description' => 'Standard user with basic permissions for token operations',
                 'is_active' => true,
             ],
             [
                 'name' => 'audit',
+                'slug' => 'audit',
                 'display_name' => 'Auditor',
                 'description' => 'Read-only access for auditing and monitoring',
                 'is_active' => true,

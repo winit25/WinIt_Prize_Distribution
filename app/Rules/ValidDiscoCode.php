@@ -7,10 +7,10 @@ use Illuminate\Contracts\Validation\Rule;
 class ValidDiscoCode implements Rule
 {
     private $validDiscos = [
-        'AEDC', 'ABUJA', 'EKEDC', 'EKO', 'IKEDC', 'IKEJA', 
-        'IBEDC', 'IBADAN', 'EEDC', 'ENUGU', 'PHED', 'PH',
-        'JEDC', 'JOS', 'KAEDCO', 'KADUNA', 'KEDCO', 'KANO',
-        'BEDC', 'BH'
+        // Primary codes (required)
+        'ABUJA', 'EKO', 'IKEJA', 'IBADAN', 'ENUGU', 'PH', 'JOS', 'KADUNA', 'KANO', 'BH',
+        // Legacy aliases (for backward compatibility)
+        'AEDC', 'EKEDC', 'IKEDC', 'IBEDC', 'EEDC', 'PHED', 'JEDC', 'KAEDCO', 'KEDCO', 'BEDC'
     ];
 
     public function passes($attribute, $value)
@@ -20,6 +20,6 @@ class ValidDiscoCode implements Rule
 
     public function message()
     {
-        return 'The :attribute must be a valid DISCO code (AEDC, EKO, IKEJA, IBADAN, ENUGU, PH, JOS, KADUNA, KANO, BH).';
+        return 'The :attribute must be a valid DISCO code (ABUJA, EKO, IKEJA, IBADAN, ENUGU, PH, JOS, KADUNA, KANO, BH).';
     }
 }

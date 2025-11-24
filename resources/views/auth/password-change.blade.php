@@ -55,23 +55,14 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--winit-navy);
             box-shadow: 0 8px 25px rgba(18, 18, 104, 0.2);
+            padding: 15px;
         }
 
-        .winit-logo {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--winit-navy);
+        .password-change-header .logo img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
         }
 
         .password-change-header h1 {
@@ -189,12 +180,12 @@
             .password-change-header .logo {
                 width: 80px;
                 height: 80px;
-                font-size: 2.5rem;
+                padding: 10px;
             }
-            .winit-logo {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+            
+            .password-change-header .logo img {
+                width: 100%;
+                height: auto;
             }
             .password-change-body {
                 padding: 2rem 1.5rem;
@@ -214,12 +205,10 @@
     <div class="password-change-container">
         <div class="password-change-header">
             <div class="logo">
-                <div class="winit-logo">
-                    W
-                </div>
+                <img src="{{ asset('images/winit-logo.png') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
             </div>
-            <h1>Change Password</h1>
-            <p>Set your new secure password</p>
+            <h1 style="color: white;">Change Password</h1>
+            <p style="color: rgba(255, 255, 255, 0.9);">Set your new secure password</p>
         </div>
 
         <div class="password-change-body">
@@ -234,10 +223,17 @@
                 </div>
             @endif
 
+            @if(auth()->user()->must_change_password)
             <div class="alert alert-warning">
                 <i class="fas fa-shield-alt me-2"></i>
-                <strong>Security Required:</strong> You must change your password before accessing the system.
+                <strong>First-Time Password Change Required:</strong> Please set a new password to access the system. You don't need to enter your current password for this first change.
             </div>
+            @else
+            <div class="alert alert-info" style="background: rgba(23, 247, 182, 0.1); color: rgb(18, 18, 104); border-left: 4px solid rgb(18, 18, 104);">
+                <i class="fas fa-key me-2"></i>
+                <strong>Update Password:</strong> Please enter your current password to set a new one.
+            </div>
+            @endif
 
             <div class="password-requirements">
                 <h5>Password Requirements</h5>
@@ -249,10 +245,11 @@
                 </ul>
             </div>
 
-            <form method="POST" action="{{ route('password.update') }}">
+            <form method="POST" action="{{ route('password.change.update') }}">
                 @csrf
 
-                <!-- Current Password -->
+                @if(!auth()->user()->must_change_password)
+                <!-- Current Password - Only show if not first-time password change -->
                 <div class="mb-4">
                     <label for="current_password" class="form-label">Current Password</label>
                     <input id="current_password" 
@@ -263,6 +260,7 @@
                            autofocus
                            placeholder="Enter your current password">
                 </div>
+                @endif
 
                 <!-- New Password -->
                 <div class="mb-4">
@@ -272,6 +270,7 @@
                            class="form-control @error('password') is-invalid @enderror" 
                            name="password" 
                            required
+                           @if(auth()->user()->must_change_password) autofocus @endif
                            placeholder="Enter your new password">
                 </div>
 

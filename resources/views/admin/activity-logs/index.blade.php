@@ -154,6 +154,14 @@
         border-radius: 1rem;
         overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(18, 18, 104, 0.1);
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    .table th,
+    .table td {
+        width: auto;
+        word-wrap: break-word;
     }
 
     .table th {
@@ -205,9 +213,11 @@
                 <p>Monitor system activities and user actions</p>
             </div>
             <div>
+                @if($canViewAll)
                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#clearLogsModal">
                     <i class="fas fa-trash me-2"></i>Clear Old Logs
                 </button>
+                @endif
             </div>
         </div>
     </div>
@@ -217,8 +227,9 @@
         <div class="card-body">
             <form method="GET" action="{{ route('activity-logs.index') }}">
                 <div class="row g-3">
+                    @if($canViewAll)
                     <div class="col-md-3">
-                        <label for="user_id" class="form-label">User</label>
+                        <label for="user_id" class="form-label"><i class="fas fa-user me-1"></i>User</label>
                         <select name="user_id" id="user_id" class="form-control">
                             <option value="">All Users</option>
                             @foreach($users as $user)
@@ -228,34 +239,47 @@
                             @endforeach
                         </select>
                     </div>
+                    @else
                     <div class="col-md-3">
-                        <label for="event" class="form-label">Event Type</label>
+                        <label class="form-label"><i class="fas fa-user me-1"></i>User</label>
+                        <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                        <small class="text-muted">You can only view your own activities</small>
+                    </div>
+                    @endif
+                    <div class="col-md-3">
+                        <label for="event" class="form-label"><i class="fas fa-tag me-1"></i>Event Type</label>
                         <select name="event" id="event" class="form-control">
                             <option value="">All Events</option>
                             @foreach($events as $event)
                                 <option value="{{ $event }}" {{ request('event') == $event ? 'selected' : '' }}>
-                                    {{ ucfirst($event) }}
+                                    {{ ucfirst(str_replace('_', ' ', $event)) }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="date_from" class="form-label">From Date</label>
+                        <label for="date_from" class="form-label"><i class="fas fa-calendar me-1"></i>From Date</label>
                         <input type="date" name="date_from" id="date_from" class="form-control" value="{{ request('date_from') }}">
                     </div>
                     <div class="col-md-2">
-                        <label for="date_to" class="form-label">To Date</label>
+                        <label for="date_to" class="form-label"><i class="fas fa-calendar me-1"></i>To Date</label>
                         <input type="date" name="date_to" id="date_to" class="form-control" value="{{ request('date_to') }}">
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary me-2">
+                        <button type="submit" class="btn btn-primary me-2 w-100">
                             <i class="fas fa-search"></i> Filter
                         </button>
-                        <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times"></i> Clear
+                    </div>
+                </div>
+                @if(request()->hasAny(['user_id', 'event', 'date_from', 'date_to', 'search']))
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times"></i> Clear Filters
                         </a>
                     </div>
                 </div>
+                @endif
             </form>
         </div>
     </div>
@@ -270,12 +294,15 @@
                             <th><i class="fas fa-user me-2"></i>User</th>
                             <th><i class="fas fa-tag me-2"></i>Event</th>
                             <th><i class="fas fa-info-circle me-2"></i>Description</th>
+                            <th><i class="fas fa-network-wired me-2"></i>User IP Address</th>
+                            <th><i class="fas fa-mobile-alt me-2"></i>Device</th>
                             <th><i class="fas fa-clock me-2"></i>Time</th>
                             <th><i class="fas fa-eye me-2"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($logs as $log)
+                        @if(isset($logs) && $logs->count() > 0)
+                        @foreach($logs as $log)
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -289,13 +316,53 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="event-badge">{{ $log->event }}</span>
+                                    @php
+                                        $badgeClass = 'bg-secondary';
+                                        if (in_array($log->event, ['user_created', 'batch_created', 'transaction_created'])) {
+                                            $badgeClass = 'bg-success';
+                                        } elseif (in_array($log->event, ['user_login', 'token_generated'])) {
+                                            $badgeClass = 'bg-info';
+                                        } elseif (in_array($log->event, ['password_changed', 'batch_status_changed', 'transaction_status_changed'])) {
+                                            $badgeClass = 'bg-warning';
+                                        } elseif (in_array($log->event, ['error', 'user_deleted', 'user_logout'])) {
+                                            $badgeClass = 'bg-danger';
+                                        }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">{{ ucfirst(str_replace('_', ' ', $log->event ?? 'unknown')) }}</span>
                                 </td>
                                 <td>
                                     <span class="fw-medium">{{ $log->description }}</span>
                                     @if($log->properties)
                                         <br><small class="text-muted">{{ Str::limit(json_encode($log->properties), 100) }}</small>
                                     @endif
+                                </td>
+                                <td>
+                                    @if($log->ip_address)
+                                        <span class="badge bg-info">{{ $log->ip_address }}</span>
+                                    @else
+                                        <span class="text-muted">N/A</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                        $deviceInfo = $log->device_info;
+                                        $deviceType = $deviceInfo['device_type'] ?? 'Unknown';
+                                        $browser = $deviceInfo['browser'] ?? 'Unknown';
+                                        $os = $deviceInfo['os'] ?? 'Unknown';
+                                        
+                                        // Set badge color based on device type
+                                        $deviceBadgeClass = 'bg-secondary';
+                                        if ($deviceType === 'Mobile') {
+                                            $deviceBadgeClass = 'bg-primary';
+                                        } elseif ($deviceType === 'Tablet') {
+                                            $deviceBadgeClass = 'bg-info';
+                                        } elseif ($deviceType === 'Desktop') {
+                                            $deviceBadgeClass = 'bg-success';
+                                        }
+                                    @endphp
+                                    <span class="badge {{ $deviceBadgeClass }} mb-1">{{ $deviceType }}</span>
+                                    <br><small class="text-muted">{{ $browser }}</small>
+                                    <br><small class="text-muted">{{ $os }}</small>
                                 </td>
                                 <td>
                                     <span class="text-muted">{{ $log->created_at->format('M d, Y H:i:s') }}</span>
@@ -307,17 +374,23 @@
                                     </a>
                                 </td>
                             </tr>
-                        @empty
+                        @endforeach
+                        @else
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="fas fa-clipboard-list fa-3x mb-3"></i>
                                         <h5>No activity logs found</h5>
                                         <p>Activity logs will appear here as users interact with the system.</p>
+                                        @if(config('app.debug'))
+                                            <small class="text-muted mt-2 d-block">
+                                                Debug: Total logs in DB: {{ \App\Models\ActivityLog::count() }}
+                                            </small>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
-                        @endforelse
+                        @endif
                     </tbody>
                 </table>
             </div>

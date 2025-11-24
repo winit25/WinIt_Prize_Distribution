@@ -1,6 +1,6 @@
-<form method="post" action="{{ route('profile.password.update') }}" class="needs-validation" novalidate>
+<form method="POST" action="{{ route('profile.password.update') }}" class="needs-validation" novalidate>
     @csrf
-    @method('put')
+    @method('PATCH')
 
     <div class="row">
         <div class="col-md-4 mb-3">

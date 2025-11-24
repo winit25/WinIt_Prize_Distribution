@@ -1,6 +1,6 @@
 @extends('layouts.sidebar')
 
-@section('title', 'Profile - WinIt')
+@section('title', 'Profile - WinIt Prize Distribution')
 
 @push('styles')
 <style>
@@ -182,6 +182,97 @@
         </div>
     </div>
 
+    <!-- Roles & Permissions -->
+    <div class="profile-card mb-4">
+        <div class="card-body p-4">
+            <h5 class="card-title mb-4">
+                <i class="fas fa-shield-alt me-2"></i>Roles & Permissions
+            </h5>
+            
+            <!-- Roles Section -->
+            <div class="mb-4">
+                <h6 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: rgb(18, 18, 104);">
+                    <i class="fas fa-user-tag me-2"></i>Your Roles
+                </h6>
+                @if($user->roles && $user->roles->count() > 0)
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($user->roles as $role)
+                            <span class="badge" style="
+                                background: linear-gradient(135deg, rgb(18, 18, 104) 0%, rgb(30, 30, 120) 100%);
+                                color: white;
+                                padding: 0.5rem 1rem;
+                                border-radius: 0.5rem;
+                                font-size: 0.875rem;
+                                font-weight: 500;
+                                font-family: 'Montserrat', sans-serif;
+                            ">
+                                <i class="fas fa-shield me-1"></i>{{ $role->display_name ?? $role->name }}
+                            </span>
+                        @endforeach
+                    </div>
+                    @foreach($user->roles as $role)
+                        @if($role->description)
+                            <p class="text-muted small mt-2 mb-0">
+                                <strong>{{ $role->display_name ?? $role->name }}:</strong> {{ $role->description }}
+                            </p>
+                        @endif
+                    @endforeach
+                @else
+                    <p class="text-muted mb-0">No roles assigned</p>
+                @endif
+            </div>
+            
+            <hr class="my-4">
+            
+            <!-- Permissions Section -->
+            <div>
+                <h6 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: rgb(18, 18, 104);">
+                    <i class="fas fa-key me-2"></i>Your Permissions
+                </h6>
+                @if($userPermissions && $userPermissions->count() > 0)
+                    @foreach($permissionsByCategory as $category => $permissions)
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-2" style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.875rem;">
+                                <i class="fas fa-folder me-1"></i>{{ ucfirst(str_replace('_', ' ', $category)) }}
+                            </h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach($permissions as $permission)
+                                    <span class="badge" style="
+                                        background: linear-gradient(135deg, rgba(23, 247, 182, 0.1) 0%, rgba(23, 247, 182, 0.05) 100%);
+                                        color: rgb(18, 18, 104);
+                                        border: 1px solid rgba(23, 247, 182, 0.3);
+                                        padding: 0.375rem 0.75rem;
+                                        border-radius: 0.5rem;
+                                        font-size: 0.75rem;
+                                        font-weight: 500;
+                                        font-family: 'Montserrat', sans-serif;
+                                    ">
+                                        <i class="fas fa-check-circle me-1"></i>{{ $permission->display_name ?? $permission->name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                    
+                    <div class="alert alert-info mt-3 mb-0" style="
+                        background: linear-gradient(135deg, rgba(18, 18, 104, 0.05) 0%, rgba(18, 18, 104, 0.02) 100%);
+                        border: 1px solid rgba(18, 18, 104, 0.1);
+                        border-radius: 0.75rem;
+                        padding: 1rem;
+                    ">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>
+                            <strong>Total Permissions:</strong> {{ $userPermissions->count() }} 
+                            across {{ $permissionsByCategory->count() }} categories
+                        </small>
+                    </div>
+                @else
+                    <p class="text-muted mb-0">No permissions assigned. Contact your administrator to get access.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Recent Activity -->
     @if($recentActivity->count() > 0)
     <div class="profile-card mb-4">
@@ -232,7 +323,8 @@
     </div>
     @endif
 
-    <!-- Account Deletion -->
+    <!-- Account Deletion (Superadmins Only) -->
+    @if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('Super Admin'))
     <div class="profile-card">
         <div class="card-body p-4">
             <h5 class="card-title mb-4 text-danger">
@@ -241,6 +333,7 @@
             @include('profile.partials.delete-user-form')
         </div>
     </div>
+    @endif
 </div>
 
 @if(session('status'))

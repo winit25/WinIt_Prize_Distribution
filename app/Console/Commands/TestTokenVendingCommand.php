@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\BuyPowerApiInterface;
 use App\Models\BatchUpload;
 use App\Models\Recipient;
 use App\Models\Transaction;
-use App\Services\BuyPowerApiService;
 use App\Services\TermiiSmsService;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
@@ -28,12 +28,12 @@ class TestTokenVendingCommand extends Command
      */
     protected $description = 'Test the complete token vending flow with BuyPower API and SMS notifications';
 
-    protected BuyPowerApiService $buyPowerService;
+    protected BuyPowerApiInterface $buyPowerService;
     protected TermiiSmsService $termiiSmsService;
     protected NotificationService $notificationService;
 
     public function __construct(
-        BuyPowerApiService $buyPowerService, 
+        BuyPowerApiInterface $buyPowerService, 
         TermiiSmsService $termiiSmsService,
         NotificationService $notificationService
     ) {

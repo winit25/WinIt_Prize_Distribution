@@ -38,7 +38,7 @@ class ProductionEmailService
                         'transport' => 'smtp',
                         'host' => $config['host'],
                         'port' => $config['port'],
-                        'encryption' => $config['encryption'],
+                        'encryption' => $config['encryption'] ?? null,
                         'username' => $config['username'],
                         'password' => $config['password'],
                         'timeout' => $config['timeout'] ?? null,
@@ -48,13 +48,20 @@ class ProductionEmailService
 
                 $startTime = microtime(true);
 
-                Mail::mailer('production')->send($view, $data, function ($message) use ($toEmail, $subject) {
+                // Use SMTP username as FROM address to avoid Gmail rejection
+                $fromAddress = config('mail.mailers.smtp.username') ?: config('mail.from.address');
+                $fromName = config('mail.from.name');
+                
+                Mail::mailer('production')->send($view, $data, function ($message) use ($toEmail, $subject, $fromAddress, $fromName) {
                     $message->to($toEmail)
-                            ->subject($subject);
+                            ->from($fromAddress, $fromName)
+                            ->replyTo($fromAddress, $fromName)
+                            ->subject($subject)
+                            ->returnPath($fromAddress);
 
-                    // Add anti-spam headers
-                    $message->getHeaders()
-                        ->addTextHeader('X-Mailer', 'WinIt Prize Distribution System v1.0')
+                    // Add anti-spam headers (excluding Return-Path and Reply-To which are set via methods)
+                    $headers = $message->getHeaders();
+                    $headers->addTextHeader('X-Mailer', 'WinIt Prize Distribution System v1.0')
                         ->addTextHeader('X-Priority', '3')
                         ->addTextHeader('Importance', 'Normal')
                         ->addTextHeader('X-Message-Type', 'Transaction Notification')
@@ -62,10 +69,7 @@ class ProductionEmailService
                         ->addTextHeader('List-Unsubscribe', '<mailto:unsubscribe@winit.ng?subject=unsubscribe>')
                         ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click')
                         ->addTextHeader('Organization', 'WinIt Prize Distribution')
-                        ->addTextHeader('X-Sender-Domain', config('mail.from.address'))
-                        ->addTextHeader('Return-Path', config('mail.from.address'))
-                        ->addTextHeader('Reply-To', config('mail.from.address'))
-                        ->addTextHeader('Sender', config('mail.from.address'));
+                        ->addTextHeader('X-Sender-Domain', $fromAddress);
                 });
 
                 $endTime = microtime(true);
@@ -138,7 +142,7 @@ class ProductionEmailService
                         'transport' => 'smtp',
                         'host' => $config['host'],
                         'port' => $config['port'],
-                        'encryption' => $config['encryption'],
+                        'encryption' => $config['encryption'] ?? null,
                         'username' => $config['username'],
                         'password' => $config['password'],
                         'timeout' => $config['timeout'] ?? null,
@@ -148,13 +152,20 @@ class ProductionEmailService
 
                 $startTime = microtime(true);
 
-                Mail::mailer('production')->send($templateViewName, $data, function ($message) use ($toEmail, $subject) {
+                // Use SMTP username as FROM address to avoid Gmail rejection
+                $fromAddress = config('mail.mailers.smtp.username') ?: config('mail.from.address');
+                $fromName = config('mail.from.name');
+                
+                Mail::mailer('production')->send($templateViewName, $data, function ($message) use ($toEmail, $subject, $fromAddress, $fromName) {
                     $message->to($toEmail)
-                            ->subject($subject);
+                            ->from($fromAddress, $fromName)
+                            ->replyTo($fromAddress, $fromName)
+                            ->subject($subject)
+                            ->returnPath($fromAddress);
 
-                    // Add anti-spam headers
-                    $message->getHeaders()
-                        ->addTextHeader('X-Mailer', 'WinIt Prize Distribution System v1.0')
+                    // Add anti-spam headers (excluding Return-Path and Reply-To which are set via methods)
+                    $headers = $message->getHeaders();
+                    $headers->addTextHeader('X-Mailer', 'WinIt Prize Distribution System v1.0')
                         ->addTextHeader('X-Priority', '3')
                         ->addTextHeader('Importance', 'Normal')
                         ->addTextHeader('X-Message-Type', 'Transaction Notification')
@@ -162,10 +173,7 @@ class ProductionEmailService
                         ->addTextHeader('List-Unsubscribe', '<mailto:unsubscribe@winit.ng?subject=unsubscribe>')
                         ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click')
                         ->addTextHeader('Organization', 'WinIt Prize Distribution')
-                        ->addTextHeader('X-Sender-Domain', config('mail.from.address'))
-                        ->addTextHeader('Return-Path', config('mail.from.address'))
-                        ->addTextHeader('Reply-To', config('mail.from.address'))
-                        ->addTextHeader('Sender', config('mail.from.address'));
+                        ->addTextHeader('X-Sender-Domain', $fromAddress);
                 });
 
                 $endTime = microtime(true);

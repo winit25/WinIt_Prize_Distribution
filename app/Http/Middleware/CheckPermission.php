@@ -26,6 +26,22 @@ class CheckPermission
             return $next($request);
         }
         
+        // HARD RESTRICTION: Audit role cannot perform write operations
+        // This is a critical security requirement - Audit is read-only
+        if ($user->hasRole('audit')) {
+            $writePermissions = [
+                'upload-csv',
+                'process-batches',
+                'manage-users',
+                'clear-activity-logs',
+                'manage-notifications'
+            ];
+            
+            if (in_array($permission, $writePermissions)) {
+                abort(403, 'Audit role is restricted to read-only access. Write operations are not permitted.');
+            }
+        }
+        
         // Check if user has the specific permission
         if (!$user->hasPermission($permission)) {
             abort(403, 'You do not have permission to access this resource.');

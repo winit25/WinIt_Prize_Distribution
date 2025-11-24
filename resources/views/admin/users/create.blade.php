@@ -1,6 +1,6 @@
 @extends('layouts.sidebar')
 
-@section('title', 'Create User - WinIt')
+@section('title', 'Create User - WinIt Prize Distribution')
 
 @push('styles')
 <style>

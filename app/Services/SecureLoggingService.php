@@ -8,26 +8,35 @@ use Exception;
 class SecureLoggingService
 {
     /**
+     * Sensitive field patterns to mask
+     */
+    private static array $sensitiveFields = [
+        'phone_number', 'phone', 'mobile', 'phoneNumber',
+        'meter_number', 'meter', 'meter_id',
+        'api_key', 'apikey', 'api_secret',
+        'token', 'tokens', 'access_token', 'refresh_token',
+        'password', 'passwd', 'secret',
+        'email', 'email_address',
+        'amount', 'balance',
+        'card_number', 'card_token', 'card',
+        'bank_account', 'account_number',
+        'ssn', 'social_security',
+        'nin', 'national_id'
+    ];
+    
+    /**
      * Mask sensitive data in logs
      */
     public static function maskSensitiveData(array $data): array
     {
-        $sensitiveFields = [
-            'phone_number', 'phone', 'meter_number', 'meter', 
-            'api_key', 'token', 'password', 'email'
-        ];
-        
         $masked = $data;
         
-        foreach ($sensitiveFields as $field) {
-            if (isset($masked[$field])) {
-                $masked[$field] = self::maskValue($masked[$field]);
-            }
-        }
-        
-        // Mask nested arrays
         foreach ($masked as $key => $value) {
-            if (is_array($value)) {
+            // Check if key matches sensitive field pattern (case-insensitive)
+            if (self::isSensitiveField($key)) {
+                $masked[$key] = self::maskValue($value);
+            } elseif (is_array($value)) {
+                // Recursively mask nested arrays
                 $masked[$key] = self::maskSensitiveData($value);
             }
         }
@@ -36,10 +45,39 @@ class SecureLoggingService
     }
     
     /**
-     * Mask a single value
+     * Check if field name is sensitive
+     */
+    private static function isSensitiveField(string $field): bool
+    {
+        $fieldLower = strtolower($field);
+        
+        foreach (self::$sensitiveFields as $sensitive) {
+            if ($fieldLower === strtolower($sensitive) || 
+                strpos($fieldLower, strtolower($sensitive)) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Mask a single value (for both scalar and array values)
      */
     private static function maskValue($value): string
     {
+        if ($value === null) {
+            return '[NULL]';
+        }
+        
+        if (is_array($value)) {
+            return '[ARRAY]';
+        }
+        
+        if (is_bool($value)) {
+            return $value ? '[TRUE]' : '[FALSE]';
+        }
+        
         if (empty($value)) {
             return '[EMPTY]';
         }
@@ -47,6 +85,7 @@ class SecureLoggingService
         $stringValue = (string) $value;
         $length = strlen($stringValue);
         
+        // Very short strings - mask completely
         if ($length <= 4) {
             return str_repeat('*', $length);
         }
@@ -91,5 +130,27 @@ class SecureLoggingService
             'context' => self::maskSensitiveData($context),
             'timestamp' => now()->toISOString()
         ]);
+    }
+
+    /**
+     * Log batch operation securely
+     */
+    public static function logBatchOperation(string $operation, int $batchId, array $details = []): void
+    {
+        Log::info("Batch {$operation}", array_merge([
+            'batch_id' => $batchId,
+            'timestamp' => now()->toISOString()
+        ], self::maskSensitiveData($details)));
+    }
+
+    /**
+     * Log transaction securely
+     */
+    public static function logTransaction(string $operation, int $transactionId, array $details = []): void
+    {
+        Log::info("Transaction {$operation}", array_merge([
+            'transaction_id' => $transactionId,
+            'timestamp' => now()->toISOString()
+        ], self::maskSensitiveData($details)));
     }
 }

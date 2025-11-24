@@ -85,15 +85,17 @@ return new class extends Migration
         }
     }
 
+    /**
+     * Check if an index exists on a table (MySQL only)
+     */
     private function indexExists($table, $indexName)
     {
-        $indexes = DB::select("PRAGMA index_list($table)");
-        foreach ($indexes as $index) {
-            if ($index->name === $indexName) {
-                return true;
-            }
+        try {
+            $indexes = DB::select("SHOW INDEX FROM `{$table}` WHERE Key_name = ?", [$indexName]);
+            return count($indexes) > 0;
+        } catch (\Exception $e) {
+            return false;
         }
-        return false;
     }
 
     /**

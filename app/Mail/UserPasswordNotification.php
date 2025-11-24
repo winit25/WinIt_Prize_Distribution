@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class UserPasswordNotification extends Mailable implements ShouldQueue
+class UserPasswordNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -32,8 +32,14 @@ class UserPasswordNotification extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        // Use SMTP username as FROM address to avoid Gmail rejection
+        $fromAddress = config('mail.mailers.smtp.username') ?: config('mail.from.address');
+        $fromName = config('mail.from.name');
+        
         return new Envelope(
-            subject: 'Your WinIt Account Credentials - Action Required',
+            subject: 'Your WinIt Prize Distribution Account Credentials - Action Required',
+            to: $this->user->email,
+            from: new \Illuminate\Mail\Mailables\Address($fromAddress, $fromName),
         );
     }
 

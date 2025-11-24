@@ -8,22 +8,78 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActivityLoggingService
 {
-    public function log(string $action, string $description, ?Model $model = null, array $properties = []): ActivityLog
+    /**
+     * Get the real IP address of the user, handling proxies and load balancers
+     * Checks various headers to get the actual client IP behind proxies/load balancers
+     */
+    private function getUserIpAddress(): string
     {
+        $request = request();
+        
+        // Check for IP in various headers (for proxies/load balancers)
+        $ipHeaders = [
+            'HTTP_CF_CONNECTING_IP',     // Cloudflare
+            'HTTP_X_REAL_IP',            // Nginx proxy
+            'HTTP_X_FORWARDED_FOR',      // Standard proxy header
+            'HTTP_X_FORWARDED',          // Alternative proxy header
+            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
+            'HTTP_CLIENT_IP',            // Client IP
+        ];
+        
+        foreach ($ipHeaders as $header) {
+            $ip = $request->server($header);
+            if ($ip && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                // If X-Forwarded-For contains multiple IPs, get the first one
+                if (strpos($ip, ',') !== false) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+        
+        // Fallback to Laravel's request()->ip() which handles most cases
+        $ip = $request->ip();
+        
+        // Final fallback
+        return $ip ?: '0.0.0.0';
+    }
+
+    /**
+     * Log an activity with proper causer and subject tracking
+     * 
+     * @param string $action The action name (e.g., 'batch_created', 'user_login')
+     * @param string $description Human-readable description
+     * @param Model|null $subject The model being acted upon (optional)
+     * @param array $properties Additional properties to store
+     * @param Model|null $causer The user/model causing the action (defaults to authenticated user)
+     * @return ActivityLog
+     */
+    public function log(string $action, string $description, ?Model $subject = null, array $properties = [], ?Model $causer = null): ActivityLog
+    {
+        $causer = $causer ?? Auth::user();
+        
+        // Get user's IP address (handles proxies/load balancers)
+        $ipAddress = $this->getUserIpAddress();
+        
         return ActivityLog::create([
-            'user_id' => Auth::id(),
             'action' => $action,
+            'event' => $action,
             'description' => $description,
-            'model_type' => $model ? get_class($model) : null,
-            'model_id' => $model ? $model->id : null,
+            'subject_type' => $subject ? get_class($subject) : null,
+            'subject_id' => $subject ? $subject->id : null,
+            'causer_type' => $causer ? get_class($causer) : null,
+            'causer_id' => $causer ? $causer->id : null,
             'properties' => $properties,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'ip_address' => $ipAddress,
+            'user_agent' => request()->userAgent() ?? 'Unknown',
         ]);
     }
 
-    public function logBatchCreated($batch): ActivityLog
+    public function logBatchCreated($batch, ?\App\Models\User $user = null): ActivityLog
     {
+        $user = $user ?? Auth::user();
         return $this->log(
             'batch_created',
             "Created batch: {$batch->batch_name}",
@@ -32,32 +88,47 @@ class ActivityLoggingService
                 'batch_name' => $batch->batch_name,
                 'total_recipients' => $batch->total_recipients,
                 'total_amount' => $batch->total_amount,
-            ]
+                'batch_id' => $batch->id,
+            ],
+            $user
         );
     }
 
-    public function logBatchStatusChanged($batch, string $oldStatus, string $newStatus): ActivityLog
+    public function logBatchStatusChanged($batch, string $oldStatus, string $newStatus, ?\App\Models\User $user = null): ActivityLog
     {
+        $user = $user ?? Auth::user() ?? $batch->user;
         return $this->log(
             'batch_status_changed',
-            "Batch status changed from {$oldStatus} to {$newStatus}",
+            "Batch '{$batch->batch_name}' status changed from {$oldStatus} to {$newStatus}",
             $batch,
             [
                 'batch_name' => $batch->batch_name,
+                'batch_id' => $batch->id,
                 'old_status' => $oldStatus,
                 'new_status' => $newStatus,
-            ]
+                'total_recipients' => $batch->total_recipients ?? null,
+                'processed_recipients' => $batch->processed_recipients ?? null,
+            ],
+            $user
         );
     }
 
     public function logTransactionCreated($transaction): ActivityLog
     {
+        $recipientName = 'Unknown';
+        if ($transaction->relationLoaded('recipient') && $transaction->recipient) {
+            $recipientName = $transaction->recipient->name;
+        } elseif (!$transaction->relationLoaded('recipient')) {
+            $transaction->load('recipient');
+            $recipientName = $transaction->recipient ? $transaction->recipient->name : 'Unknown';
+        }
+        
         return $this->log(
             'transaction_created',
-            "Transaction created for {$transaction->recipient->name ?? 'Unknown'}",
+            "Transaction created for {$recipientName}",
             $transaction,
             [
-                'recipient_name' => $transaction->recipient->name ?? 'Unknown',
+                'recipient_name' => $recipientName,
                 'phone_number' => $transaction->phone_number,
                 'amount' => $transaction->amount,
                 'status' => $transaction->status,
@@ -67,12 +138,20 @@ class ActivityLoggingService
 
     public function logTransactionStatusChanged($transaction, string $oldStatus, string $newStatus): ActivityLog
     {
+        $recipientName = 'Unknown';
+        if ($transaction->relationLoaded('recipient') && $transaction->recipient) {
+            $recipientName = $transaction->recipient->name;
+        } elseif (!$transaction->relationLoaded('recipient')) {
+            $transaction->load('recipient');
+            $recipientName = $transaction->recipient ? $transaction->recipient->name : 'Unknown';
+        }
+        
         return $this->log(
             'transaction_status_changed',
             "Transaction status changed from {$oldStatus} to {$newStatus}",
             $transaction,
             [
-                'recipient_name' => $transaction->recipient->name ?? 'Unknown',
+                'recipient_name' => $recipientName,
                 'phone_number' => $transaction->phone_number,
                 'amount' => $transaction->amount,
                 'old_status' => $oldStatus,
@@ -83,12 +162,20 @@ class ActivityLoggingService
 
     public function logTokenGenerated($transaction): ActivityLog
     {
+        $recipientName = 'Unknown';
+        if ($transaction->relationLoaded('recipient') && $transaction->recipient) {
+            $recipientName = $transaction->recipient->name;
+        } elseif (!$transaction->relationLoaded('recipient')) {
+            $transaction->load('recipient');
+            $recipientName = $transaction->recipient ? $transaction->recipient->name : 'Unknown';
+        }
+        
         return $this->log(
             'token_generated',
             "Token generated for transaction",
             $transaction,
             [
-                'recipient_name' => $transaction->recipient->name ?? 'Unknown',
+                'recipient_name' => $recipientName,
                 'phone_number' => $transaction->phone_number,
                 'amount' => $transaction->amount,
                 'token' => $transaction->token,
@@ -114,13 +201,15 @@ class ActivityLoggingService
     {
         return $this->log(
             'user_login',
-            "User logged in: {$user->name}",
+            "User logged in: {$user->name} ({$user->email})",
             $user,
             [
                 'name' => $user->name,
                 'email' => $user->email,
                 'login_time' => now()->toISOString(),
-            ]
+                'ip_address' => request()->ip(),
+            ],
+            $user // The user is both causer and subject
         );
     }
 
@@ -128,13 +217,15 @@ class ActivityLoggingService
     {
         return $this->log(
             'user_logout',
-            "User logged out: {$user->name}",
+            "User logged out: {$user->name} ({$user->email})",
             $user,
             [
                 'name' => $user->name,
                 'email' => $user->email,
                 'logout_time' => now()->toISOString(),
-            ]
+                'ip_address' => request()->ip(),
+            ],
+            $user // The user is both causer and subject
         );
     }
 

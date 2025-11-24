@@ -39,12 +39,15 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'must_change_password' => true, // Force password change on first login
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to password change page for first-time users
+        return redirect()->route('password.change')
+            ->with('warning', 'Welcome! Please change your password to continue.');
     }
 }

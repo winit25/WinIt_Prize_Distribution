@@ -11,6 +11,7 @@ class BatchUpload extends Model
     protected $fillable = [
         'filename',
         'batch_name',
+        'batch_type',
         'total_recipients',
         'processed_recipients',
         'successful_transactions',
@@ -18,11 +19,17 @@ class BatchUpload extends Model
         'total_amount',
         'status',
         'notes',
+        'sms_template',
+        'email_template',
+        'enable_sms',
+        'enable_email',
         'user_id'
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'enable_sms' => 'boolean',
+        'enable_email' => 'boolean',
     ];
 
     public function recipients(): HasMany

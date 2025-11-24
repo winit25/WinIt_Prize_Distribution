@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TokenNotification extends Mailable implements ShouldQueue
+class TokenNotification extends Mailable
 {
     use Queueable, SerializesModels;
 

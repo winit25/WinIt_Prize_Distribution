@@ -7,67 +7,83 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #333;
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             background-color: #f4f4f4;
         }
         .container {
             background-color: #ffffff;
-            padding: 30px;
+            padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            border-bottom: 2px solid #122168;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+        .logo-container {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #122168 0%, #1a2d7a 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            padding: 12px;
+        }
+        .logo-container img {
+            max-width: 85%;
+            height: auto;
         }
         .logo {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
-            color: #007bff;
-            margin-bottom: 10px;
+            color: #122168;
+            margin-bottom: 8px;
         }
         .welcome-box {
             background-color: #d4edda;
             border: 2px solid #28a745;
             border-radius: 8px;
-            padding: 20px;
+            padding: 14px;
             text-align: center;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .password-box {
             background-color: #fff3cd;
             border: 2px solid #ffc107;
             border-radius: 8px;
-            padding: 20px;
+            padding: 14px;
             text-align: center;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .password {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #856404;
             letter-spacing: 1px;
-            margin: 10px 0;
+            margin: 8px 0;
             font-family: 'Courier New', monospace;
         }
         .details {
             background-color: #e9ecef;
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .detail-row {
             display: flex;
             justify-content: space-between;
-            margin: 8px 0;
-            padding: 5px 0;
+            margin: 6px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
         }
         .detail-row:last-child {
             border-bottom: none;
@@ -81,39 +97,57 @@
         }
         .footer {
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 16px;
             border-top: 1px solid #dee2e6;
             color: #6c757d;
-            font-size: 14px;
+            font-size: 11px;
         }
         .security-notice {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .login-button {
             display: inline-block;
-            background-color: #007bff;
+            background: linear-gradient(135deg, #122168 0%, #1a2d7a 100%);
             color: white;
             padding: 12px 24px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .login-button:hover {
-            background-color: #0056b3;
+            background: linear-gradient(135deg, #1a2d7a 0%, #223688 100%);
             color: white;
+        }
+        h1 {
+            font-size: 20px;
+            margin: 8px 0;
+        }
+        h3 {
+            font-size: 16px;
+            margin: 8px 0;
+        }
+        h4 {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        p {
+            margin: 8px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">⚡ WinIt Prize Distribution</div>
+            <div class="logo-container" style="background: #0a1628; padding: 20px;">
+                <img src="{{ url('images/winit-logo.png') }}" alt="WinIt Logo" width="150" style="display:block; margin:0 auto;">
+            </div>
+            <div class="logo">WinIt Prize Distribution</div>
             <h1>Welcome to WinIt!</h1>
         </div>
 

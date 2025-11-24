@@ -12,17 +12,17 @@ class ActivityLog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'log_name',
+        'action',
+        'event',
         'description',
         'subject_type',
         'subject_id',
         'causer_type',
         'causer_id',
         'properties',
-        'event',
-        'batch_uuid',
         'ip_address',
         'user_agent',
+        'user_id', // For backward compatibility
     ];
 
     protected $casts = [
@@ -43,6 +43,70 @@ class ActivityLog extends Model
     public function getFormattedDateAttribute(): string
     {
         return $this->created_at->format('M d, Y h:i A');
+    }
+
+    /**
+     * Parse user agent to extract device information
+     */
+    public function getDeviceInfoAttribute(): array
+    {
+        $userAgent = $this->user_agent ?? '';
+        
+        if (empty($userAgent)) {
+            return [
+                'device_type' => 'Unknown',
+                'browser' => 'Unknown',
+                'os' => 'Unknown',
+                'display' => 'Unknown'
+            ];
+        }
+
+        // Detect device type
+        $deviceType = 'Desktop';
+        if (preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i', $userAgent)) {
+            if (preg_match('/iPad/i', $userAgent)) {
+                $deviceType = 'Tablet';
+            } elseif (preg_match('/Mobile|Android|iPhone|iPod|BlackBerry|Windows Phone/i', $userAgent)) {
+                $deviceType = 'Mobile';
+            }
+        }
+
+        // Detect browser
+        $browser = 'Unknown';
+        if (preg_match('/Chrome/i', $userAgent) && !preg_match('/Edg|OPR/i', $userAgent)) {
+            $browser = 'Chrome';
+        } elseif (preg_match('/Firefox/i', $userAgent)) {
+            $browser = 'Firefox';
+        } elseif (preg_match('/Safari/i', $userAgent) && !preg_match('/Chrome/i', $userAgent)) {
+            $browser = 'Safari';
+        } elseif (preg_match('/Edg/i', $userAgent)) {
+            $browser = 'Edge';
+        } elseif (preg_match('/OPR/i', $userAgent)) {
+            $browser = 'Opera';
+        } elseif (preg_match('/MSIE|Trident/i', $userAgent)) {
+            $browser = 'Internet Explorer';
+        }
+
+        // Detect OS
+        $os = 'Unknown';
+        if (preg_match('/Windows NT/i', $userAgent)) {
+            $os = 'Windows';
+        } elseif (preg_match('/Mac OS X/i', $userAgent)) {
+            $os = 'macOS';
+        } elseif (preg_match('/Linux/i', $userAgent)) {
+            $os = 'Linux';
+        } elseif (preg_match('/Android/i', $userAgent)) {
+            $os = 'Android';
+        } elseif (preg_match('/iPhone|iPad|iPod/i', $userAgent)) {
+            $os = 'iOS';
+        }
+
+        return [
+            'device_type' => $deviceType,
+            'browser' => $browser,
+            'os' => $os,
+            'display' => "{$deviceType} - {$browser} on {$os}"
+        ];
     }
 
     public function getActionBadgeAttribute(): string
@@ -79,6 +143,12 @@ class ActivityLog extends Model
     {
         return $query->where('causer_id', $userId)
                     ->where('causer_type', User::class);
+    }
+    
+    public function scopeByCauser($query, $causer)
+    {
+        return $query->where('causer_type', get_class($causer))
+                    ->where('causer_id', $causer->id);
     }
 
     public function scopeByAction($query, string $action)

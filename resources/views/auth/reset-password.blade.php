@@ -1,9 +1,9 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ route('password.store') }}" id="reset-password-form">
         @csrf
 
         <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+        <input type="hidden" name="token" value="{{ $request->route('token') ?? $request->input('token') }}">
 
         <!-- Email Address -->
         <div>
@@ -36,4 +36,24 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        // Ensure CSRF token is fresh when form is submitted
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('reset-password-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Get fresh CSRF token from meta tag
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (csrfToken) {
+                        const tokenInput = this.querySelector('input[name="_token"]');
+                        if (tokenInput) {
+                            tokenInput.value = csrfToken.getAttribute('content');
+                        }
+                    }
+                    // Allow form to submit normally
+                });
+            }
+        });
+    </script>
 </x-guest-layout>

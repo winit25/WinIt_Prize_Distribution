@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Credit card base -->
+  <rect x="70" y="245" width="370" height="220" rx="35" ry="35" fill="none" stroke="#8BA668" stroke-width="20"/>
+  <!-- Card stripe -->
+  <line x1="70" y1="295" x2="440" y2="295" stroke="#8BA668" stroke-width="20"/>
+  <line x1="70" y1="330" x2="440" y2="330" stroke="#8BA668" stroke-width="20"/>
+  <!-- Card circles -->
+  <circle cx="300" cy="395" r="30" fill="none" stroke="#8BA668" stroke-width="15"/>
+  <circle cx="360" cy="395" r="30" fill="none" stroke="#8BA668" stroke-width="15"/>
+  <!-- Lightning bolt -->
+  <path d="M 320 40 L 260 220 L 350 220 L 240 390 L 300 240 L 210 240 Z" fill="#F5B749" stroke="#F5B749" stroke-width="5" stroke-linejoin="miter"/>
+</svg>

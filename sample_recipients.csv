@@ -1,11 +1,4 @@
-name,address,phone_number,disco,meter_number,meter_type,amount,customer_name
-John Doe,123 Main St Lagos,08036120008,EKO,12345678910,prepaid,1000.00,
-Jane Smith,456 Victoria Island Lagos,08036120009,IKEJA,12345678911,prepaid,1500.50,Jane Smith
-Mike Johnson,789 Ikeja Lagos,08036120010,ABUJA,12345678912,prepaid,2000.00,
-Sarah Williams,321 Lekki Lagos,08036120011,EKO,12345678913,prepaid,500.00,Sarah W.
-David Brown,654 Gbagada Lagos,08036120012,IBADAN,12345678914,prepaid,1200.00,
-Emma Wilson,987 Surulere Lagos,08036120013,IKEJA,12345678915,prepaid,800.00,
-Michael Davis,456 Yaba Lagos,08036120014,EKO,12345678916,prepaid,3000.00,
-Lisa Anderson,321 Ikoyi Lagos,08036120015,ABUJA,12345678917,prepaid,750.00,
-James Taylor,654 Victoria Island Lagos,08036120016,IKEJA,12345678918,prepaid,1800.00,
-Maria Garcia,789 Lekki Lagos,08036120017,EKO,12345678919,prepaid,2200.00,
+name,address,phone_number,email,disco,meter_number,meter_type,amount,customer_name
+Test User - VERIFIED,012 Fake Cresent Fake City,08000000000,,EKO,12345678910,prepaid,1000.00,Ciroma Chukwuma Adekunle
+Adebayo Olawuyi,789 Marina Road Lagos,07048107043,m.olawuyi@hopegainltd.com,EKO,12345678910,prepaid,1000.00,
+Temitope Shonekan,123 Test Street Lagos,+234 803 321 1380,t.shonekan@hopegainltd.com,EKO,12345678910,prepaid,1000.00,Temitope Shonekan
