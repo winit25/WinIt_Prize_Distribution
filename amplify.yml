@@ -23,7 +23,7 @@ frontend:
         - test -f .env || (test -f .env.example && cp .env.example .env) || true
         - '# Generate application key if not exists'
         - php artisan key:generate --force || echo "Key generation skipped"
-        - '# Create storage directories if they don't exist'
+        - '# Create storage directories'
         - mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
         - mkdir -p bootstrap/cache
         - '# Set proper permissions for storage'
