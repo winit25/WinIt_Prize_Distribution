@@ -5,32 +5,32 @@ frontend:
       commands:
         - echo "Injecting env variables"
         - cp .env.production .env || echo ".env.production not found, skipping"
-        - '# Check PHP version'
+        - echo "Check PHP version"
         - php -v
-        - '# Check Composer version'
+        - echo "Check Composer version"
         - composer --version || echo "Composer not found, installing..."
-        - '# Install PHP dependencies'
+        - echo "Install PHP dependencies"
         - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
-        - '# Run post-install scripts'
+        - echo "Run post-install scripts"
         - composer dump-autoload --optimize
-        - '# Install Node.js dependencies'
+        - echo "Install Node.js dependencies"
         - npm ci || npm install
     build:
       commands:
-        - '# Build frontend assets'
+        - echo "Build frontend assets"
         - npm run build
-        - '# Ensure .env exists (fallback to .env.example if .env.production was not found)'
+        - echo "Ensure .env exists (fallback to .env.example if .env.production was not found)"
         - test -f .env || (test -f .env.example && cp .env.example .env) || true
-        - '# Generate application key if not exists'
+        - echo "Generate application key if not exists"
         - php artisan key:generate --force || echo "Key generation skipped"
-        - '# Create storage directories'
+        - echo "Create storage directories"
         - mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
         - mkdir -p bootstrap/cache
-        - '# Set proper permissions for storage'
+        - echo "Set proper permissions for storage"
         - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
-        - '# Run database migrations automatically'
+        - echo "Run database migrations automatically"
         - test -n "$DB_HOST" && test -n "$DB_DATABASE" && (echo "Running database migrations..." && php artisan migrate --force || echo "Migration failed or already up to date") || echo "Database credentials not set, skipping migrations"
-        - '# Optimize Laravel for production'
+        - echo "Optimize Laravel for production"
         - php artisan config:cache || echo "Config cache skipped"
         - php artisan route:cache || echo "Route cache skipped"
         - php artisan view:cache || echo "View cache skipped"
