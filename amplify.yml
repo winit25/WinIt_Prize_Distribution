@@ -3,6 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "Injecting env variables"
+        - cp .env.production .env || echo ".env.production not found, skipping"
         - '# Check PHP version'
         - php -v
         - '# Check Composer version'
@@ -17,7 +19,7 @@ frontend:
       commands:
         - '# Build frontend assets'
         - npm run build
-        - '# Copy .env.example to .env if .env doesn't exist'
+        - '# Ensure .env exists (fallback to .env.example if .env.production was not found)'
         - test -f .env || (test -f .env.example && cp .env.example .env) || true
         - '# Generate application key if not exists'
         - php artisan key:generate --force || echo "Key generation skipped"
