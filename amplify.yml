@@ -18,7 +18,7 @@ frontend:
         - '# Build frontend assets'
         - npm run build
         - '# Copy .env.example to .env if .env doesn't exist'
-        - 'if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi'
+        - test -f .env || (test -f .env.example && cp .env.example .env) || true
         - '# Generate application key if not exists'
         - php artisan key:generate --force || echo "Key generation skipped"
         - '# Create storage directories if they don't exist'
@@ -27,7 +27,7 @@ frontend:
         - '# Set proper permissions for storage'
         - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
         - '# Run database migrations automatically'
-        - 'if [ -n "$DB_HOST" ] && [ -n "$DB_DATABASE" ]; then echo "Running database migrations..."; php artisan migrate --force || echo "Migration failed or already up to date"; else echo "Database credentials not set, skipping migrations"; fi'
+        - test -n "$DB_HOST" && test -n "$DB_DATABASE" && (echo "Running database migrations..." && php artisan migrate --force || echo "Migration failed or already up to date") || echo "Database credentials not set, skipping migrations"
         - '# Optimize Laravel for production'
         - php artisan config:cache || echo "Config cache skipped"
         - php artisan route:cache || echo "Route cache skipped"
