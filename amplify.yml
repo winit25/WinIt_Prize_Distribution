@@ -3,43 +3,16 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Injecting env variables"
-        - cp .env.production .env || echo ".env.production not found, skipping"
-        - echo "Check PHP version"
-        - php -v
-        - echo "Check Composer version"
-        - composer --version || echo "Composer not found, installing..."
-        - echo "Install PHP dependencies"
-        - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
-        - echo "Run post-install scripts"
-        - composer dump-autoload --optimize
-        - echo "Install Node.js dependencies"
+        - echo "Installing Node.js dependencies"
         - npm ci || npm install
     build:
       commands:
-        - echo "Build frontend assets"
+        - echo "Building frontend assets with Vite"
         - npm run build
-        - echo "Ensure .env exists (fallback to .env.example if .env.production was not found)"
-        - test -f .env || (test -f .env.example && cp .env.example .env) || true
-        - echo "Generate application key if not exists"
-        - php artisan key:generate --force || echo "Key generation skipped"
-        - echo "Create storage directories"
-        - mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
-        - mkdir -p bootstrap/cache
-        - echo "Set proper permissions for storage"
-        - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
-        - echo "Run database migrations automatically"
-        - test -n "$DB_HOST" && test -n "$DB_DATABASE" && (echo "Running database migrations..." && php artisan migrate --force || echo "Migration failed or already up to date") || echo "Database credentials not set, skipping migrations"
-        - echo "Optimize Laravel for production"
-        - php artisan config:cache || echo "Config cache skipped"
-        - php artisan route:cache || echo "Route cache skipped"
-        - php artisan view:cache || echo "View cache skipped"
   artifacts:
-    baseDirectory: /
+    baseDirectory: public/build
     files:
       - '**/*'
   cache:
     paths:
       - node_modules/**/*
-      - vendor/**/*
-      - .npm/**/*
