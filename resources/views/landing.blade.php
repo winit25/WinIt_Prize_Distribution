@@ -220,16 +220,6 @@
                 <button class="card-button" onclick="window.location.href='{{ route('login') }}'">Buy Electricity</button>
             </div>
 
-            <!-- DSTV Card -->
-            <div class="card card-dstv">
-                <div class="card-icon">
-                    <div style="font-size: 4rem; color: #010133;">📺</div>
-                </div>
-                <h2>DSTV</h2>
-                <p>Recharge your DSTV subscription instantly. Quick and secure TV subscription top-ups for your entertainment needs.</p>
-                <button class="card-button" onclick="window.location.href='{{ route('login') }}'">Vend TV</button>
-            </div>
-
             <!-- SureGift Card -->
             <div class="card card-suregift">
                 <div class="card-icon">
