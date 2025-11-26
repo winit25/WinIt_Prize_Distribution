@@ -17,14 +17,9 @@ frontend:
       commands:
         - '# Build frontend assets'
         - npm run build
-        - '# Copy .env.example to .env if .env doesn't exist (for build only)'
-        - |
-          if [ ! -f .env ]; then
-            if [ -f .env.example ]; then
-              cp .env.example .env
-            fi
-          fi
-        - '# Generate application key if not exists (will be overridden by Amplify env vars)'
+        - '# Copy .env.example to .env if .env doesn't exist'
+        - 'if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi'
+        - '# Generate application key if not exists'
         - php artisan key:generate --force || echo "Key generation skipped"
         - '# Create storage directories if they don't exist'
         - mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
@@ -32,14 +27,8 @@ frontend:
         - '# Set proper permissions for storage'
         - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
         - '# Run database migrations automatically'
-        - |
-          if [ -n "$DB_HOST" ] && [ -n "$DB_DATABASE" ]; then
-            echo "Running database migrations..."
-            php artisan migrate --force || echo "Migration failed or already up to date"
-          else
-            echo "Database credentials not set, skipping migrations"
-          fi
-        - '# Optimize Laravel for production (skip if env vars not set)'
+        - 'if [ -n "$DB_HOST" ] && [ -n "$DB_DATABASE" ]; then echo "Running database migrations..."; php artisan migrate --force || echo "Migration failed or already up to date"; else echo "Database credentials not set, skipping migrations"; fi'
+        - '# Optimize Laravel for production'
         - php artisan config:cache || echo "Config cache skipped"
         - php artisan route:cache || echo "Route cache skipped"
         - php artisan view:cache || echo "View cache skipped"
@@ -52,4 +41,3 @@ frontend:
       - node_modules/**/*
       - vendor/**/*
       - .npm/**/*
-
