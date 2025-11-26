@@ -1,0 +1,47 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - '# Check PHP version'
+        - php -v
+        - '# Check Composer version'
+        - composer --version || echo "Composer not found, installing..."
+        - '# Install PHP dependencies'
+        - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
+        - '# Run post-install scripts'
+        - composer dump-autoload --optimize
+        - '# Install Node.js dependencies'
+        - npm ci || npm install
+    build:
+      commands:
+        - '# Build frontend assets'
+        - npm run build
+        - '# Copy .env.example to .env if .env doesn't exist (for build only)'
+        - |
+          if [ ! -f .env ]; then
+            if [ -f .env.example ]; then
+              cp .env.example .env
+            fi
+          fi
+        - '# Generate application key if not exists (will be overridden by Amplify env vars)'
+        - php artisan key:generate --force || echo "Key generation skipped"
+        - '# Create storage directories if they don't exist'
+        - mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
+        - mkdir -p bootstrap/cache
+        - '# Set proper permissions for storage'
+        - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
+        - '# Optimize Laravel for production (skip if env vars not set)'
+        - php artisan config:cache || echo "Config cache skipped"
+        - php artisan route:cache || echo "Route cache skipped"
+        - php artisan view:cache || echo "View cache skipped"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - vendor/**/*
+      - .npm/**/*
+
