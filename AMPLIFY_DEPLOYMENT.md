@@ -27,11 +27,14 @@ Add these environment variables in **App settings** → **Environment variables*
 
 **Database:**
 - `DB_CONNECTION` - `mysql` or `pgsql`
-- `DB_HOST` - Your database host
+- `DB_HOST` - Your database host (AWS RDS endpoint)
 - `DB_PORT` - Database port (usually `3306` for MySQL)
 - `DB_DATABASE` - Database name
 - `DB_USERNAME` - Database username
 - `DB_PASSWORD` - Database password
+- `DB_SSL_VERIFY` - `false` (for AWS RDS SSL connections, optional)
+
+**Note:** See `AWS_RDS_SETUP.md` for detailed AWS RDS MySQL setup instructions.
 
 **BuyPower API:**
 - `BUYPOWER_API_KEY` - Your BuyPower API key
@@ -71,8 +74,19 @@ The `amplify.yml` file handles:
 
 ## Post-Deployment Steps
 
-### 1. Run Migrations
-After first deployment, run migrations:
+### 1. Automatic Migrations
+✅ **Migrations run automatically during build!**
+
+The `amplify.yml` configuration includes automatic migration execution:
+- Migrations run during the build phase
+- Only runs if database credentials are configured
+- Uses `php artisan migrate --force` for production
+- Safe to run multiple times (idempotent)
+
+**No manual migration needed** - just ensure your database environment variables are set correctly in Amplify Console.
+
+### 2. Manual Migration (If Needed)
+If you need to run migrations manually:
 ```bash
 # Connect to your Amplify app via SSH or use AWS Systems Manager
 php artisan migrate --force

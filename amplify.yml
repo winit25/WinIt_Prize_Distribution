@@ -31,6 +31,14 @@ frontend:
         - mkdir -p bootstrap/cache
         - '# Set proper permissions for storage'
         - chmod -R 775 storage bootstrap/cache || echo "Permission setting skipped"
+        - '# Run database migrations automatically'
+        - |
+          if [ -n "$DB_HOST" ] && [ -n "$DB_DATABASE" ]; then
+            echo "Running database migrations..."
+            php artisan migrate --force || echo "Migration failed or already up to date"
+          else
+            echo "Database credentials not set, skipping migrations"
+          fi
         - '# Optimize Laravel for production (skip if env vars not set)'
         - php artisan config:cache || echo "Config cache skipped"
         - php artisan route:cache || echo "Route cache skipped"
