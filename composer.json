@@ -35,12 +35,12 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php -r \"\\$dirs = ['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache']; \\$paths = ['/var/app/staging', getcwd()]; foreach(\\$paths as \\$base) { if (is_dir(\\$base)) { foreach(\\$dirs as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { mkdir(\\$path, 0777, true); chmod(\\$path, 0777); } } } }\""
+            "@php ensure_storage_dirs.php"
         ],
         "post-autoload-dump": [
-            "@php -r \"\\$dirs = ['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache']; \\$paths = ['/var/app/staging', getcwd()]; foreach(\\$paths as \\$base) { if (is_dir(\\$base)) { foreach(\\$dirs as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { @mkdir(\\$path, 0777, true); @chmod(\\$path, 0777); } } } }\"",
+            "@php ensure_storage_dirs.php",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php -r \"\\$dirs = ['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache']; \\$paths = ['/var/app/staging', getcwd()]; foreach(\\$paths as \\$base) { if (is_dir(\\$base)) { foreach(\\$dirs as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { @mkdir(\\$path, 0777, true); @chmod(\\$path, 0777); } } } }\"",
+            "@php ensure_storage_dirs.php",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
