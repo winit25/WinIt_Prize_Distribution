@@ -35,7 +35,7 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php ensure_storage_dirs.php"
+            "@php ensure_storage_dirs.php || true"
         ],
         "post-autoload-dump": [
             "@php ensure_storage_dirs.php || true",
