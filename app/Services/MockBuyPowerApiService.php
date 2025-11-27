@@ -339,4 +339,125 @@ class MockBuyPowerApiService implements BuyPowerApiInterface
         $randomFactor = mt_rand(80, 120) / 100; // 0.8 to 1.2
         return number_format($baseUnits * $randomFactor, 2);
     }
+
+    /**
+     * Top up airtime (VTU) - Mock Implementation
+     */
+    public function topUpAirtime(
+        string $phoneNumber,
+        float $amount,
+        ?string $customerName = null,
+        ?string $reference = null
+    ): array {
+        try {
+            $reference = $reference ?? $this->generateReference();
+            
+            // Simulate API delay
+            usleep(500000); // 0.5 seconds
+            
+            Log::info('Mock Airtime Top-Up Successful', [
+                'reference' => $reference,
+                'phone' => substr($phoneNumber, 0, 4) . '****',
+                'amount' => $amount,
+                'customer_name' => $customerName,
+                'mock' => true
+            ]);
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'status' => 'success',
+                    'message' => 'Airtime top-up successful (MOCK)',
+                    'reference' => $reference,
+                    'phone' => $phoneNumber,
+                    'amount' => $amount,
+                    'transaction_date' => now()->toDateTimeString()
+                ],
+                'order_id' => $reference,
+                'buypower_reference' => $reference,
+                'status_code' => 200
+            ];
+        } catch (Exception $e) {
+            Log::error('Mock Airtime Top-Up Error', [
+                'phone' => substr($phoneNumber, 0, 4) . '****',
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+                'mock' => true
+            ]);
+
+            return [
+                'success' => false,
+                'error' => 'Failed to top up airtime (MOCK): ' . $e->getMessage(),
+                'data' => null,
+                'status_code' => 500
+            ];
+        }
+    }
+
+    /**
+     * Vend DSTV subscription (TV) or Data bundles - Mock Implementation
+     */
+    public function vendDstv(
+        string $phoneNumber,
+        string $smartcardNumber,
+        float $amount,
+        ?string $customerName = null,
+        ?string $email = null,
+        ?string $reference = null,
+        ?string $disco = null,
+        ?string $tariffClass = null
+    ): array {
+        try {
+            $reference = $reference ?? $this->generateReference();
+            
+            // Simulate API delay
+            usleep(500000); // 0.5 seconds
+            
+            $serviceType = $disco === 'DSTV' ? 'DSTV Subscription' : 'Data Bundle';
+            
+            Log::info("Mock $serviceType Successful", [
+                'reference' => $reference,
+                'phone' => substr($phoneNumber, 0, 4) . '****',
+                'smartcard/meter' => substr($smartcardNumber, 0, 4) . '****',
+                'amount' => $amount,
+                'disco' => $disco,
+                'tariff_class' => $tariffClass,
+                'mock' => true
+            ]);
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'status' => 'success',
+                    'message' => "$serviceType successful (MOCK)",
+                    'reference' => $reference,
+                    'phone' => $phoneNumber,
+                    'smartcard_number' => $smartcardNumber,
+                    'amount' => $amount,
+                    'disco' => $disco,
+                    'tariff_class' => $tariffClass,
+                    'transaction_date' => now()->toDateTimeString()
+                ],
+                'order_id' => $reference,
+                'buypower_reference' => $reference,
+                'token' => $disco === 'DSTV' ? null : $this->generateMockToken(),
+                'status_code' => 200
+            ];
+        } catch (Exception $e) {
+            Log::error('Mock DSTV/Data Vend Error', [
+                'phone' => substr($phoneNumber, 0, 4) . '****',
+                'smartcard/meter' => substr($smartcardNumber, 0, 4) . '****',
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+                'mock' => true
+            ]);
+
+            return [
+                'success' => false,
+                'error' => 'Failed to vend DSTV/Data (MOCK): ' . $e->getMessage(),
+                'data' => null,
+                'status_code' => 500
+            ];
+        }
+    }
 }
