@@ -29,8 +29,8 @@ foreach ($paths as $base) {
                 @chmod($path, 0777);
                 $created++;
             } else {
-                error_log("ERROR: Failed to create directory: $path");
-                exit(1);
+                // Log error but don't exit - let composer continue
+                error_log("WARNING: Failed to create directory: $path");
             }
         } else {
             // Ensure writable
@@ -39,11 +39,9 @@ foreach ($paths as $base) {
         
         // Verify it exists and is writable
         if (!is_dir($path)) {
-            error_log("ERROR: Directory does not exist: $path");
-            exit(1);
-        }
-        if (!is_writable($path)) {
-            error_log("ERROR: Directory not writable: $path");
+            error_log("WARNING: Directory does not exist: $path");
+        } else if (!is_writable($path)) {
+            error_log("WARNING: Directory not writable: $path");
             @chmod($path, 0777);
         }
     }
