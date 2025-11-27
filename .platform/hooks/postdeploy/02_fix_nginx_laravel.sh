@@ -9,16 +9,35 @@ echo "=========================================="
 echo "Configuring nginx for Laravel routes..."
 echo "=========================================="
 
-# Possible nginx config locations for EB AL2023 PHP
-NGINX_CONFIGS=(
-    "/etc/nginx/conf.d/elasticbeanstalk/php.conf"
-    "/etc/nginx/conf.d/php.conf"
-    "/etc/nginx/conf.d/default.conf"
-    "/etc/nginx/sites-available/elasticbeanstalk"
-    "/etc/nginx/sites-enabled/elasticbeanstalk"
-)
+# Set document root
+DOCUMENT_ROOT="/var/app/current/public"
 
-LARAVEL_CONFIG='location / {
+# Check main nginx.conf for server block
+NGINX_CONF="/etc/nginx/nginx.conf"
+if [ -f "$NGINX_CONF" ]; then
+    echo "Checking main nginx.conf..."
+    
+    # Backup
+    cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%s)"
+    
+    # Check if document root is set correctly
+    if ! grep -q "root.*$DOCUMENT_ROOT" "$NGINX_CONF"; then
+        echo "Updating document root in nginx.conf..."
+        # Try to find and replace root directive in server block
+        sed -i "s|root.*;|root $DOCUMENT_ROOT;|g" "$NGINX_CONF" || true
+    fi
+fi
+
+# Update PHP config with document root and try_files
+PHP_CONF="/etc/nginx/conf.d/elasticbeanstalk/php.conf"
+if [ -f "$PHP_CONF" ]; then
+    echo "Updating $PHP_CONF..."
+    cp "$PHP_CONF" "${PHP_CONF}.bak.$(date +%s)"
+    
+    cat > "$PHP_CONF" <<'EOF'
+root /var/app/current/public;
+
+location / {
     try_files $uri $uri/ /index.php?$query_string;
 }
 
@@ -31,56 +50,22 @@ location ~ \.php$ {
 
 location ~ /\.(?!well-known).* {
     deny all;
-}'
-
-# Find and update nginx config
-CONFIG_UPDATED=false
-for config_file in "${NGINX_CONFIGS[@]}"; do
-    if [ -f "$config_file" ]; then
-        echo "Found nginx config: $config_file"
-        
-        # Backup original
-        cp "$config_file" "${config_file}.bak.$(date +%s)" 2>/dev/null || true
-        
-        # Check if it already has try_files
-        if ! grep -q "try_files" "$config_file"; then
-            echo "Updating $config_file with Laravel config..."
-            echo "$LARAVEL_CONFIG" > "$config_file"
-            CONFIG_UPDATED=true
-        else
-            echo "$config_file already has try_files directive"
-        fi
-    fi
-done
-
-# Also check main nginx.conf for server block
-if [ -f "/etc/nginx/nginx.conf" ]; then
-    echo "Checking main nginx.conf..."
-    if ! grep -q "try_files" /etc/nginx/nginx.conf; then
-        # Try to add try_files to the server block
-        if grep -q "location /" /etc/nginx/nginx.conf; then
-            echo "Found location / in nginx.conf, updating..."
-            sed -i.bak '/location \//a\    try_files $uri $uri/ /index.php?$query_string;' /etc/nginx/nginx.conf || true
-            CONFIG_UPDATED=true
-        fi
-    fi
+}
+EOF
+    echo "✓ Updated $PHP_CONF"
 fi
 
-# Test and reload nginx if config was updated
-if [ "$CONFIG_UPDATED" = true ]; then
-    echo "Testing nginx configuration..."
-    if nginx -t 2>/dev/null; then
-        echo "Nginx config test passed, reloading..."
-        systemctl reload nginx || service nginx reload || /etc/init.d/nginx reload || true
-        echo "✓ Nginx reloaded successfully"
-    else
-        echo "WARNING: Nginx config test failed"
-        nginx -t
-    fi
+# Test and reload nginx
+echo "Testing nginx configuration..."
+if nginx -t 2>/dev/null; then
+    echo "✓ Nginx config test passed, reloading..."
+    systemctl reload nginx || service nginx reload || /etc/init.d/nginx reload || true
+    echo "✓ Nginx reloaded successfully"
 else
-    echo "No nginx config files found or already configured"
+    echo "⚠️  Nginx config test failed:"
+    nginx -t
 fi
 
 echo "=========================================="
-echo "Nginx configuration check completed"
+echo "Nginx configuration completed"
 echo "=========================================="
