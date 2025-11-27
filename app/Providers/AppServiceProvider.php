@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\File;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,8 +12,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Ensure storage directories exist before Laravel boots
+        // Ensure storage directories exist BEFORE Laravel boots
         $this->ensureStorageDirectoriesExist();
+        
+        // Override view compiler to ensure directories exist before compilation
+        $this->app->afterResolving('view', function ($view) {
+            $this->ensureStorageDirectoriesExist();
+        });
     }
 
     /**
@@ -39,7 +45,12 @@ class AppServiceProvider extends ServiceProvider
         
         foreach ($storagePaths as $path) {
             if (!is_dir($path)) {
-                @mkdir($path, 0777, true);
+                @File::makeDirectory($path, 0777, true, true);
+                @chmod($path, 0777);
+            }
+            
+            // Ensure writable
+            if (is_dir($path) && !is_writable($path)) {
                 @chmod($path, 0777);
             }
         }
