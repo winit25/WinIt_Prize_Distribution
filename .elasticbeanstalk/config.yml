@@ -1,0 +1,20 @@
+branch-defaults:
+  default:
+    environment: buypower-prod
+    group_suffix: null
+  main:
+    environment: buypower-prod
+global:
+  application_name: buypower
+  branch: null
+  default_ec2_keyname: null
+  default_platform: PHP 8.2
+  default_region: us-east-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  repository: null
+  sc: git
+  workspace_type: Application

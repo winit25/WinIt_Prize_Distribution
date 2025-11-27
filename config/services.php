@@ -43,4 +43,20 @@ return [
         'timeout' => env('TERMII_TIMEOUT', 30),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Backend API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the Elastic Beanstalk backend API.
+    | This is used by the BackendApiClient service to make requests
+    | to the business logic API.
+    |
+    */
+
+    'backend_api' => [
+        'url' => env('BACKEND_API_URL', 'http://localhost:8001'),
+        'timeout' => env('BACKEND_API_TIMEOUT', 30),
+    ],
+
 ];

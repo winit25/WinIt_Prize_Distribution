@@ -3,16 +3,29 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "Installing Composer dependencies"
+        - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
         - echo "Installing Node.js dependencies"
         - npm ci || npm install
+        - echo "Generating application key"
+        - php artisan key:generate --force
     build:
       commands:
         - echo "Building frontend assets with Vite"
         - npm run build
+        - echo "Caching Laravel configuration"
+        - php artisan config:cache
+        - php artisan route:cache
+        - php artisan view:cache
+        - echo "Creating storage link"
+        - php artisan storage:link || true
   artifacts:
-    baseDirectory: public/build
+    baseDirectory: /
     files:
       - '**/*'
+      - '.env.example'
   cache:
     paths:
+      - vendor/**/*
       - node_modules/**/*
+      - bootstrap/cache/**/*
