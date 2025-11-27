@@ -20,7 +20,7 @@ if [ -f "$PHP_CONF" ]; then
     
     cat > "$PHP_CONF" <<'EOF'
 root /var/app/current/public;
-index index.php index.html;
+index index.php index.html index.htm;
 
 location / {
     try_files $uri $uri/ /index.php?$query_string;
@@ -38,6 +38,27 @@ location ~ /\.(?!well-known).* {
 }
 EOF
     echo "✓ Updated $PHP_CONF"
+fi
+
+# Also check main nginx.conf for server block
+NGINX_CONF="/etc/nginx/nginx.conf"
+if [ -f "$NGINX_CONF" ]; then
+    echo "Checking main nginx.conf..."
+    
+    # Backup
+    cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%s)"
+    
+    # Ensure index directive includes index.php
+    if ! grep -q "index.*index.php" "$NGINX_CONF"; then
+        echo "Adding index.php to nginx.conf..."
+        sed -i '/server {/a\    index index.php index.html index.htm;' "$NGINX_CONF" || true
+    fi
+    
+    # Ensure root is set correctly
+    if ! grep -q "root.*$DOCUMENT_ROOT" "$NGINX_CONF"; then
+        echo "Updating document root in nginx.conf..."
+        sed -i "s|root.*;|root $DOCUMENT_ROOT;|g" "$NGINX_CONF" || true
+    fi
 fi
 
 # Test and reload nginx
