@@ -20,5 +20,6 @@ tests/
 .gitattributes
 phpunit.xml
 *.sh
+!.platform/**/*.sh
 *.txt
 amplify.yml
