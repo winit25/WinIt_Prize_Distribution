@@ -12,9 +12,29 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UploadCsvController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('landing');
+});
+
+// Temporary debug route
+Route::get('/test-db', function () {
+    try {
+        DB::connection()->getPdo();
+        return response()->json([
+            'success' => true,
+            'message' => 'Database connection successful',
+            'database' => config('database.connections.mysql.database'),
+            'host' => config('database.connections.mysql.host')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Database connection failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
 
 Route::get('/login-redirect', function () {
