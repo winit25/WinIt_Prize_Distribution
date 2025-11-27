@@ -2,7 +2,7 @@
 
 /**
  * Ensure storage directories exist before Laravel compiles views
- * This script is called by composer before package discovery
+ * This script MUST run before any Laravel code executes
  */
 
 $dirs = [
@@ -15,6 +15,7 @@ $dirs = [
 
 $paths = ['/var/app/staging', getcwd()];
 
+$created = 0;
 foreach ($paths as $base) {
     if (!is_dir($base)) {
         continue;
@@ -24,21 +25,32 @@ foreach ($paths as $base) {
         $path = $base . '/' . $dir;
         
         if (!is_dir($path)) {
-            if (!@mkdir($path, 0777, true)) {
-                error_log("Failed to create directory: $path");
-                continue;
+            if (@mkdir($path, 0777, true)) {
+                @chmod($path, 0777);
+                $created++;
+            } else {
+                error_log("ERROR: Failed to create directory: $path");
+                exit(1);
             }
+        } else {
+            // Ensure writable
+            @chmod($path, 0777);
         }
         
-        // Ensure writable
-        @chmod($path, 0777);
-        
-        // Verify it exists
+        // Verify it exists and is writable
         if (!is_dir($path)) {
-            error_log("Directory still does not exist after creation: $path");
+            error_log("ERROR: Directory does not exist: $path");
+            exit(1);
+        }
+        if (!is_writable($path)) {
+            error_log("ERROR: Directory not writable: $path");
+            @chmod($path, 0777);
         }
     }
 }
 
-echo "Storage directories ensured\n";
-
+if ($created > 0) {
+    echo "Created $created storage directories\n";
+} else {
+    echo "Storage directories verified\n";
+}

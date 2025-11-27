@@ -38,9 +38,10 @@
             "@php ensure_storage_dirs.php"
         ],
         "post-autoload-dump": [
-            "@php ensure_storage_dirs.php",
+            "@php ensure_storage_dirs.php || true",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php ensure_storage_dirs.php",
+            "@php ensure_storage_dirs.php || true",
+            "@php ensure_storage_dirs.php || true",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
