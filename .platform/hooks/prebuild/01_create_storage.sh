@@ -1,42 +1,37 @@
 #!/bin/bash
 
 # Create storage directories BEFORE composer install runs
-# This prevents Laravel from failing when it tries to compile views during package discovery
+# This MUST run before any PHP/Laravel code executes
 
 set -e
 
 echo "=========================================="
-echo "Creating storage directories (pre-build)..."
+echo "Creating storage directories (PRE-BUILD)..."
 echo "=========================================="
 
 # Create directories in staging (where composer runs)
 STAGING_DIR="/var/app/staging"
 
-if [ -d "$STAGING_DIR" ]; then
-    echo "Creating storage directories in $STAGING_DIR..."
-    
-    mkdir -p $STAGING_DIR/storage/framework/sessions
-    mkdir -p $STAGING_DIR/storage/framework/views
-    mkdir -p $STAGING_DIR/storage/framework/cache
-    mkdir -p $STAGING_DIR/storage/logs
-    mkdir -p $STAGING_DIR/bootstrap/cache
-    
-    # Set permissions - use 777 during build to avoid any permission issues
-    chmod -R 777 $STAGING_DIR/storage
-    chmod -R 777 $STAGING_DIR/bootstrap/cache
-    
-    # Set ownership
-    chown -R webapp:webapp $STAGING_DIR/storage $STAGING_DIR/bootstrap/cache || true
-    
-    echo "✓ Storage directories created in staging"
-    ls -la $STAGING_DIR/storage/framework/ || echo "Warning: Could not list storage/framework"
-else
-    echo "Warning: Staging directory not found, creating in current directory..."
-    mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
-    chmod -R 777 storage bootstrap/cache
-fi
+echo "Creating storage directories in $STAGING_DIR..."
 
-echo "=========================================="
-echo "Pre-build storage setup completed"
-echo "=========================================="
+# Create all required directories
+mkdir -p $STAGING_DIR/storage/framework/sessions 2>/dev/null || true
+mkdir -p $STAGING_DIR/storage/framework/views 2>/dev/null || true
+mkdir -p $STAGING_DIR/storage/framework/cache 2>/dev/null || true
+mkdir -p $STAGING_DIR/storage/logs 2>/dev/null || true
+mkdir -p $STAGING_DIR/bootstrap/cache 2>/dev/null || true
 
+# Set permissions - use 777 during build to avoid any permission issues
+chmod -R 777 $STAGING_DIR/storage 2>/dev/null || true
+chmod -R 777 $STAGING_DIR/bootstrap/cache 2>/dev/null || true
+
+# Set ownership
+chown -R webapp:webapp $STAGING_DIR/storage $STAGING_DIR/bootstrap/cache 2>/dev/null || true
+
+# Verify creation
+echo "Verifying directories..."
+ls -la $STAGING_DIR/storage/framework/ 2>/dev/null || echo "Warning: Could not list storage/framework"
+ls -la $STAGING_DIR/storage/framework/views/ 2>/dev/null || echo "Warning: Could not list storage/framework/views"
+
+echo "✓ Storage directories created in staging"
+echo "=========================================="

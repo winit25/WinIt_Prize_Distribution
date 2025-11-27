@@ -35,15 +35,10 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/views')) { mkdir(\\$base . '/storage/framework/views', 0777, true); }\"",
-            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/cache')) { mkdir(\\$base . '/storage/framework/cache', 0777, true); }\"",
-            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/sessions')) { mkdir(\\$base . '/storage/framework/sessions', 0777, true); }\"",
-            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/logs')) { mkdir(\\$base . '/storage/logs', 0777, true); }\"",
-            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/bootstrap/cache')) { mkdir(\\$base . '/bootstrap/cache', 0777, true); }\"",
-            "@php -r \"\\$staging = '/var/app/staging'; if (is_dir(\\$staging)) { \\$base = \\$staging; if (!file_exists(\\$base . '/storage/framework/views')) { mkdir(\\$base . '/storage/framework/views', 0777, true); } if (!file_exists(\\$base . '/storage/framework/cache')) { mkdir(\\$base . '/storage/framework/cache', 0777, true); } if (!file_exists(\\$base . '/storage/framework/sessions')) { mkdir(\\$base . '/storage/framework/sessions', 0777, true); } if (!file_exists(\\$base . '/storage/logs')) { mkdir(\\$base . '/storage/logs', 0777, true); } if (!file_exists(\\$base . '/bootstrap/cache')) { mkdir(\\$base . '/bootstrap/cache', 0777, true); } }\""
+            "@php -r \"\\$dirs = ['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache']; \\$paths = ['/var/app/staging', getcwd()]; foreach(\\$paths as \\$base) { if (is_dir(\\$base)) { foreach(\\$dirs as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { mkdir(\\$path, 0777, true); chmod(\\$path, 0777); } } } }\""
         ],
         "post-autoload-dump": [
-            "@php -r \"\\$staging = '/var/app/staging'; \\$current = getcwd(); foreach([\\$staging, \\$current] as \\$base) { if (is_dir(\\$base)) { foreach(['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache'] as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { mkdir(\\$path, 0777, true); } } } }\"",
+            "@php -r \"\\$dirs = ['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache']; \\$paths = ['/var/app/staging', getcwd()]; foreach(\\$paths as \\$base) { if (is_dir(\\$base)) { foreach(\\$dirs as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { mkdir(\\$path, 0777, true); chmod(\\$path, 0777); } } } }\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
