@@ -12,23 +12,7 @@ echo "=========================================="
 # Set document root
 DOCUMENT_ROOT="/var/app/current/public"
 
-# Check main nginx.conf for server block
-NGINX_CONF="/etc/nginx/nginx.conf"
-if [ -f "$NGINX_CONF" ]; then
-    echo "Checking main nginx.conf..."
-    
-    # Backup
-    cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%s)"
-    
-    # Check if document root is set correctly
-    if ! grep -q "root.*$DOCUMENT_ROOT" "$NGINX_CONF"; then
-        echo "Updating document root in nginx.conf..."
-        # Try to find and replace root directive in server block
-        sed -i "s|root.*;|root $DOCUMENT_ROOT;|g" "$NGINX_CONF" || true
-    fi
-fi
-
-# Update PHP config with document root and try_files
+# Update PHP config with document root, index, and try_files
 PHP_CONF="/etc/nginx/conf.d/elasticbeanstalk/php.conf"
 if [ -f "$PHP_CONF" ]; then
     echo "Updating $PHP_CONF..."
@@ -36,6 +20,7 @@ if [ -f "$PHP_CONF" ]; then
     
     cat > "$PHP_CONF" <<'EOF'
 root /var/app/current/public;
+index index.php index.html;
 
 location / {
     try_files $uri $uri/ /index.php?$query_string;
