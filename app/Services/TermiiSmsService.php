@@ -15,10 +15,10 @@ class TermiiSmsService
 
     public function __construct()
     {
-        $this->apiKey = config('services.termii.api_key', env('TERMII_API_KEY'));
-        $this->baseUrl = config('services.termii.base_url', 'https://api.ng.termii.com');
-        $this->senderId = config('services.termii.sender_id', env('TERMII_SENDER_ID', 'WinIt'));
-        $this->timeout = config('services.termii.timeout', 30);
+        $this->apiKey = config('services.termii.api_key') ?: env('TERMII_API_KEY');
+        $this->baseUrl = config('services.termii.base_url') ?: 'https://api.ng.termii.com';
+        $this->senderId = config('services.termii.sender_id') ?: env('TERMII_SENDER_ID', 'WinIt') ?: 'WinIt';
+        $this->timeout = config('services.termii.timeout') ?: 30;
         
         // Validate API key is set
         if (empty($this->apiKey)) {

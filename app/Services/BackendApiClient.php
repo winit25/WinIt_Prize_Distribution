@@ -13,7 +13,7 @@ class BackendApiClient
 
     public function __construct()
     {
-        $this->baseUrl = rtrim(config('services.backend_api.url'), '/');
+        $this->baseUrl = rtrim(config('services.backend_api.url') ?: 'http://localhost:8001', '/');
     }
 
     /**

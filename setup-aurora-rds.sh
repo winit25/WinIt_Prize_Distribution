@@ -250,3 +250,4 @@ echo -e "${YELLOW}cd /var/app/current && php artisan migrate --force${NC}\n"
 
 echo -e "${GREEN}Setup complete!${NC}\n"
 
+

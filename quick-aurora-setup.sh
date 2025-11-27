@@ -122,3 +122,4 @@ echo ""
 echo "Run this command:"
 echo "eb setenv DB_CONNECTION=mysql DB_HOST=\"$ENDPOINT\" DB_PORT=3306 DB_DATABASE=buypower_db DB_USERNAME=admin DB_PASSWORD=\"$DB_PASSWORD\""
 
+
