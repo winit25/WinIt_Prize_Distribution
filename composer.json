@@ -35,11 +35,12 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php -r \"if (!file_exists('storage/framework/views')) { mkdir('storage/framework/views', 0777, true); }\"",
-            "@php -r \"if (!file_exists('storage/framework/cache')) { mkdir('storage/framework/cache', 0777, true); }\"",
-            "@php -r \"if (!file_exists('storage/framework/sessions')) { mkdir('storage/framework/sessions', 0777, true); }\"",
-            "@php -r \"if (!file_exists('storage/logs')) { mkdir('storage/logs', 0777, true); }\"",
-            "@php -r \"if (!file_exists('bootstrap/cache')) { mkdir('bootstrap/cache', 0777, true); }\""
+            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/views')) { mkdir(\\$base . '/storage/framework/views', 0777, true); }\"",
+            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/cache')) { mkdir(\\$base . '/storage/framework/cache', 0777, true); }\"",
+            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/framework/sessions')) { mkdir(\\$base . '/storage/framework/sessions', 0777, true); }\"",
+            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/storage/logs')) { mkdir(\\$base . '/storage/logs', 0777, true); }\"",
+            "@php -r \"\\$base = getcwd(); if (!file_exists(\\$base . '/bootstrap/cache')) { mkdir(\\$base . '/bootstrap/cache', 0777, true); }\"",
+            "@php -r \"\\$staging = '/var/app/staging'; if (is_dir(\\$staging)) { \\$base = \\$staging; if (!file_exists(\\$base . '/storage/framework/views')) { mkdir(\\$base . '/storage/framework/views', 0777, true); } if (!file_exists(\\$base . '/storage/framework/cache')) { mkdir(\\$base . '/storage/framework/cache', 0777, true); } if (!file_exists(\\$base . '/storage/framework/sessions')) { mkdir(\\$base . '/storage/framework/sessions', 0777, true); } if (!file_exists(\\$base . '/storage/logs')) { mkdir(\\$base . '/storage/logs', 0777, true); } if (!file_exists(\\$base . '/bootstrap/cache')) { mkdir(\\$base . '/bootstrap/cache', 0777, true); } }\""
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
