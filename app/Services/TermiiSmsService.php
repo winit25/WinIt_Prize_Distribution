@@ -8,7 +8,7 @@ use Exception;
 
 class TermiiSmsService
 {
-    protected string $apiKey;
+    protected ?string $apiKey;
     protected string $baseUrl;
     protected string $senderId;
     protected int $timeout;
