@@ -3,6 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "Installing Composer"
+        - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+        - export PATH="/usr/local/bin:$PATH"
+        - composer --version
         - echo "Installing Composer dependencies"
         - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
         - echo "Installing Node.js dependencies"
