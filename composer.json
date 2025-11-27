@@ -43,6 +43,7 @@
             "@php -r \"\\$staging = '/var/app/staging'; if (is_dir(\\$staging)) { \\$base = \\$staging; if (!file_exists(\\$base . '/storage/framework/views')) { mkdir(\\$base . '/storage/framework/views', 0777, true); } if (!file_exists(\\$base . '/storage/framework/cache')) { mkdir(\\$base . '/storage/framework/cache', 0777, true); } if (!file_exists(\\$base . '/storage/framework/sessions')) { mkdir(\\$base . '/storage/framework/sessions', 0777, true); } if (!file_exists(\\$base . '/storage/logs')) { mkdir(\\$base . '/storage/logs', 0777, true); } if (!file_exists(\\$base . '/bootstrap/cache')) { mkdir(\\$base . '/bootstrap/cache', 0777, true); } }\""
         ],
         "post-autoload-dump": [
+            "@php -r \"\\$staging = '/var/app/staging'; \\$current = getcwd(); foreach([\\$staging, \\$current] as \\$base) { if (is_dir(\\$base)) { foreach(['storage/framework/views', 'storage/framework/cache', 'storage/framework/sessions', 'storage/logs', 'bootstrap/cache'] as \\$dir) { \\$path = \\$base . '/' . \\$dir; if (!is_dir(\\$path)) { mkdir(\\$path, 0777, true); } } } }\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
