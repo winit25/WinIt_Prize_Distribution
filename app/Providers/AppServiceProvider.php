@@ -11,7 +11,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Ensure storage directories exist before Laravel boots
+        $this->ensureStorageDirectoriesExist();
     }
 
     /**
@@ -20,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Ensure storage directories exist
+        $this->ensureStorageDirectoriesExist();
+    }
+
+    /**
+     * Ensure all required storage directories exist
+     */
+    protected function ensureStorageDirectoriesExist(): void
+    {
         $storagePaths = [
             storage_path('framework/views'),
             storage_path('framework/cache'),
@@ -31,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
         foreach ($storagePaths as $path) {
             if (!is_dir($path)) {
                 @mkdir($path, 0777, true);
+                @chmod($path, 0777);
             }
         }
     }
