@@ -12,7 +12,7 @@ use Exception;
 class BuyPowerApiService implements BuyPowerApiInterface
 {
     protected string $baseUrl;
-    protected string $apiKey;
+    protected ?string $apiKey;
     protected int $timeout;
     protected CircuitBreakerService $circuitBreaker;
 
