@@ -9,7 +9,7 @@ use Exception;
 class MockBuyPowerApiService implements BuyPowerApiInterface
 {
     protected string $baseUrl;
-    protected string $apiKey;
+    protected ?string $apiKey;
     protected int $timeout;
 
     public function __construct()
