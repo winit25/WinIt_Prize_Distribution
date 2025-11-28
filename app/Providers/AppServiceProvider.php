@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->afterResolving('view', function ($view) {
             $this->ensureStorageDirectoriesExist();
         });
+        
+        // Ensure view finder can locate views
+        $this->app->afterResolving('view.finder', function ($finder) {
+            $this->ensureStorageDirectoriesExist();
+        });
     }
 
     /**
