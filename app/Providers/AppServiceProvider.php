@@ -44,6 +44,14 @@ class AppServiceProvider extends ServiceProvider
         ];
         
         foreach ($storagePaths as $path) {
+            // Create parent directories first
+            $parent = dirname($path);
+            if (!is_dir($parent)) {
+                @File::makeDirectory($parent, 0777, true, true);
+                @chmod($parent, 0777);
+            }
+            
+            // Create the directory itself
             if (!is_dir($path)) {
                 @File::makeDirectory($path, 0777, true, true);
                 @chmod($path, 0777);
