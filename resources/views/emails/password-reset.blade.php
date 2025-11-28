@@ -99,7 +99,7 @@
     <div class="email-container">
         <div class="header">
             <div class="logo-container" style="background: #0a1628; padding: 20px;">
-                <img src="{{ url('images/winit-logo.png') }}" alt="WinIt Logo" width="150" style="display:block; margin:0 auto;">
+                <img src="{{ url('images/winit-logo.svg') }}" alt="WinIt Logo" width="150" style="display:block; margin:0 auto;">
             </div>
             <h1>Reset Your Password</h1>
             <p class="subtitle">WinIt Prize Distribution</p>

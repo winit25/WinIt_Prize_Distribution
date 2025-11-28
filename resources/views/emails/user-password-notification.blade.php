@@ -32,7 +32,7 @@
                 <table role="presentation" width="600" class="wrapper" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(18,33,104,0.08);">
                     <tr>
                         <td style="padding:32px 32px 24px 32px; text-align:center; background: #0a1628;">
-                            <img src="{{ url('images/winit-logo.png') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 16px auto;">
+                            <img src="{{ url('images/winit-logo.svg') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 16px auto;">
                             <h1 style="margin:0; font-size:22px; font-weight:700; color:#ffffff;">WinIt Prize Distribution</h1>
                             <p style="margin:8px 0 0 0; font-size:14px; color:rgba(255,255,255,0.85);">Secure access credentials</p>
                         </td>

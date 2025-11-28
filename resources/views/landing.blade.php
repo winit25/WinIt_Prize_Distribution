@@ -204,7 +204,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/winit-logo.png') }}" alt="WinIt Logo" class="logo">
+            <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" class="logo">
             <h1>Welcome to WinIt</h1>
             <p>Your one-stop platform for bill payments and service purchases</p>
         </div>

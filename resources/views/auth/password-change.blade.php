@@ -205,7 +205,7 @@
     <div class="password-change-container">
         <div class="password-change-header">
             <div class="logo">
-                <img src="{{ asset('images/winit-logo.png') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
+                <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
             </div>
             <h1 style="color: white;">Change Password</h1>
             <p style="color: rgba(255, 255, 255, 0.9);">Set your new secure password</p>
