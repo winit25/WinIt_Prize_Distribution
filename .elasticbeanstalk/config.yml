@@ -3,7 +3,7 @@ branch-defaults:
     environment: buypower-prod
     group_suffix: null
   main:
-    environment: buypower-prod
+    environment: null
 global:
   application_name: buypower
   branch: null
