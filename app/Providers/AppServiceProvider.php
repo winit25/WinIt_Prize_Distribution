@@ -35,7 +35,28 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function ensureStorageDirectoriesExist(): void
     {
+        // Get the actual base path - ensure we're using /var/app/current, not staging
+        $basePath = base_path();
+        
+        // If somehow we're resolving to staging, force current
+        if (strpos($basePath, '/var/app/staging') !== false) {
+            $basePath = str_replace('/var/app/staging', '/var/app/current', $basePath);
+        }
+        
+        // Ensure we're using the correct paths
+        $storageBase = $basePath . DIRECTORY_SEPARATOR . 'storage';
+        $frameworkBase = $storageBase . DIRECTORY_SEPARATOR . 'framework';
+        
         $storagePaths = [
+            $frameworkBase . DIRECTORY_SEPARATOR . 'views',
+            $frameworkBase . DIRECTORY_SEPARATOR . 'cache',
+            $frameworkBase . DIRECTORY_SEPARATOR . 'sessions',
+            $storageBase . DIRECTORY_SEPARATOR . 'logs',
+            $basePath . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache',
+        ];
+        
+        // Also use Laravel's storage_path() as fallback
+        $laravelPaths = [
             storage_path('framework/views'),
             storage_path('framework/cache'),
             storage_path('framework/sessions'),
@@ -43,7 +64,13 @@ class AppServiceProvider extends ServiceProvider
             base_path('bootstrap/cache'),
         ];
         
-        foreach ($storagePaths as $path) {
+        // Combine both sets of paths
+        $allPaths = array_unique(array_merge($storagePaths, $laravelPaths));
+        
+        foreach ($allPaths as $path) {
+            // Normalize path separators
+            $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+            
             // Create parent directories first
             $parent = dirname($path);
             if (!is_dir($parent)) {
