@@ -24,16 +24,28 @@ Route::get('/', function () {
         
         // Check if view file exists
         $viewPath = resource_path('views/landing.blade.php');
+        $viewsDir = resource_path('views');
+        
+        // Debug information
+        $debug = [
+            'base_path' => base_path(),
+            'resource_path' => resource_path('views'),
+            'storage_path' => storage_path('framework/views'),
+            'views_dir_exists' => is_dir($viewsDir),
+            'view_file_exists' => file_exists($viewPath),
+            'expected_path' => $viewPath,
+            'views_dir_contents' => is_dir($viewsDir) ? array_slice(scandir($viewsDir), 0, 20) : null,
+        ];
+        
         if (!file_exists($viewPath)) {
             return response()->json([
                 'error' => 'View file not found',
-                'expected_path' => $viewPath,
-                'base_path' => base_path(),
-                'resource_path' => resource_path('views'),
-                'storage_path' => storage_path('framework/views'),
-                'views_exist' => is_dir(resource_path('views')),
+                'debug' => $debug,
             ], 500);
         }
+        
+        // Clear view cache to ensure fresh lookup
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
         
         return view('landing');
     } catch (\Exception $e) {
@@ -41,6 +53,9 @@ Route::get('/', function () {
             'error' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
+            'base_path' => base_path(),
+            'resource_path' => resource_path('views'),
+            'view_file_exists' => file_exists(resource_path('views/landing.blade.php')),
             'trace' => $e->getTraceAsString(),
         ], 500);
     }
