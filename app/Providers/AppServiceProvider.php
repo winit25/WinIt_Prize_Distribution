@@ -35,27 +35,30 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function ensureStorageDirectoriesExist(): void
     {
-        // Get the actual base path - ensure we're using /var/app/current, not staging
-        $basePath = base_path();
+        // CRITICAL: Ensure directories exist in BOTH locations
+        // Laravel might resolve storage_path() to staging or current
         
-        // If somehow we're resolving to staging, force current
-        if (strpos($basePath, '/var/app/staging') !== false) {
-            $basePath = str_replace('/var/app/staging', '/var/app/current', $basePath);
-        }
-        
-        // Ensure we're using the correct paths
-        $storageBase = $basePath . DIRECTORY_SEPARATOR . 'storage';
-        $frameworkBase = $storageBase . DIRECTORY_SEPARATOR . 'framework';
-        
-        $storagePaths = [
-            $frameworkBase . DIRECTORY_SEPARATOR . 'views',
-            $frameworkBase . DIRECTORY_SEPARATOR . 'cache',
-            $frameworkBase . DIRECTORY_SEPARATOR . 'sessions',
-            $storageBase . DIRECTORY_SEPARATOR . 'logs',
-            $basePath . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'cache',
+        // Paths in /var/app/current (where app runs)
+        $currentBase = '/var/app/current';
+        $currentPaths = [
+            $currentBase . '/storage/framework/views',
+            $currentBase . '/storage/framework/cache',
+            $currentBase . '/storage/framework/sessions',
+            $currentBase . '/storage/logs',
+            $currentBase . '/bootstrap/cache',
         ];
         
-        // Also use Laravel's storage_path() as fallback
+        // Paths in /var/app/staging (where composer runs, Laravel might resolve here)
+        $stagingBase = '/var/app/staging';
+        $stagingPaths = [
+            $stagingBase . '/storage/framework/views',
+            $stagingBase . '/storage/framework/cache',
+            $stagingBase . '/storage/framework/sessions',
+            $stagingBase . '/storage/logs',
+            $stagingBase . '/bootstrap/cache',
+        ];
+        
+        // Also use Laravel's storage_path() and base_path() (whatever they resolve to)
         $laravelPaths = [
             storage_path('framework/views'),
             storage_path('framework/cache'),
@@ -64,12 +67,18 @@ class AppServiceProvider extends ServiceProvider
             base_path('bootstrap/cache'),
         ];
         
-        // Combine both sets of paths
-        $allPaths = array_unique(array_merge($storagePaths, $laravelPaths));
+        // Combine all paths
+        $allPaths = array_unique(array_merge($currentPaths, $stagingPaths, $laravelPaths));
         
         foreach ($allPaths as $path) {
             // Normalize path separators
             $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+            
+            // Skip if path doesn't exist (e.g., staging might not exist at runtime)
+            $baseDir = dirname($path, 3); // Go up 3 levels to check base
+            if (!is_dir($baseDir)) {
+                continue;
+            }
             
             // Create parent directories first
             $parent = dirname($path);
