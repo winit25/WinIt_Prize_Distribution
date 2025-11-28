@@ -15,7 +15,35 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
-    return view('landing');
+    try {
+        // Ensure storage directories exist before rendering view
+        $storagePath = storage_path('framework/views');
+        if (!is_dir($storagePath)) {
+            \Illuminate\Support\Facades\File::makeDirectory($storagePath, 0777, true, true);
+        }
+        
+        // Check if view file exists
+        $viewPath = resource_path('views/landing.blade.php');
+        if (!file_exists($viewPath)) {
+            return response()->json([
+                'error' => 'View file not found',
+                'expected_path' => $viewPath,
+                'base_path' => base_path(),
+                'resource_path' => resource_path('views'),
+                'storage_path' => storage_path('framework/views'),
+                'views_exist' => is_dir(resource_path('views')),
+            ], 500);
+        }
+        
+        return view('landing');
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ], 500);
+    }
 });
 
 // Temporary debug route
