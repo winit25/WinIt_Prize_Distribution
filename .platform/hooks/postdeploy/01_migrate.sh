@@ -13,4 +13,8 @@ if ! php artisan migrate:status 2>/dev/null; then
     php artisan migrate --force
 fi
 
-echo "Migrations completed!"
+# Seed database (creates superadmin user)
+echo "Seeding database (creating superadmin)..."
+php artisan db:seed --class=SuperAdminSeeder --force || true
+
+echo "Migrations and seeding completed!"

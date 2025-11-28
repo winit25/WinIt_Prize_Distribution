@@ -34,15 +34,8 @@
         }
     },
     "scripts": {
-        "pre-autoload-dump": [
-            "@php ensure_storage_dirs.php || true"
-        ],
         "post-autoload-dump": [
-            "@php ensure_storage_dirs.php || true",
-            "@php ensure_storage_before_laravel.php || true",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php ensure_storage_dirs.php || true",
-            "@php ensure_storage_before_laravel.php || true",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
