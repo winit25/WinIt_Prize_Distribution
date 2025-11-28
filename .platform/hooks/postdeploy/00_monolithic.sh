@@ -1,6 +1,9 @@
 #!/bin/bash
-# Monolithic post-deployment hook
-# Handles all post-deployment tasks in one place
+# ============================================================================
+# MONOLITHIC POST-DEPLOYMENT HOOK
+# ============================================================================
+# Runs AFTER deployment to ensure everything is configured correctly
+# ============================================================================
 
 set -e
 
@@ -11,8 +14,8 @@ echo "=========================================="
 CURRENT_DIR="/var/app/current"
 STAGING_DIR="/var/app/staging"
 
-# 1. Ensure storage directories exist in both locations
-echo "Creating storage directories..."
+# 1. Ensure storage directories exist in BOTH locations
+echo "Ensuring storage directories exist..."
 
 # In current (where app runs)
 if [ -d "$CURRENT_DIR" ]; then
@@ -33,7 +36,33 @@ if [ -d "$STAGING_DIR" ]; then
     chown -R webapp:webapp $STAGING_DIR/storage $STAGING_DIR/bootstrap/cache 2>/dev/null || true
 fi
 
-# 2. Clear caches
+# 2. Fix Nginx configuration for Laravel routes
+echo "Configuring Nginx..."
+PHP_CONF="/etc/nginx/conf.d/elasticbeanstalk/php.conf"
+if [ -f "$PHP_CONF" ]; then
+    cat > "$PHP_CONF" <<'EOF'
+root /var/app/current/public;
+index index.php index.html index.htm;
+
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
+
+location ~ \.php$ {
+    fastcgi_pass unix:/run/php-fpm/www.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+}
+
+location ~ /\.(?!well-known).* {
+    deny all;
+}
+EOF
+    nginx -t 2>/dev/null && systemctl reload nginx 2>/dev/null || true
+fi
+
+# 3. Clear caches
 echo "Clearing caches..."
 if [ -d "$CURRENT_DIR" ]; then
     cd $CURRENT_DIR
@@ -43,14 +72,16 @@ if [ -d "$CURRENT_DIR" ]; then
     php artisan cache:clear 2>/dev/null || true
 fi
 
-# 3. Run migrations (if needed)
+# 4. Run migrations (if needed)
 echo "Running migrations..."
 if [ -d "$CURRENT_DIR" ]; then
     cd $CURRENT_DIR
     php artisan migrate:status > /dev/null 2>&1 || php artisan migrate:install --force 2>/dev/null || true
     php artisan migrate --force 2>/dev/null || true
+    
+    # Seed superadmin if needed
+    php artisan db:seed --class=SuperAdminSeeder --force 2>/dev/null || true
 fi
 
-echo "✓ Monolithic post-deployment complete"
+echo "✓ Post-deployment hook completed"
 echo "=========================================="
-
