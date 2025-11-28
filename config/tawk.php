@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'enabled' => env('TAWK_ENABLED', true),
+    'enabled' => env('TAWK_ENABLED', false),
 
     'property_id' => env('TAWK_PROPERTY_ID', '691b089cdde8a31959180b3a'),
 

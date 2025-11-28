@@ -292,7 +292,7 @@
     <div class="login-container">
         <div class="login-header">
             <div class="logo">
-                <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
+                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
             </div>
             <h1 style="color: white;">WinIt</h1>
             <p style="color: rgba(255, 255, 255, 0.9);">BuyPower Token Distribution</p>

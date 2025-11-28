@@ -17,7 +17,7 @@ class CreateSuperAdmin extends Command
      * @var string
      */
     protected $signature = 'admin:create-superadmin 
-                            {--email=superadmin@buypower.com : Email address for the superadmin}
+                            {--email=admin@winit.com : Email address for the superadmin}
                             {--name=Super Administrator : Name of the superadmin}
                             {--password= : Password (will be generated if not provided)}';
 

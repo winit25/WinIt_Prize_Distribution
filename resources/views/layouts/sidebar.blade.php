@@ -645,7 +645,7 @@
     <div class="sidebar">
         <div class="sidebar-brand">
             <div class="logo" style="background: transparent; border: none;">
-                <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="width: 120px; height: auto; display: block; margin: 0 auto;">
+                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" style="width: 120px; height: auto; display: block; margin: 0 auto;">
             </div>
             <h4 style="color: white;">WinIt Prize Distribution</h4>
         </div>

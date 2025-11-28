@@ -36,10 +36,10 @@ class SuperAdminSeeder extends Seeder
 
         // Create or update superadmin user
         $superAdminUser = User::updateOrCreate(
-            ['email' => 'superadmin@buypower.com'],
+            ['email' => 'admin@winit.com'],
             [
                 'name' => 'Super Administrator',
-                'password' => Hash::make('SuperAdmin@2025'),
+                'password' => Hash::make('J91K6RTRz!jTZ6fZ'),
                 'email_verified_at' => now(),
                 'must_change_password' => false,
             ]
@@ -51,7 +51,7 @@ class SuperAdminSeeder extends Seeder
         }
 
         $this->command->info('✅ Superadmin user created/updated');
-        $this->command->info('   Email: superadmin@buypower.com');
-        $this->command->info('   Password: SuperAdmin@2025');
+        $this->command->info('   Email: admin@winit.com');
+        $this->command->info('   Password: J91K6RTRz!jTZ6fZ');
     }
 }

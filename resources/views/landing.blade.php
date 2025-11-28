@@ -37,9 +37,15 @@
         }
 
         .logo {
-            max-width: 200px;
+            max-width: 600px;
             height: auto;
             margin-bottom: 2rem;
+            shape-rendering: crispEdges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+            filter: contrast(1.1) brightness(1.05);
         }
 
         .header h1 {
@@ -112,6 +118,9 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
         }
 
         .card h2 {
@@ -204,7 +213,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" class="logo">
+            <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" class="logo">
             <h1>Welcome to WinIt</h1>
             <p>Your one-stop platform for bill payments and service purchases</p>
         </div>
@@ -217,7 +226,7 @@
                 </div>
                 <h2>BuyPower</h2>
                 <p>Purchase electricity tokens instantly. Quick, secure, and hassle-free power top-ups for your home or business.</p>
-                <button class="card-button" onclick="window.location.href='{{ route('login') }}'">Buy Electricity</button>
+                <button class="card-button" onclick="window.location.href='{{ route('login') }}'">Login</button>
             </div>
 
             <!-- SureGift Card -->
@@ -227,7 +236,7 @@
                 </div>
                 <h2>SureGift</h2>
                 <p>Send digital gift cards to your loved ones. Perfect for any occasion with instant delivery and multiple options.</p>
-                <button class="card-button" onclick="window.location.href='#suregift'">Send Gift</button>
+                <button class="card-button" onclick="window.location.href='#suregift'">Login</button>
             </div>
 
             <!-- Uber Card -->
@@ -237,7 +246,7 @@
                 </div>
                 <h2>Uber</h2>
                 <p>Book your ride or order food delivery. Fast, reliable transportation and food services at your fingertips.</p>
-                <button class="card-button" onclick="window.location.href='#uber'">Get Started</button>
+                <button class="card-button" onclick="window.location.href='#uber'">Login</button>
             </div>
         </div>
 
@@ -246,18 +255,5 @@
             <p>Secure payments • Instant delivery • 24/7 support</p>
         </div>
     </div>
-    <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/691b089cdde8a31959180b3a/1ja8pj9c5';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-    </script>
-    <!--End of Tawk.to Script-->
 </body>
 </html>
