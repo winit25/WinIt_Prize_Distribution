@@ -49,7 +49,7 @@
         .password-change-header .logo {
             width: 100px;
             height: 100px;
-            background: white;
+            background: rgba(255, 255, 255, 0);
             border-radius: 25px;
             display: flex;
             align-items: center;
