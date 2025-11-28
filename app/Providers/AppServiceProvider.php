@@ -12,6 +12,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Register MonolithicService as singleton
+        $this->app->singleton(\App\Services\MonolithicService::class, function ($app) {
+            return new \App\Services\MonolithicService();
+        });
+        
         // Ensure storage directories exist BEFORE Laravel boots
         $this->ensureStorageDirectoriesExist();
         
