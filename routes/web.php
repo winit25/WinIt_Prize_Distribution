@@ -16,18 +16,6 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     try {
-        // Ensure storage directories exist before rendering view
-        $storagePath = storage_path('framework/views');
-        if (!is_dir($storagePath)) {
-            \Illuminate\Support\Facades\File::makeDirectory($storagePath, 0777, true, true);
-        }
-        
-        // Clear view cache to ensure fresh lookup
-        \Illuminate\Support\Facades\Artisan::call('view:clear');
-        
-        // Clear config cache to ensure view config is fresh
-        \Illuminate\Support\Facades\Artisan::call('config:clear');
-        
         return view('landing');
     } catch (\Exception $e) {
         return response()->json([
