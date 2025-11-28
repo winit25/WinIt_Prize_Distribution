@@ -15,6 +15,6 @@ fi
 
 # Seed database (creates superadmin user)
 echo "Seeding database (creating superadmin)..."
-php artisan db:seed --class=SuperAdminSeeder --force || true
+php artisan db:seed --class=SuperAdminSeeder --force || php artisan db:seed --force || true
 
 echo "Migrations and seeding completed!"

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +13,6 @@ class SuperAdminSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * This creates a superadmin user that can login immediately after deployment.
      */
     public function run(): void
     {
@@ -29,13 +28,14 @@ class SuperAdminSeeder extends Seeder
         );
 
         // Assign all permissions to super-admin role
-        $permissions = Permission::all();
-        if ($permissions->isNotEmpty()) {
-            $superAdminRole->permissions()->sync($permissions->pluck('id'));
+        $allPermissions = Permission::all();
+        if ($allPermissions->isNotEmpty()) {
+            $superAdminRole->permissions()->sync($allPermissions->pluck('id'));
+            $this->command->info("✅ Assigned {$allPermissions->count()} permissions to super-admin role");
         }
 
         // Create or update superadmin user
-        $superAdmin = User::updateOrCreate(
+        $superAdminUser = User::updateOrCreate(
             ['email' => 'superadmin@buypower.com'],
             [
                 'name' => 'Super Administrator',
@@ -46,13 +46,12 @@ class SuperAdminSeeder extends Seeder
         );
 
         // Assign super-admin role to user
-        if (!$superAdmin->roles->contains('id', $superAdminRole->id)) {
-            $superAdmin->roles()->attach($superAdminRole->id);
+        if (!$superAdminUser->roles->contains('id', $superAdminRole->id)) {
+            $superAdminUser->roles()->attach($superAdminRole->id);
         }
 
         $this->command->info('✅ Superadmin user created/updated');
-        $this->command->info('📧 Email: superadmin@buypower.com');
-        $this->command->info('🔑 Password: SuperAdmin@2025');
+        $this->command->info('   Email: superadmin@buypower.com');
+        $this->command->info('   Password: SuperAdmin@2025');
     }
 }
-
