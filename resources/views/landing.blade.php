@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WinIt - Pay Bills & Purchase Services</title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <!-- Favicon - Same as logo -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/winit-logo-C73aMBts (2).svg') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/winit-logo-C73aMBts (2).png') }}">
     
     <!-- Fonts -->
