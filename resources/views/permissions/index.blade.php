@@ -451,19 +451,36 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="mt-2 pt-2 border-top">
-                                                            <small class="text-muted">
-                                                                <strong>Assigned to:</strong> 
-                                                                @if($permission->roles && $permission->roles->count() > 0)
-                                                                    <div class="mt-1">
-                                                                        @foreach($permission->roles as $role)
-                                                                            <span class="badge bg-info me-1 mb-1">{{ $role->display_name }}</span>
-                                                                        @endforeach
-                                                                    </div>
-                                                                @else
-                                                                    <span class="text-danger">No roles</span>
-                                                                @endif
+                                                        
+                                                        <!-- Assign to Roles Section -->
+                                                        <div class="mt-3 pt-2 border-top">
+                                                            <small class="text-muted fw-bold d-block mb-2">
+                                                                <i class="fas fa-user-tag me-1"></i>Assign to Roles:
                                                             </small>
+                                                            <div class="role-assignment-list">
+                                                                @foreach($roles as $role)
+                                                                    @php
+                                                                        $hasPermission = $permission->roles && $permission->roles->contains('id', $role->id);
+                                                                    @endphp
+                                                                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: #f8fafc;">
+                                                                        <div class="flex-grow-1">
+                                                                            <small class="fw-bold">{{ $role->display_name }}</small>
+                                                                            @if($hasPermission)
+                                                                                <span class="badge bg-success ms-2" style="font-size: 0.65rem;">Assigned</span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <label class="toggle-switch" style="margin: 0;">
+                                                                            <input type="checkbox" 
+                                                                                   class="permission-role-toggle" 
+                                                                                   data-permission-id="{{ $permission->id }}" 
+                                                                                   data-role-id="{{ $role->id }}"
+                                                                                   {{ $hasPermission ? 'checked' : '' }}
+                                                                                   onchange="togglePermissionRole({{ $permission->id }}, {{ $role->id }}, this.checked)">
+                                                                            <span class="toggle-slider"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1233,6 +1250,96 @@ function deletePermission(permissionId) {
             utils.showAlert(error.message || 'Failed to delete permission', 'error');
         });
     }
+}
+
+// Toggle Permission Assignment to Role
+async function togglePermissionRole(permissionId, roleId, isChecked) {
+    const permission = permissionsData.find(p => p.id === permissionId);
+    const role = rolesData.find(r => r.id === roleId);
+    
+    if (!permission || !role) {
+        utils.showAlert('Permission or role not found!', 'error');
+        return;
+    }
+    
+    try {
+        // Get current role permissions
+        const rolePermissions = role.permissions || [];
+        const currentPermissionIds = rolePermissions.map(p => p.id);
+        
+        // Add or remove permission based on toggle state
+        let newPermissionIds;
+        if (isChecked) {
+            // Add permission if not already present
+            if (!currentPermissionIds.includes(permissionId)) {
+                newPermissionIds = [...currentPermissionIds, permissionId];
+            } else {
+                return; // Already assigned, no need to update
+            }
+        } else {
+            // Remove permission
+            newPermissionIds = currentPermissionIds.filter(id => id !== permissionId);
+        }
+        
+        // Update role permissions
+        const result = await utils.makeRequest(`/permissions/roles/${roleId}/permissions`, {
+            method: 'POST',
+            body: JSON.stringify({ permission_ids: newPermissionIds })
+        });
+        
+        const action = isChecked ? 'assigned' : 'removed';
+        utils.showAlert(`Permission "${permission.display_name}" ${action} to "${role.display_name}" successfully!`, 'success');
+        
+        // Update local data to reflect changes
+        if (isChecked) {
+            if (!role.permissions) role.permissions = [];
+            role.permissions.push(permission);
+        } else {
+            if (role.permissions) {
+                role.permissions = role.permissions.filter(p => p.id !== permissionId);
+            }
+        }
+        
+        // Update the UI without full reload
+        updatePermissionRoleBadge(permissionId, roleId, isChecked);
+        
+    } catch (error) {
+        // Revert toggle on error
+        const toggle = document.querySelector(`input[data-permission-id="${permissionId}"][data-role-id="${roleId}"]`);
+        if (toggle) {
+            toggle.checked = !isChecked;
+        }
+        utils.showAlert(error.message || 'Failed to update permission assignment', 'error');
+    }
+}
+
+// Update permission role badge in UI
+function updatePermissionRoleBadge(permissionId, roleId, isAssigned) {
+    // Find all permission cards and update badges
+    const permissionCards = document.querySelectorAll(`[data-permission-id="${permissionId}"]`);
+    permissionCards.forEach(card => {
+        const roleAssignment = card.closest('.border.rounded').querySelector(`[data-role-id="${roleId}"]`);
+        if (roleAssignment) {
+            const badgeContainer = roleAssignment.closest('.d-flex.justify-content-between').querySelector('.badge');
+            if (isAssigned) {
+                if (!badgeContainer || !badgeContainer.classList.contains('bg-success')) {
+                    const roleName = rolesData.find(r => r.id === roleId)?.display_name || 'Role';
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-success ms-2';
+                    badge.style.fontSize = '0.65rem';
+                    badge.textContent = 'Assigned';
+                    const flexContainer = roleAssignment.closest('.d-flex.justify-content-between').querySelector('.flex-grow-1');
+                    if (flexContainer && !flexContainer.querySelector('.badge.bg-success')) {
+                        flexContainer.appendChild(badge);
+                    }
+                }
+            } else {
+                if (badgeContainer && badgeContainer.classList.contains('bg-success')) {
+                    badgeContainer.remove();
+                }
+            }
+        }
+    });
 }
 
 </script>
