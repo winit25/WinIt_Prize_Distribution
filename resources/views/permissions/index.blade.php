@@ -406,9 +406,14 @@
                 <!-- Permissions Tab -->
                 <div class="tab-pane fade" id="permissions" role="tabpanel">
                     <div class="card">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0"><i class="fas fa-key me-2"></i>All System Permissions</h5>
-                            <p class="text-muted mb-0 small">Total: {{ $permissions->count() }} permissions across {{ $permissionsByCategory->count() }} categories</p>
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0"><i class="fas fa-key me-2"></i>All System Permissions</h5>
+                                <p class="text-muted mb-0 small">Total: {{ $permissions->count() }} permissions across {{ $permissionsByCategory->count() }} categories</p>
+                            </div>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPermissionModal">
+                                <i class="fas fa-plus me-1"></i>Create Permission
+                            </button>
                         </div>
                         <div class="card-body">
                             @if($permissionsByCategory->count() > 0)
@@ -434,7 +439,17 @@
                                                                 <small class="text-muted d-block mb-2">{{ $permission->description }}</small>
                                                                 <small class="text-muted"><code style="font-size: 0.75rem;">{{ $permission->name }}</code></small>
                                                             </div>
-                                                            {!! $permission->status_badge !!}
+                                                            <div class="d-flex flex-column align-items-end gap-1">
+                                                                {!! $permission->status_badge !!}
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <button class="btn btn-outline-primary btn-sm" onclick="editPermission({{ $permission->id }})" title="Edit Permission">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-outline-danger btn-sm" onclick="deletePermission({{ $permission->id }})" title="Delete Permission">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <div class="mt-2 pt-2 border-top">
                                                             <small class="text-muted">
@@ -659,6 +674,109 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Roles</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Permission Modal -->
+<div class="modal fade" id="createPermissionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Permission</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createPermissionForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Permission Name (System Identifier)</label>
+                        <input type="text" class="form-control" name="name" placeholder="e.g., view-reports" required>
+                        <small class="form-text text-muted">Lowercase, use hyphens. This is the system identifier.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Display Name</label>
+                        <input type="text" class="form-control" name="display_name" placeholder="e.g., View Reports" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea class="form-control" name="description" rows="2" placeholder="What does this permission allow?"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="user_management">User Management</option>
+                            <option value="batch_management">Batch Operations</option>
+                            <option value="transaction_management">Transactions</option>
+                            <option value="system_administration">System Administration</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="createPermissionActive" checked>
+                        <label class="form-check-label" for="createPermissionActive">
+                            Active
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i>Create Permission
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Permission Modal -->
+<div class="modal fade" id="editPermissionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Permission</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editPermissionForm">
+                <input type="hidden" id="editPermissionId" name="permission_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Permission Name (System Identifier)</label>
+                        <input type="text" class="form-control" id="editPermissionName" name="name" required>
+                        <small class="form-text text-muted">Lowercase, use hyphens. This is the system identifier.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Display Name</label>
+                        <input type="text" class="form-control" id="editPermissionDisplayName" name="display_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea class="form-control" id="editPermissionDescription" name="description" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <select class="form-select" id="editPermissionCategory" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="user_management">User Management</option>
+                            <option value="batch_management">Batch Operations</option>
+                            <option value="transaction_management">Transactions</option>
+                            <option value="system_administration">System Administration</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="editPermissionActive">
+                        <label class="form-check-label" for="editPermissionActive">
+                            Active
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Save Changes
+                    </button>
                 </div>
             </form>
         </div>
