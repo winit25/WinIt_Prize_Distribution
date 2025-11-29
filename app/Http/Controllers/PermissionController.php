@@ -29,15 +29,21 @@ class PermissionController extends Controller
      */
     public function index()
     {
+        // Clear all caches to ensure fresh data
+        \Illuminate\Support\Facades\Cache::flush();
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        
         // Get ALL permissions, including inactive ones for admin view
         $permissions = Permission::with('roles')->orderBy('category')->orderBy('name')->get();
         $roles = Role::with('permissions')->orderBy('name')->get();
-        $users = User::with('roles')->orderBy('name')->get();
+        $users = User::with(['roles.permissions'])->orderBy('name')->get();
 
         // Group permissions by category
         $permissionsByCategory = $permissions->groupBy('category');
         
-        // Ensure all expected categories exist (even if empty) - use toArray() to convert to array for better compatibility
+        // Ensure all expected categories exist (even if empty)
         $expectedCategories = ['user_management', 'batch_management', 'transaction_management', 'system_administration'];
         foreach ($expectedCategories as $category) {
             if (!$permissionsByCategory->has($category)) {
@@ -50,6 +56,7 @@ class PermissionController extends Controller
             'total_permissions' => $permissions->count(),
             'by_category' => $permissionsByCategory->map->count()->toArray(),
             'categories' => $permissionsByCategory->keys()->toArray(),
+            'total_roles' => $roles->count(),
             'sample_permission' => $permissions->first() ? [
                 'id' => $permissions->first()->id,
                 'name' => $permissions->first()->name,

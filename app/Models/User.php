@@ -55,7 +55,20 @@ class User extends Authenticatable
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class)->with('permissions');
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Always eager load roles with permissions when user is retrieved
+        static::addGlobalScope('withRoles', function ($builder) {
+            $builder->with('roles.permissions');
+        });
     }
 
     /**
@@ -63,6 +76,11 @@ class User extends Authenticatable
      */
     public function hasRole($role)
     {
+        // Ensure roles are loaded
+        if (!$this->relationLoaded('roles')) {
+            $this->load('roles.permissions');
+        }
+        
         if (is_string($role)) {
             return $this->roles->contains('name', $role);
         }
@@ -119,13 +137,22 @@ class User extends Authenticatable
      */
     public function hasPermission($permission)
     {
+        // Ensure roles and permissions are loaded
+        if (!$this->relationLoaded('roles')) {
+            $this->load('roles.permissions');
+        }
+        
         // Super admin has all permissions
         if ($this->hasRole('super-admin') || $this->hasRole('Super Admin')) {
             return true;
         }
         
         // Check if any of the user's roles have this permission
-        return $this->roles->flatMap->permissions->contains('name', $permission);
+        $userPermissions = $this->roles->flatMap(function($role) {
+            return $role->relationLoaded('permissions') ? $role->permissions : collect([]);
+        });
+        
+        return $userPermissions->contains('name', $permission);
     }
 
     /**
