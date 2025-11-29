@@ -316,6 +316,11 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab">
+                        <i class="fas fa-key me-1"></i>All Permissions ({{ $permissions->count() }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
                         <i class="fas fa-users me-1"></i>Users
                     </button>
@@ -386,6 +391,55 @@
                             </div>
                         </div>
                         @endforelse
+                    </div>
+                </div>
+
+                <!-- Permissions Tab -->
+                <div class="tab-pane fade" id="permissions" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-key me-2"></i>All System Permissions</h5>
+                            <p class="text-muted mb-0 small">Total: {{ $permissions->count() }} permissions across {{ $permissionsByCategory->count() }} categories</p>
+                        </div>
+                        <div class="card-body">
+                            @foreach($permissionsByCategory as $category => $categoryPermissions)
+                                <div class="permission-toggle-container mb-4">
+                                    <div class="permission-category-title">
+                                        <i class="fas fa-{{ $permissionCategories[$category]['icon'] ?? 'folder' }}"></i>
+                                        {{ $permissionCategories[$category]['label'] ?? ucfirst(str_replace('_', ' ', $category)) }}
+                                        <span class="badge bg-primary ms-2">{{ $categoryPermissions->count() }}</span>
+                                    </div>
+                                    <div class="row">
+                                        @foreach($categoryPermissions as $permission)
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 fw-bold">{{ $permission->display_name }}</h6>
+                                                        <small class="text-muted d-block">{{ $permission->description }}</small>
+                                                        <small class="text-muted"><code>{{ $permission->name }}</code></small>
+                                                    </div>
+                                                    {!! $permission->status_badge !!}
+                                                </div>
+                                                <div class="mt-2">
+                                                    <small class="text-muted">
+                                                        <strong>Assigned to:</strong> 
+                                                        @if($permission->roles->count() > 0)
+                                                            @foreach($permission->roles as $role)
+                                                                <span class="badge bg-info me-1">{{ $role->display_name }}</span>
+                                                            @endforeach
+                                                        @else
+                                                            <span class="text-danger">No roles</span>
+                                                        @endif
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
