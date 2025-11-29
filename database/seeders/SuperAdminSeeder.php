@@ -35,23 +35,37 @@ class SuperAdminSeeder extends Seeder
         }
 
         // Create or update superadmin user
+        $superAdminEmail = 'superadmin@winit.com';
+        $superAdminPassword = 'SuperAdmin@2025!Secure';
+        
         $superAdminUser = User::updateOrCreate(
-            ['email' => 'admin@winit.com'],
+            ['email' => $superAdminEmail],
             [
                 'name' => 'Super Administrator',
-                'password' => Hash::make('J91K6RTRz!jTZ6fZ'),
+                'password' => Hash::make($superAdminPassword),
                 'email_verified_at' => now(),
                 'must_change_password' => false,
             ]
         );
 
-        // Assign super-admin role to user
-        if (!$superAdminUser->roles->contains('id', $superAdminRole->id)) {
-            $superAdminUser->roles()->attach($superAdminRole->id);
+        // Ensure super-admin role is assigned (sync to ensure it's the only role)
+        $superAdminUser->roles()->sync([$superAdminRole->id]);
+
+        // Double-check: Ensure all permissions are assigned to the role
+        $allPermissions = Permission::all();
+        if ($allPermissions->isNotEmpty()) {
+            $superAdminRole->permissions()->sync($allPermissions->pluck('id'));
+            $this->command->info("✅ Assigned {$allPermissions->count()} permissions to super-admin role");
         }
 
         $this->command->info('✅ Superadmin user created/updated');
-        $this->command->info('   Email: admin@winit.com');
-        $this->command->info('   Password: J91K6RTRz!jTZ6fZ');
+        $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->command->info('🔐 SUPERADMIN CREDENTIALS:');
+        $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->command->info("   Email:    {$superAdminEmail}");
+        $this->command->info("   Password: {$superAdminPassword}");
+        $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        $this->command->info("   Permissions: {$allPermissions->count()} (ALL PERMISSIONS)");
+        $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
 }
