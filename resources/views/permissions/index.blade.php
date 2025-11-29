@@ -291,6 +291,15 @@
 @endpush
 
 @section('content')
+@php
+    // Define permission categories at the top level so it's available everywhere
+    $permissionCategories = [
+        'user_management' => ['icon' => 'users', 'label' => 'User Management'],
+        'batch_management' => ['icon' => 'boxes', 'label' => 'Batch Operations'],
+        'transaction_management' => ['icon' => 'exchange-alt', 'label' => 'Transactions'],
+        'system_administration' => ['icon' => 'cog', 'label' => 'System Admin']
+    ];
+@endphp
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -536,15 +545,6 @@
 
                     <h6 class="mb-3 fw-bold" style="color: var(--winit-primary);"><i class="fas fa-key me-2"></i>Assign Permissions</h6>
                     
-                    @php
-                        $permissionCategories = [
-                            'user_management' => ['icon' => 'users', 'label' => 'User Management'],
-                            'batch_management' => ['icon' => 'boxes', 'label' => 'Batch Operations'],
-                            'transaction_management' => ['icon' => 'exchange-alt', 'label' => 'Transactions'],
-                            'system_administration' => ['icon' => 'cog', 'label' => 'System Admin']
-                        ];
-                    @endphp
-
                     @foreach($permissionsByCategory as $category => $categoryPermissions)
                         <div class="permission-toggle-container">
                             <div class="permission-category-title">

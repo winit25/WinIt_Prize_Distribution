@@ -34,13 +34,22 @@ class PermissionController extends Controller
         $roles = Role::with('permissions')->orderBy('name')->get();
         $users = User::with('roles')->orderBy('name')->get();
 
-        // Group permissions by category
+        // Group permissions by category - ensure all categories are included even if empty
         $permissionsByCategory = $permissions->groupBy('category');
+        
+        // Ensure all expected categories exist (even if empty)
+        $expectedCategories = ['user_management', 'batch_management', 'transaction_management', 'system_administration'];
+        foreach ($expectedCategories as $category) {
+            if (!$permissionsByCategory->has($category)) {
+                $permissionsByCategory->put($category, collect([]));
+            }
+        }
 
         // Log for debugging
         Log::info('Permissions loaded', [
             'total_permissions' => $permissions->count(),
-            'by_category' => $permissionsByCategory->map->count()->toArray()
+            'by_category' => $permissionsByCategory->map->count()->toArray(),
+            'categories' => $permissionsByCategory->keys()->toArray()
         ]);
 
         return view('permissions.index', compact('permissions', 'roles', 'users', 'permissionsByCategory'));
