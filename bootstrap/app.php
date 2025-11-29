@@ -4,7 +4,15 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-return Application::configure(basePath: dirname(__DIR__))
+// Resolve base path correctly on AWS EB
+$basePath = dirname(__DIR__);
+if (is_dir('/var/app/current')) {
+    $basePath = '/var/app/current';
+} elseif (is_dir('/var/app/staging')) {
+    $basePath = '/var/app/staging';
+}
+
+return Application::configure(basePath: $basePath)
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',

@@ -30,7 +30,19 @@ return [
 
     'compiled' => env(
         'VIEW_COMPILED_PATH',
-        realpath(storage_path('framework/views'))
+        function() {
+            // Resolve compiled path correctly on server
+            $basePath = is_dir('/var/app/current') ? '/var/app/current' : base_path();
+            $compiledPath = $basePath . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . 'views';
+            
+            // Ensure directory exists
+            if (!is_dir($compiledPath)) {
+                @mkdir($compiledPath, 0777, true);
+                @chmod($compiledPath, 0777);
+            }
+            
+            return realpath($compiledPath) ?: $compiledPath;
+        }()
     ),
 
 ];
