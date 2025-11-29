@@ -91,8 +91,12 @@ class PermissionController extends Controller
         try {
             DB::beginTransaction();
 
+            // Auto-generate slug from name if not provided
+            $slug = $this->generateSlug($request->name);
+
             $permission = Permission::create([
                 'name' => $request->name,
+                'slug' => $slug,
                 'display_name' => $request->display_name,
                 'description' => $request->description,
                 'category' => $request->category,
