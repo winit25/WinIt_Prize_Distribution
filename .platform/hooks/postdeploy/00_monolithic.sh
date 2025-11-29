@@ -72,14 +72,35 @@ if [ -d "$CURRENT_DIR" ]; then
     php artisan cache:clear 2>/dev/null || true
 fi
 
-# 4. Run migrations (if needed)
-echo "Running migrations..."
+# 4. Create database if not exists
+echo "Ensuring database exists..."
+if [ -d "$CURRENT_DIR" ]; then
+    cd $CURRENT_DIR
+    
+    # Get database credentials from environment
+    DB_HOST="${DB_HOST:-127.0.0.1}"
+    DB_DATABASE="${DB_DATABASE:-buypower_db}"
+    DB_USERNAME="${DB_USERNAME:-root}"
+    DB_PASSWORD="${DB_PASSWORD:-}"
+    DB_PORT="${DB_PORT:-3306}"
+    
+    # Create database if it doesn't exist (connect without database first)
+    mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null || echo "Note: Database creation skipped (may already exist)"
+fi
+
+# 5. Run migrations and seeders
+echo "Running migrations and seeders..."
 if [ -d "$CURRENT_DIR" ]; then
     cd $CURRENT_DIR
     php artisan migrate:status > /dev/null 2>&1 || php artisan migrate:install --force 2>/dev/null || true
     php artisan migrate --force 2>/dev/null || true
     
-    # Seed superadmin if needed
+    # Seed permissions
+    echo "Seeding permissions..."
+    php artisan db:seed --class=PermissionSeeder --force 2>/dev/null || true
+    
+    # Seed superadmin
+    echo "Seeding superadmin..."
     php artisan db:seed --class=SuperAdminSeeder --force 2>/dev/null || true
 fi
 
