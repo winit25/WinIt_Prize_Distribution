@@ -336,4 +336,40 @@ Route::get('/health', [HealthController::class, 'health'])->name('health');
 Route::get('/status', [HealthController::class, 'status'])->name('status');
 Route::get('/metrics', [HealthController::class, 'metrics'])->name('metrics');
 
+// Cache clearing route (Super Admin only) - for immediate cache refresh
+Route::middleware(['auth'])->group(function () {
+    Route::post('/admin/clear-cache', function () {
+        $user = auth()->user();
+        if (!$user || (!$user->hasRole('super-admin') && !$user->hasRole('Super Admin'))) {
+            abort(403, 'Unauthorized. Super Admin access required.');
+        }
+        
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        \Illuminate\Support\Facades\Artisan::call('event:clear');
+        
+        // Clear OPcache if available
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'All caches cleared successfully!',
+            'cleared' => [
+                'application_cache',
+                'config_cache',
+                'route_cache',
+                'view_cache',
+                'optimization_cache',
+                'event_cache',
+                'opcache'
+            ]
+        ]);
+    })->name('admin.clear-cache');
+});
+
 require __DIR__.'/auth.php';
