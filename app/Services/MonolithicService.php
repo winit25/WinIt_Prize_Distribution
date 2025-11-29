@@ -226,8 +226,20 @@ class MonolithicService
      */
     public function validatePhoneNumber(string $phone): bool
     {
+        // Remove all non-numeric characters
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        return preg_match('/^(0|234)[0-9]{10}$/', $phone) === 1;
+        
+        // Nigerian phone numbers: 11 digits starting with 0, or 13 digits starting with 234
+        // After removing non-digits, should be 11 digits (0XXXXXXXXXX) or 13 digits (234XXXXXXXXXX)
+        if (strlen($phone) === 11 && substr($phone, 0, 1) === '0') {
+            return true;
+        }
+        
+        if (strlen($phone) === 13 && substr($phone, 0, 3) === '234') {
+            return true;
+        }
+        
+        return false;
     }
 
     // ========================================================================
