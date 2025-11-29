@@ -1122,5 +1122,118 @@ document.getElementById('manageUserRolesForm').addEventListener('submit', async 
     }
 });
 
+// Create Permission
+document.getElementById('createPermissionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        display_name: formData.get('display_name'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        is_active: formData.get('is_active') === 'on'
+    };
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creating...';
+        
+        const result = await utils.makeRequest('/permissions', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        
+        utils.showAlert(result.message || 'Permission created successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('createPermissionModal')).hide();
+        this.reset();
+        
+        setTimeout(() => location.reload(), 1200);
+    } catch (error) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        utils.showAlert(error.message || 'Failed to create permission', 'error');
+    }
+});
+
+// Edit Permission
+function editPermission(permissionId) {
+    const permission = permissionsData.find(p => p.id === permissionId);
+    
+    if (!permission) {
+        utils.showAlert('Permission not found!', 'error');
+        return;
+    }
+    
+    document.getElementById('editPermissionId').value = permission.id;
+    document.getElementById('editPermissionName').value = permission.name;
+    document.getElementById('editPermissionDisplayName').value = permission.display_name;
+    document.getElementById('editPermissionDescription').value = permission.description || '';
+    document.getElementById('editPermissionCategory').value = permission.category;
+    document.getElementById('editPermissionActive').checked = permission.is_active;
+    
+    const modal = new bootstrap.Modal(document.getElementById('editPermissionModal'));
+    modal.show();
+}
+
+// Update Permission
+document.getElementById('editPermissionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const permissionId = document.getElementById('editPermissionId').value;
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        display_name: formData.get('display_name'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        is_active: formData.get('is_active') === 'on'
+    };
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+        
+        const result = await utils.makeRequest(`/permissions/${permissionId}`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+        
+        utils.showAlert(result.message || 'Permission updated successfully!', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editPermissionModal')).hide();
+        
+        setTimeout(() => location.reload(), 1200);
+    } catch (error) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        utils.showAlert(error.message || 'Failed to update permission', 'error');
+    }
+});
+
+// Delete Permission
+function deletePermission(permissionId) {
+    const permission = permissionsData.find(p => p.id === permissionId);
+    const permissionName = permission ? permission.display_name : 'this permission';
+    
+    if (confirm(`⚠️ Are you sure you want to delete "${permissionName}"?\n\nThis action cannot be undone.`)) {
+        utils.showAlert('Deleting permission...', 'info');
+        
+        utils.makeRequest(`/permissions/${permissionId}`, {
+            method: 'DELETE'
+        }).then(result => {
+            utils.showAlert(result.message || `Permission "${permissionName}" deleted successfully!`, 'success');
+            setTimeout(() => location.reload(), 1200);
+        }).catch(error => {
+            utils.showAlert(error.message || 'Failed to delete permission', 'error');
+        });
+    }
+}
+
 </script>
 @endpush
