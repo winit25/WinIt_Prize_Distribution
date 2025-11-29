@@ -25,6 +25,20 @@ class PermissionController extends Controller
     }
 
     /**
+     * Generate slug from name
+     */
+    private function generateSlug(string $name): string
+    {
+        // Convert to lowercase and replace spaces/special chars with hyphens
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+        
+        return $slug;
+    }
+
+    /**
      * Display permissions management dashboard
      */
     public function index()
