@@ -34,10 +34,10 @@ class PermissionController extends Controller
         $roles = Role::with('permissions')->orderBy('name')->get();
         $users = User::with('roles')->orderBy('name')->get();
 
-        // Group permissions by category - ensure all categories are included even if empty
+        // Group permissions by category
         $permissionsByCategory = $permissions->groupBy('category');
         
-        // Ensure all expected categories exist (even if empty)
+        // Ensure all expected categories exist (even if empty) - use toArray() to convert to array for better compatibility
         $expectedCategories = ['user_management', 'batch_management', 'transaction_management', 'system_administration'];
         foreach ($expectedCategories as $category) {
             if (!$permissionsByCategory->has($category)) {
@@ -45,11 +45,17 @@ class PermissionController extends Controller
             }
         }
 
-        // Log for debugging
+        // Log for debugging - include sample permission data
         Log::info('Permissions loaded', [
             'total_permissions' => $permissions->count(),
             'by_category' => $permissionsByCategory->map->count()->toArray(),
-            'categories' => $permissionsByCategory->keys()->toArray()
+            'categories' => $permissionsByCategory->keys()->toArray(),
+            'sample_permission' => $permissions->first() ? [
+                'id' => $permissions->first()->id,
+                'name' => $permissions->first()->name,
+                'category' => $permissions->first()->category,
+            ] : null,
+            'first_category_permissions' => $permissionsByCategory->first() ? $permissionsByCategory->first()->count() : 0
         ]);
 
         return view('permissions.index', compact('permissions', 'roles', 'users', 'permissionsByCategory'));

@@ -411,43 +411,73 @@
                             <p class="text-muted mb-0 small">Total: {{ $permissions->count() }} permissions across {{ $permissionsByCategory->count() }} categories</p>
                         </div>
                         <div class="card-body">
-                            @foreach($permissionsByCategory as $category => $categoryPermissions)
-                                <div class="permission-toggle-container mb-4">
-                                    <div class="permission-category-title">
-                                        <i class="fas fa-{{ $permissionCategories[$category]['icon'] ?? 'folder' }}"></i>
-                                        {{ $permissionCategories[$category]['label'] ?? ucfirst(str_replace('_', ' ', $category)) }}
-                                        <span class="badge bg-primary ms-2">{{ $categoryPermissions->count() }}</span>
-                                    </div>
-                                    <div class="row">
-                                        @foreach($categoryPermissions as $permission)
-                                        <div class="col-md-6 col-lg-4 mb-3">
-                                            <div class="border rounded p-3 h-100">
-                                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                                    <div class="flex-grow-1">
-                                                        <h6 class="mb-1 fw-bold">{{ $permission->display_name }}</h6>
-                                                        <small class="text-muted d-block">{{ $permission->description }}</small>
-                                                        <small class="text-muted"><code>{{ $permission->name }}</code></small>
+                            @if($permissionsByCategory->count() > 0)
+                                @foreach($permissionsByCategory as $category => $categoryPermissions)
+                                    @php
+                                        // Ensure categoryPermissions is a collection
+                                        $perms = is_array($categoryPermissions) ? collect($categoryPermissions) : $categoryPermissions;
+                                    @endphp
+                                    @if($perms->count() > 0)
+                                        <div class="permission-toggle-container mb-4">
+                                            <div class="permission-category-title">
+                                                <i class="fas fa-{{ $permissionCategories[$category]['icon'] ?? 'folder' }}"></i>
+                                                {{ $permissionCategories[$category]['label'] ?? ucfirst(str_replace('_', ' ', $category)) }}
+                                                <span class="badge bg-primary ms-2">{{ $perms->count() }}</span>
+                                            </div>
+                                            <div class="row">
+                                                @foreach($perms as $permission)
+                                                <div class="col-md-6 col-lg-4 mb-3">
+                                                    <div class="border rounded p-3 h-100" style="background: white; transition: all 0.3s;">
+                                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-1 fw-bold" style="color: var(--winit-primary);">{{ $permission->display_name }}</h6>
+                                                                <small class="text-muted d-block mb-2">{{ $permission->description }}</small>
+                                                                <small class="text-muted"><code style="font-size: 0.75rem;">{{ $permission->name }}</code></small>
+                                                            </div>
+                                                            {!! $permission->status_badge !!}
+                                                        </div>
+                                                        <div class="mt-2 pt-2 border-top">
+                                                            <small class="text-muted">
+                                                                <strong>Assigned to:</strong> 
+                                                                @if($permission->roles && $permission->roles->count() > 0)
+                                                                    <div class="mt-1">
+                                                                        @foreach($permission->roles as $role)
+                                                                            <span class="badge bg-info me-1 mb-1">{{ $role->display_name }}</span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @else
+                                                                    <span class="text-danger">No roles</span>
+                                                                @endif
+                                                            </small>
+                                                        </div>
                                                     </div>
-                                                    {!! $permission->status_badge !!}
                                                 </div>
-                                                <div class="mt-2">
-                                                    <small class="text-muted">
-                                                        <strong>Assigned to:</strong> 
-                                                        @if($permission->roles->count() > 0)
-                                                            @foreach($permission->roles as $role)
-                                                                <span class="badge bg-info me-1">{{ $role->display_name }}</span>
-                                                            @endforeach
-                                                        @else
-                                                            <span class="text-danger">No roles</span>
-                                                        @endif
-                                                    </small>
-                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
-                                        @endforeach
-                                    </div>
+                                    @else
+                                        <div class="permission-toggle-container mb-4">
+                                            <div class="permission-category-title">
+                                                <i class="fas fa-{{ $permissionCategories[$category]['icon'] ?? 'folder' }}"></i>
+                                                {{ $permissionCategories[$category]['label'] ?? ucfirst(str_replace('_', ' ', $category)) }}
+                                                <span class="badge bg-secondary ms-2">0</span>
+                                            </div>
+                                            <div class="alert alert-info mb-0">
+                                                <i class="fas fa-info-circle me-2"></i>No permissions in this category yet.
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @else
+                                <div class="text-center py-5">
+                                    <i class="fas fa-key fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No Permissions Found</h5>
+                                    <p class="text-muted">Please run the PermissionSeeder to create permissions.</p>
+                                    <a href="{{ route('permissions.index') }}" class="btn btn-primary mt-3">
+                                        <i class="fas fa-sync me-1"></i>Refresh Page
+                                    </a>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
