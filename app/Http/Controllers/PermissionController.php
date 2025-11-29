@@ -150,8 +150,22 @@ class PermissionController extends Controller
         try {
             DB::beginTransaction();
 
+            // Auto-generate slug from name if name changed or slug is empty
+            $slug = $permission->slug;
+            if ($request->name !== $permission->name || empty($slug)) {
+                $slug = $this->generateSlug($request->name);
+                // Ensure uniqueness (excluding current permission)
+                $originalSlug = $slug;
+                $counter = 1;
+                while (Permission::where('slug', $slug)->where('id', '!=', $permission->id)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
+                }
+            }
+
             $permission->update([
                 'name' => $request->name,
+                'slug' => $slug,
                 'display_name' => $request->display_name,
                 'description' => $request->description,
                 'category' => $request->category,
@@ -255,9 +269,22 @@ class PermissionController extends Controller
         try {
             DB::beginTransaction();
 
+            // Auto-generate slug from name if not provided
+            $slug = $request->input('slug');
+            if (empty($slug)) {
+                $slug = $this->generateSlug($request->name);
+                // Ensure uniqueness for roles
+                $originalSlug = $slug;
+                $counter = 1;
+                while (Role::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
+                }
+            }
+
             $role = Role::create([
                 'name' => $request->name,
-                'slug' => $request->slug ?? $request->name, // Auto-generate slug from name if not provided
+                'slug' => $slug,
                 'display_name' => $request->display_name,
                 'description' => $request->description,
                 'is_active' => $request->boolean('is_active', true)
@@ -314,9 +341,22 @@ class PermissionController extends Controller
         try {
             DB::beginTransaction();
 
+            // Auto-generate slug from name if name changed or slug is empty
+            $slug = $role->slug;
+            if ($request->name !== $role->name || empty($slug)) {
+                $slug = $this->generateSlug($request->name);
+                // Ensure uniqueness (excluding current role)
+                $originalSlug = $slug;
+                $counter = 1;
+                while (Role::where('slug', $slug)->where('id', '!=', $role->id)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
+                }
+            }
+
             $role->update([
                 'name' => $request->name,
-                'slug' => $request->slug ?? $request->name,
+                'slug' => $slug,
                 'display_name' => $request->display_name,
                 'description' => $request->description,
                 'is_active' => $request->boolean('is_active', true)
