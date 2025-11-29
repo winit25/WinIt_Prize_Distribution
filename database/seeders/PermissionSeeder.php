@@ -126,6 +126,46 @@ class PermissionSeeder extends Seeder
                 'category' => 'user_management',
                 'is_active' => true
             ],
+            [
+                'name' => 'retry-transactions',
+                'slug' => 'retry-transactions',
+                'display_name' => 'Retry Transactions',
+                'description' => 'Retry failed transactions',
+                'category' => 'transaction_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'manage-roles',
+                'slug' => 'manage-roles',
+                'display_name' => 'Manage Roles',
+                'description' => 'Create, edit, and delete roles',
+                'category' => 'user_management',
+                'is_active' => true
+            ],
+            [
+                'name' => 'manage-permissions',
+                'slug' => 'manage-permissions',
+                'display_name' => 'Manage Permissions',
+                'description' => 'Create, edit, and delete permissions',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'view-reports',
+                'slug' => 'view-reports',
+                'display_name' => 'View Reports',
+                'description' => 'View system reports and analytics',
+                'category' => 'system_administration',
+                'is_active' => true
+            ],
+            [
+                'name' => 'export-data',
+                'slug' => 'export-data',
+                'display_name' => 'Export Data',
+                'description' => 'Export data to CSV/Excel',
+                'category' => 'transaction_management',
+                'is_active' => true
+            ],
         ];
 
         foreach ($permissions as $permissionData) {
@@ -208,10 +248,12 @@ class PermissionSeeder extends Seeder
                     'view-batches',
                     'view-transactions',
                     'download-tokens',
+                    'retry-transactions',
                     'view-dashboard',
                     'manage-profile',
                     'view-notifications',
-                    'manage-notifications'
+                    'manage-notifications',
+                    'export-data'
                 ]);
                 $role->permissions()->sync($userPermissions->pluck('id'));
                 break;
@@ -225,7 +267,9 @@ class PermissionSeeder extends Seeder
                     'view-activity-logs',
                     'view-dashboard',
                     'manage-profile',
-                    'view-notifications'
+                    'view-notifications',
+                    'view-reports',
+                    'export-data'
                 ]);
                 $role->permissions()->sync($auditPermissions->pluck('id'));
                 break;

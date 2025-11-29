@@ -29,12 +29,19 @@ class PermissionController extends Controller
      */
     public function index()
     {
+        // Get ALL permissions, including inactive ones for admin view
         $permissions = Permission::with('roles')->orderBy('category')->orderBy('name')->get();
         $roles = Role::with('permissions')->orderBy('name')->get();
         $users = User::with('roles')->orderBy('name')->get();
 
         // Group permissions by category
         $permissionsByCategory = $permissions->groupBy('category');
+
+        // Log for debugging
+        Log::info('Permissions loaded', [
+            'total_permissions' => $permissions->count(),
+            'by_category' => $permissionsByCategory->map->count()->toArray()
+        ]);
 
         return view('permissions.index', compact('permissions', 'roles', 'users', 'permissionsByCategory'));
     }
