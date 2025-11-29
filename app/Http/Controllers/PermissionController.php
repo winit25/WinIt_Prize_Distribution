@@ -76,8 +76,16 @@ class PermissionController extends Controller
                 'name' => $permissions->first()->name,
                 'category' => $permissions->first()->category,
             ] : null,
-            'first_category_permissions' => $permissionsByCategory->first() ? $permissionsByCategory->first()->count() : 0
+            'first_category_permissions' => $permissionsByCategory->first() ? $permissionsByCategory->first()->count() : 0,
+            'permissionsByCategory_structure' => $permissionsByCategory->map(function($perms) {
+                return is_array($perms) ? count($perms) : $perms->count();
+            })->toArray()
         ]);
+
+        // Ensure permissionsByCategory is properly formatted for the view
+        $permissionsByCategory = $permissionsByCategory->map(function($perms) {
+            return is_array($perms) ? collect($perms) : $perms;
+        });
 
         return view('permissions.index', compact('permissions', 'roles', 'users', 'permissionsByCategory'));
     }
