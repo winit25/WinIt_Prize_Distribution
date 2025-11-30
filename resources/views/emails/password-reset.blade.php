@@ -104,7 +104,7 @@
     <div class="email-container">
         <div class="header">
             <div class="logo-container" style="background: transparent; padding: 20px;">
-                <img src="{{ config('app.url') }}/images/winit-logo-C73aMBts%20(2).svg" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
+                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
             </div>
             <h1>Reset Your Password</h1>
             <p class="subtitle">WinIt Prize Distribution</p>
