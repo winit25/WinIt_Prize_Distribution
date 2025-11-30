@@ -32,7 +32,7 @@
                 <table role="presentation" width="600" class="wrapper" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(18,33,104,0.08);">
                     <tr>
                         <td style="padding:32px 32px 24px 32px; text-align:center; background: #0a1628;">
-                            <img src="{{ url('images/winit-logo.svg') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 16px auto;">
+                            <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 16px auto; max-width: 100%; height: auto;">
                             <h1 style="margin:0; font-size:22px; font-weight:700; color:#ffffff;">WinIt Prize Distribution</h1>
                             <p style="margin:8px 0 0 0; font-size:14px; color:rgba(255,255,255,0.85);">Batch Processing Notification</p>
                         </td>
@@ -59,7 +59,7 @@
 
                             @if(isset($batch_id) && $batch_id)
                             <div style="margin:30px 0; text-align:center;">
-                                <a href="{{ url('/bulk-token/show/' . $batch_id) }}" style="display:inline-block; background-color:#122168; color:#ffffff; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:600; font-size:15px;">View Batch Details</a>
+                                <a href="{{ url('/bulk-token/show/' . $batch_id) }}" style="display:inline-block; background-color:#122168; color:#ffffff !important; text-decoration:none; padding:14px 32px; border-radius:8px; font-weight:600; font-size:16px; border:2px solid #122168; box-shadow:0 2px 4px rgba(0,0,0,0.2);">View Batch Details</a>
                             </div>
                             @endif
 

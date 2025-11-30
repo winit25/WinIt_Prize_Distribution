@@ -54,17 +54,22 @@
         }
         .button {
             display: inline-block;
-            padding: 12px 26px;
+            padding: 14px 32px;
             background: linear-gradient(135deg, #122168 0%, #1a2d7a 100%);
-            color: white;
+            color: #ffffff !important;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
+            font-size: 16px;
             margin: 16px 0;
             text-align: center;
+            border: 2px solid #122168;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .button:hover {
             background: linear-gradient(135deg, #1a2d7a 0%, #223688 100%);
+            color: #ffffff !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         .link-text {
             word-break: break-all;
@@ -98,8 +103,8 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div class="logo-container" style="background: #0a1628; padding: 20px;">
-                <img src="{{ url('images/winit-logo.svg') }}" alt="WinIt Logo" width="150" style="display:block; margin:0 auto;">
+            <div class="logo-container" style="background: transparent; padding: 20px;">
+                <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
             </div>
             <h1>Reset Your Password</h1>
             <p class="subtitle">WinIt Prize Distribution</p>
