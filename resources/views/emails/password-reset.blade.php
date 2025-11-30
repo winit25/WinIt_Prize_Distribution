@@ -104,7 +104,7 @@
     <div class="email-container">
         <div class="header">
             <div class="logo-container" style="background: transparent; padding: 20px;">
-                <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
+                <img src="{{ config('app.url') }}/images/winit-logo-C73aMBts%20(2).svg" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
             </div>
             <h1>Reset Your Password</h1>
             <p class="subtitle">WinIt Prize Distribution</p>
@@ -116,7 +116,7 @@
             <p style="margin: 0 0 16px 0;">You are receiving this email because we received a password reset request for your account.</p>
             
             <div style="text-align: center; margin: 20px 0;">
-                <a href="{{ $resetUrl }}" class="button">Reset Password</a>
+                <a href="{{ $resetUrl }}" class="button" style="display:inline-block; padding:14px 32px; background-color:#122168; background: linear-gradient(135deg, #122168 0%, #1a2d7a 100%); color:#ffffff !important; text-decoration:none; border-radius:8px; font-weight:600; font-size:16px; margin:16px 0; text-align:center; border:2px solid #122168; box-shadow:0 2px 4px rgba(0,0,0,0.2);"><span style="color:#ffffff !important;">Reset Password</span></a>
             </div>
             
             <p style="margin: 0 0 16px 0; font-size: 13px;">This password reset link will expire in 60 minutes.</p>

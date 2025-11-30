@@ -132,7 +132,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container" style="background: transparent; padding: 20px;">
-                <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
+                <img src="{{ config('app.url') }}/images/winit-logo-C73aMBts%20(2).svg" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
             </div>
             <div class="logo">WinIt Prize Distribution</div>
             <h1>Your Electricity Token is Ready!</h1>
