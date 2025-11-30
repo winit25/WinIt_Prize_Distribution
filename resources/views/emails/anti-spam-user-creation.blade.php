@@ -150,7 +150,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container" style="background: transparent; padding: 20px;">
-                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
+                <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="180" style="display:block; margin:0 auto; max-width: 100%; height: auto;">
             </div>
             <div class="logo">WinIt Prize Distribution</div>
             <h1>Welcome to WinIt!</h1>
@@ -204,7 +204,7 @@
         </div>
 
         <div style="text-align: center;">
-            <a href="{{ url('/login') }}" class="login-button" style="display:inline-block; background-color:#122168; background: linear-gradient(135deg, #122168 0%, #1a2d7a 100%); color:#ffffff !important; padding:14px 32px; text-decoration:none; border-radius:8px; font-weight:bold; font-size:16px; margin:16px 0; text-align:center; border:2px solid #122168; box-shadow:0 2px 4px rgba(0,0,0,0.2);"><span style="color:#ffffff !important;">Login to Your Account</span></a>
+            <a href="{{ url('/login') }}" class="login-button" style="display:inline-block; background-color:#0a1628; background: linear-gradient(135deg, #0a1628 0%, #122168 100%); color:#ffffff !important; padding:14px 32px; text-decoration:none; border-radius:8px; font-weight:bold; font-size:16px; margin:16px 0; text-align:center; border:2px solid #0a1628; box-shadow:0 2px 4px rgba(10,22,40,0.2);"><span style="color:#ffffff !important;">Login to Your Account</span></a>
         </div>
 
         <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 20px 0;">

@@ -95,7 +95,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 20px auto; max-width: 100%; height: auto;">
+            <img src="{{ url('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" width="200" style="display:block; margin:0 auto 20px auto; max-width: 100%; height: auto;">
             <h1>📊 Quarterly Token Summary Report</h1>
             <p>Q{{ $summary['quarter'] }} {{ $summary['year'] }}</p>
         </div>
