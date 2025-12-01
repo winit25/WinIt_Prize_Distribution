@@ -172,7 +172,78 @@
         }
 
         /* Responsive Design - Mobile First Approach */
-        @media (max-width: 576px) {
+        /* Extra Small Devices (< 360px) */
+        @media (max-width: 359px) {
+            body {
+                padding: 8px;
+            }
+            
+            .password-change-container {
+                border-radius: 1.25rem;
+                max-width: 100%;
+            }
+            
+            .password-change-header {
+                padding: 1.5rem 1rem 1rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .password-change-header p {
+                font-size: 0.8rem;
+            }
+            
+            .password-change-header .logo {
+                width: 60px;
+                height: 60px;
+                padding: 6px;
+                margin-bottom: 0.75rem;
+            }
+            
+            .password-change-body {
+                padding: 1.25rem 1rem;
+            }
+            
+            .form-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.4rem;
+            }
+            
+            .form-control {
+                padding: 0.75rem 0.875rem;
+                font-size: 0.9rem;
+            }
+            
+            .btn-primary {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .alert {
+                padding: 0.75rem 0.875rem;
+                font-size: 0.85rem;
+            }
+            
+            .password-requirements {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            
+            .password-requirements h5 {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .password-requirements ul {
+                font-size: 0.8rem;
+                padding-left: 1rem;
+            }
+        }
+
+        /* Small Devices (360px - 576px) */
+        @media (min-width: 360px) and (max-width: 576px) {
             body {
                 padding: 10px;
             }
@@ -202,11 +273,6 @@
                 margin-bottom: 1rem;
             }
             
-            .password-change-header .logo img {
-                width: 100%;
-                height: auto;
-            }
-            
             .password-change-body {
                 padding: 1.5rem 1.25rem;
             }
@@ -233,6 +299,7 @@
             
             .password-requirements {
                 padding: 1rem;
+                margin-bottom: 1.5rem;
             }
             
             .password-requirements h5 {
@@ -245,35 +312,229 @@
             }
         }
 
+        /* Tablets (577px - 768px) */
         @media (min-width: 577px) and (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
             .password-change-container {
-                max-width: 90%;
+                max-width: 95%;
+                border-radius: 1.75rem;
             }
             
             .password-change-header {
                 padding: 2.5rem 1.75rem 1.75rem;
             }
             
+            .password-change-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .password-change-header p {
+                font-size: 0.95rem;
+            }
+            
+            .password-change-header .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
             .password-change-body {
                 padding: 2.5rem 2rem;
             }
+            
+            .form-label {
+                font-size: 1rem;
+            }
+            
+            .form-control {
+                padding: 1rem 1.25rem;
+                font-size: 1rem;
+            }
+            
+            .btn-primary {
+                padding: 0.9rem 1.25rem;
+                font-size: 0.95rem;
+            }
+            
+            .password-requirements {
+                padding: 1.25rem;
+                margin-bottom: 1.75rem;
+            }
+            
+            .password-requirements h5 {
+                font-size: 1.1rem;
+            }
+            
+            .password-requirements ul {
+                font-size: 0.9rem;
+            }
         }
 
+        /* Small Laptops/Desktops (769px - 992px) */
         @media (min-width: 769px) and (max-width: 992px) {
+            body {
+                padding: 20px;
+            }
+            
+            .password-change-container {
+                max-width: 520px;
+                border-radius: 2rem;
+            }
+            
+            .password-change-header {
+                padding: 2.75rem 2rem 2rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 1.9rem;
+            }
+            
+            .password-change-body {
+                padding: 2.75rem 2.25rem;
+            }
+            
+            .form-label {
+                font-size: 1.05rem;
+            }
+            
+            .form-control {
+                padding: 1.1rem 1.4rem;
+                font-size: 1.05rem;
+            }
+            
+            .btn-primary {
+                padding: 0.95rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .password-requirements {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Medium Laptops (993px - 1200px) */
+        @media (min-width: 993px) and (max-width: 1200px) {
+            body {
+                padding: 30px;
+            }
+            
+            .password-change-container {
+                max-width: 500px;
+                border-radius: 2.5rem;
+            }
+            
+            .password-change-header {
+                padding: 3rem 2.25rem 2.25rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 2rem;
+            }
+            
+            .password-change-body {
+                padding: 3rem 2.5rem;
+            }
+            
+            .form-label {
+                font-size: 1.1rem;
+            }
+            
+            .form-control {
+                padding: 1.25rem 1.5rem;
+                font-size: 1.1rem;
+            }
+            
+            .btn-primary {
+                padding: 1rem 1.5rem;
+                font-size: 1.05rem;
+            }
+        }
+
+        /* Large Laptops (1201px - 1400px) */
+        @media (min-width: 1201px) and (max-width: 1400px) {
+            body {
+                padding: 40px;
+            }
+            
+            .password-change-container {
+                max-width: 520px;
+                border-radius: 2.5rem;
+            }
+            
+            .password-change-header {
+                padding: 3.5rem 2.5rem 2.5rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 2.25rem;
+            }
+            
+            .password-change-body {
+                padding: 3.5rem 2.75rem;
+            }
+        }
+
+        /* Extra Large Laptops (1401px - 1600px) */
+        @media (min-width: 1401px) and (max-width: 1600px) {
+            body {
+                padding: 50px;
+            }
+            
             .password-change-container {
                 max-width: 550px;
+                border-radius: 3rem;
+            }
+            
+            .password-change-header {
+                padding: 4rem 2.75rem 2.75rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 2.4rem;
+            }
+            
+            .password-change-body {
+                padding: 4rem 3rem;
             }
         }
 
-        @media (min-width: 993px) and (max-width: 1200px) {
-            .password-change-container {
-                max-width: 500px;
+        /* Ultra Large Laptops (> 1600px) */
+        @media (min-width: 1601px) {
+            body {
+                padding: 60px;
             }
-        }
-
-        @media (min-width: 1201px) {
+            
             .password-change-container {
-                max-width: 500px;
+                max-width: 600px;
+                border-radius: 3rem;
+            }
+            
+            .password-change-header {
+                padding: 4.5rem 3rem 3rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .password-change-body {
+                padding: 4.5rem 3.5rem;
+            }
+            
+            .form-label {
+                font-size: 1.2rem;
+            }
+            
+            .form-control {
+                padding: 1.4rem 1.75rem;
+                font-size: 1.2rem;
+            }
+            
+            .btn-primary {
+                padding: 1.1rem 1.75rem;
+                font-size: 1.15rem;
             }
         }
 
