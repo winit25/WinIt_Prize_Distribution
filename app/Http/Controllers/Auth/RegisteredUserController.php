@@ -17,8 +17,13 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        // Regenerate session token on page load to prevent 419 errors
+        if (!$request->session()->has('_token')) {
+            $request->session()->regenerateToken();
+        }
+        
         return view('auth.register');
     }
 

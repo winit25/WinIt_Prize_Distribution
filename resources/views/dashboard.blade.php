@@ -555,6 +555,33 @@
 
 @push('scripts')
 <script>
+    // Register device fingerprint on dashboard page load
+    // This ensures fingerprint is registered when user first accesses dashboard after login
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get device fingerprint from sessionStorage (set by sidebar layout script)
+        const deviceFingerprint = sessionStorage.getItem('deviceFingerprint');
+        
+        if (deviceFingerprint) {
+            // Send fingerprint to register device via AJAX
+            fetch('{{ route("dashboard") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Device-Fingerprint': deviceFingerprint,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _device_fingerprint: deviceFingerprint,
+                    _method: 'GET' // Indicate this is for device registration, not a real POST
+                })
+            }).catch(function(error) {
+                // Silently fail - device registration is not critical for dashboard display
+                console.log('Device fingerprint registration attempted');
+            });
+        }
+    });
+
     // API Status Check
     async function updateDashboardData() {
         try {

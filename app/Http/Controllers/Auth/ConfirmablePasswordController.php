@@ -14,8 +14,13 @@ class ConfirmablePasswordController extends Controller
     /**
      * Show the confirm password view.
      */
-    public function show(): View
+    public function show(Request $request): View
     {
+        // Regenerate session token on page load to prevent 419 errors
+        if (!$request->session()->has('_token')) {
+            $request->session()->regenerateToken();
+        }
+        
         return view('auth.confirm-password');
     }
 

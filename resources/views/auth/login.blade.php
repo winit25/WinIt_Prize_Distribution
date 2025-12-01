@@ -252,21 +252,35 @@
             color: var(--winit-accent) !important;
         }
 
-        @media (max-width: 480px) {
+        /* Responsive Design - Mobile First Approach */
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
             .login-container {
-                margin: 1rem;
+                margin: 0.5rem;
                 border-radius: 1.5rem;
-                max-width: 95%;
+                max-width: 100%;
             }
             
             .login-header {
-                padding: 2.5rem 1.5rem 1.5rem;
+                padding: 2rem 1.25rem 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .login-header p {
+                font-size: 0.9rem;
             }
             
             .login-header .logo {
-                width: 80px;
-                height: 80px;
-                padding: 10px;
+                width: 70px;
+                height: 70px;
+                padding: 8px;
+                margin-bottom: 1rem;
             }
             
             .login-header .logo img {
@@ -275,18 +289,83 @@
             }
             
             .login-body {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.25rem;
+            }
+            
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.5rem;
             }
             
             .form-control {
-                padding: 1rem 1.25rem;
-                font-size: 1rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .input-group .input-group-text {
+                left: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .input-group .form-control {
+                padding-left: 2.5rem;
             }
             
             .btn-primary {
-                padding: 0.875rem 1.25rem;
-                font-size: 1rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
             }
+            
+            .alert {
+                padding: 0.875rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .login-container {
+                max-width: 90%;
+            }
+            
+            .login-header {
+                padding: 2.5rem 1.75rem 1.75rem;
+            }
+            
+            .login-body {
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 992px) {
+            .login-container {
+                max-width: 550px;
+            }
+        }
+
+        @media (min-width: 993px) and (max-width: 1200px) {
+            .login-container {
+                max-width: 500px;
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .login-container {
+                max-width: 500px;
+            }
+        }
+
+        /* Fix for layout shifts */
+        .login-container {
+            min-height: 400px;
+        }
+
+        /* Prevent horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -477,19 +556,41 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle 419 CSRF errors with user-friendly message
-            if (window.location.search.includes('419')) {
+            // Clear any stale session data on page load (for new device sessions)
+            sessionStorage.removeItem('deviceFingerprint');
+            localStorage.removeItem('loginAttempts');
+            
+            // Refresh CSRF token from meta tag
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                const csrfInput = document.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = csrfMeta.getAttribute('content');
+                }
+            }
+            
+            // Handle 419 CSRF errors with user-friendly message and redirect
+            if (window.location.search.includes('419') || window.location.search.includes('csrf')) {
+                // Clear stale session data
+                sessionStorage.clear();
+                localStorage.removeItem('loginAttempts');
+                
+                // Regenerate CSRF token by refreshing the page
                 const alertDiv = document.createElement('div');
                 alertDiv.className = 'alert alert-danger';
                 alertDiv.innerHTML = `
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Session Expired:</strong> Please refresh the page and try again.
-                    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+                    <strong>Session Expired:</strong> Your session has expired. Please refresh the page and try again.
                 `;
                 const loginBody = document.querySelector('.login-body');
                 if (loginBody) {
                     loginBody.insertBefore(alertDiv, loginBody.firstChild);
                 }
+                
+                // Auto-refresh after 3 seconds to get fresh CSRF token
+                setTimeout(function() {
+                    window.location.href = window.location.pathname;
+                }, 3000);
             }
 
             // Handle device error message - Use textContent to prevent XSS
@@ -524,29 +625,43 @@
                 }
             @endif
 
-            // Generate and store device fingerprint
-            const deviceFingerprint = generateDeviceFingerprint();
-            
-            // Store fingerprint in sessionStorage for use across requests
-            sessionStorage.setItem('deviceFingerprint', deviceFingerprint);
-
-            // Clear any stale session data on page load
+            // IMPORTANT: Only generate device fingerprint AFTER user submits login form
+            // This ensures fingerprint is only used for device validation, not as a biometric login method
+            // Fingerprint generation happens on form submit, not on page load
             const form = document.getElementById('loginForm');
             
-            // Intercept form submission to add device fingerprint header
+            if (!form) {
+                console.error('Login form not found');
+                return;
+            }
+            
+            // Intercept form submission to generate and add device fingerprint
             form.addEventListener('submit', function(e) {
+                // Generate device fingerprint ONLY when form is submitted (user has entered credentials)
+                // This ensures fingerprint is not used as a biometric login before authentication
+                const deviceFingerprint = generateDeviceFingerprint();
+                
                 // Create a hidden input to send fingerprint via form
-                // Or use fetch API to send it as header
                 const fingerprintInput = document.createElement('input');
                 fingerprintInput.type = 'hidden';
                 fingerprintInput.name = '_device_fingerprint';
                 fingerprintInput.value = deviceFingerprint;
                 form.appendChild(fingerprintInput);
 
-                // Also store in sessionStorage for AJAX requests
+                // Store in sessionStorage for use after successful login
                 sessionStorage.setItem('deviceFingerprint', deviceFingerprint);
                 
+                // Clear any stale login attempts
                 localStorage.removeItem('loginAttempts');
+                
+                // Ensure CSRF token is fresh
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                if (csrfMeta) {
+                    const tokenInput = form.querySelector('input[name="_token"]');
+                    if (tokenInput) {
+                        tokenInput.value = csrfMeta.getAttribute('content');
+                    }
+                }
             });
         });
     </script>

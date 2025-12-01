@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Change Password - WinIt</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -170,34 +171,124 @@
             margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 480px) {
-            .password-change-container {
-                max-width: 95%;
-            }
-            .password-change-header {
-                padding: 2.5rem 1.5rem 1.5rem;
-            }
-            .password-change-header .logo {
-                width: 80px;
-                height: 80px;
+        /* Responsive Design - Mobile First Approach */
+        @media (max-width: 576px) {
+            body {
                 padding: 10px;
+            }
+            
+            .password-change-container {
+                margin: 0.5rem;
+                border-radius: 1.25rem;
+                max-width: 100%;
+            }
+            
+            .password-change-header {
+                padding: 2rem 1.25rem 1.5rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .password-change-header p {
+                font-size: 0.9rem;
+            }
+            
+            .password-change-header .logo {
+                width: 70px;
+                height: 70px;
+                padding: 8px;
+                margin-bottom: 1rem;
             }
             
             .password-change-header .logo img {
                 width: 100%;
                 height: auto;
             }
+            
             .password-change-body {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.25rem;
             }
+            
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.5rem;
+            }
+            
             .form-control {
-                padding: 1rem 1.25rem;
-                font-size: 1rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
             }
+            
             .btn-primary {
-                padding: 0.875rem 1.25rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .alert {
+                padding: 0.875rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .password-requirements {
+                padding: 1rem;
+            }
+            
+            .password-requirements h5 {
                 font-size: 1rem;
             }
+            
+            .password-requirements ul {
+                font-size: 0.85rem;
+                padding-left: 1.25rem;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .password-change-container {
+                max-width: 90%;
+            }
+            
+            .password-change-header {
+                padding: 2.5rem 1.75rem 1.75rem;
+            }
+            
+            .password-change-body {
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 992px) {
+            .password-change-container {
+                max-width: 550px;
+            }
+        }
+
+        @media (min-width: 993px) and (max-width: 1200px) {
+            .password-change-container {
+                max-width: 500px;
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .password-change-container {
+                max-width: 500px;
+            }
+        }
+
+        /* Fix for layout shifts */
+        .password-change-container {
+            min-height: 400px;
+        }
+
+        /* Prevent horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+
+        .password-change-container {
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -294,5 +385,42 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear any stale session data
+            sessionStorage.clear();
+            
+            // Refresh CSRF token from meta tag
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                const csrfInput = document.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = csrfMeta.getAttribute('content');
+                }
+            }
+            
+            // Handle 419 CSRF errors
+            if (window.location.search.includes('419') || window.location.search.includes('csrf')) {
+                sessionStorage.clear();
+                setTimeout(function() {
+                    window.location.href = window.location.pathname;
+                }, 3000);
+            }
+            
+            // Ensure CSRF token is fresh on form submit
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (csrfToken) {
+                        const tokenInput = this.querySelector('input[name="_token"]');
+                        if (tokenInput) {
+                            tokenInput.value = csrfToken.getAttribute('content');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

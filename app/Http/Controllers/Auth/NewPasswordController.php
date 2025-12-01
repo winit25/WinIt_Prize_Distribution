@@ -20,6 +20,11 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request): View
     {
+        // Regenerate session token on page load to prevent 419 errors
+        if (!$request->session()->has('_token')) {
+            $request->session()->regenerateToken();
+        }
+        
         return view('auth.reset-password', ['request' => $request]);
     }
 

@@ -274,36 +274,129 @@
             color: var(--winit-accent) !important;
         }
 
-        @media (max-width: 480px) {
-            .forgot-container {
-                margin: 1rem;
-                border-radius: 1.5rem;
-                max-width: 95%;
-            }
-            
-            .forgot-header {
-                padding: 2.5rem 1.5rem 1.5rem;
-            }
-            
-            .forgot-header .logo {
-                width: 80px;
-                height: 80px;
+        /* Responsive Design - Mobile First Approach */
+        @media (max-width: 576px) {
+            body {
                 padding: 10px;
             }
             
+            .forgot-container {
+                margin: 0.5rem;
+                border-radius: 1.5rem;
+                max-width: 100%;
+            }
+            
+            .forgot-header {
+                padding: 2rem 1.25rem 1.5rem;
+            }
+            
+            .forgot-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .forgot-header p {
+                font-size: 0.9rem;
+            }
+            
+            .forgot-header .logo {
+                width: 70px;
+                height: 70px;
+                padding: 8px;
+                margin-bottom: 1rem;
+            }
+            
+            .forgot-header .logo img {
+                width: 100%;
+                height: auto;
+            }
+            
             .forgot-body {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.25rem;
+            }
+            
+            .info-box {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .info-box p {
+                font-size: 0.85rem;
+            }
+            
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.5rem;
             }
             
             .form-control {
-                padding: 1rem 1.25rem;
-                font-size: 1rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .input-group .input-group-text {
+                left: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .input-group .form-control {
+                padding-left: 2.5rem;
             }
             
             .btn-primary, .btn-secondary {
-                padding: 0.875rem 1.25rem;
-                font-size: 1rem;
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
             }
+            
+            .alert {
+                padding: 0.875rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .forgot-container {
+                max-width: 90%;
+            }
+            
+            .forgot-header {
+                padding: 2.5rem 1.75rem 1.75rem;
+            }
+            
+            .forgot-body {
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 992px) {
+            .forgot-container {
+                max-width: 550px;
+            }
+        }
+
+        @media (min-width: 993px) and (max-width: 1200px) {
+            .forgot-container {
+                max-width: 500px;
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .forgot-container {
+                max-width: 500px;
+            }
+        }
+
+        /* Fix for layout shifts */
+        .forgot-container {
+            min-height: 400px;
+        }
+
+        /* Prevent horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+
+        .forgot-container {
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -382,6 +475,36 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Clear any stale session data on page load
+            sessionStorage.clear();
+            
+            // Refresh CSRF token from meta tag
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                const csrfInput = document.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = csrfMeta.getAttribute('content');
+                }
+            }
+            
+            // Handle 419 CSRF errors
+            if (window.location.search.includes('419') || window.location.search.includes('csrf')) {
+                sessionStorage.clear();
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Session Expired:</strong> Your session has expired. Please refresh the page and try again.
+                `;
+                const forgotBody = document.querySelector('.forgot-body');
+                if (forgotBody) {
+                    forgotBody.insertBefore(alertDiv, forgotBody.firstChild);
+                }
+                setTimeout(function() {
+                    window.location.href = window.location.pathname;
+                }, 3000);
+            }
+            
             // Ensure CSRF token is fresh when form is submitted
             const form = document.getElementById('forgotForm');
             if (form) {

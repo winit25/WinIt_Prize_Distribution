@@ -14,8 +14,14 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        // Regenerate session token on page load to prevent 419 errors
+        // This ensures fresh CSRF token for new device sessions
+        if (!$request->session()->has('_token')) {
+            $request->session()->regenerateToken();
+        }
+        
         return view('auth.login');
     }
 
@@ -53,8 +59,9 @@ class AuthenticatedSessionController extends Controller
             \Log::warning('Failed to log login activity', ['error' => $e->getMessage()]);
         }
 
-        // Register or update device fingerprint
-        $this->registerDeviceFingerprint($request, $user);
+        // IMPORTANT: Device fingerprint registration happens ONLY when user accesses dashboard
+        // This ensures fingerprint is only activated after successful login AND password change (if required)
+        // Do NOT register device fingerprint here - it will be registered in DashboardController
 
         // Check if user must change password on first login
         if ($user->must_change_password) {
@@ -213,8 +220,9 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Register or update device fingerprint for the authenticated user.
+     * This method is public so it can be called from DashboardController.
      */
-    private function registerDeviceFingerprint(Request $request, $user): void
+    public function registerDeviceFingerprint(Request $request, $user): void
     {
         try {
             // Check if device_fingerprints table exists

@@ -14,6 +14,11 @@ class EmailVerificationPromptController extends Controller
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
+        // Regenerate session token on page load to prevent 419 errors
+        if (!$request->session()->has('_token')) {
+            $request->session()->regenerateToken();
+        }
+        
         return $request->user()->hasVerifiedEmail()
                     ? redirect()->intended(route('dashboard', absolute: false))
                     : view('auth.verify-email');

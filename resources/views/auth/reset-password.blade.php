@@ -40,6 +40,26 @@
     <script>
         // Ensure CSRF token is fresh when form is submitted
         document.addEventListener('DOMContentLoaded', function() {
+            // Clear any stale session data on page load
+            sessionStorage.clear();
+            
+            // Refresh CSRF token from meta tag
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                const csrfInput = document.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfInput.value = csrfMeta.getAttribute('content');
+                }
+            }
+            
+            // Handle 419 CSRF errors
+            if (window.location.search.includes('419') || window.location.search.includes('csrf')) {
+                sessionStorage.clear();
+                setTimeout(function() {
+                    window.location.href = window.location.pathname + window.location.search;
+                }, 3000);
+            }
+            
             const form = document.getElementById('reset-password-form');
             if (form) {
                 form.addEventListener('submit', function(e) {
