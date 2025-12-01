@@ -42,8 +42,7 @@
             margin: 0;
             padding: 20px;
             position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         body::before {
@@ -64,21 +63,19 @@
             background: white;
             border-radius: 2rem;
             box-shadow: 0 25px 50px rgba(1, 1, 51, 0.5);
-            overflow: visible;
+            overflow: hidden;
             max-width: 500px;
             width: 100%;
             position: relative;
             z-index: 1;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            max-height: 95vh;
-            overflow-y: auto;
         }
 
         .login-header {
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
-            padding: 2rem 1.5rem 1.5rem;
+            padding: 3rem 2rem 2rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -124,7 +121,7 @@
         .login-header h1 {
             margin: 0;
             font-weight: 700;
-            font-size: 1.75rem;
+            font-size: 2rem;
             position: relative;
             z-index: 1;
         }
@@ -138,7 +135,7 @@
         }
 
         .login-body {
-            padding: 2rem 1.5rem;
+            padding: 3rem 2.5rem;
         }
 
         .form-label {
@@ -325,88 +322,35 @@
             }
         }
 
-        /* Small Laptops (13-inch screens: 1280px - 1440px) */
-        @media (min-width: 577px) and (max-width: 1440px) {
-            body {
-                padding: 15px;
-            }
-            
+        @media (min-width: 577px) and (max-width: 768px) {
             .login-container {
                 max-width: 90%;
-                max-height: 90vh;
             }
             
             .login-header {
-                padding: 1.75rem 1.25rem 1.25rem;
-            }
-            
-            .login-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .login-header p {
-                font-size: 0.85rem;
-            }
-            
-            .login-header .logo {
-                width: 70px;
-                height: 70px;
-                margin-bottom: 0.75rem;
+                padding: 2.5rem 1.75rem 1.75rem;
             }
             
             .login-body {
-                padding: 1.75rem 1.5rem;
-            }
-            
-            .form-label {
-                font-size: 1rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .form-control {
-                padding: 1rem 1.25rem;
-                font-size: 1rem;
-            }
-            
-            .btn-primary {
-                padding: 0.875rem 1.25rem;
-                font-size: 1rem;
-            }
-            
-            .alert {
-                padding: 0.875rem 1rem;
-                font-size: 0.9rem;
-                margin-bottom: 1rem;
+                padding: 2.5rem 2rem;
             }
         }
 
-        /* Medium Laptops (1441px - 1600px) */
-        @media (min-width: 1441px) and (max-width: 1600px) {
+        @media (min-width: 769px) and (max-width: 992px) {
             .login-container {
-                max-width: 480px;
-            }
-            
-            .login-header {
-                padding: 2rem 1.5rem 1.5rem;
-            }
-            
-            .login-body {
-                padding: 2rem 2rem;
+                max-width: 550px;
             }
         }
 
-        /* Large Screens (1601px+) */
-        @media (min-width: 1601px) {
+        @media (min-width: 993px) and (max-width: 1200px) {
             .login-container {
                 max-width: 500px;
             }
-            
-            .login-header {
-                padding: 3rem 2rem 2rem;
-            }
-            
-            .login-body {
-                padding: 3rem 2.5rem;
+        }
+
+        @media (min-width: 1201px) {
+            .login-container {
+                max-width: 500px;
             }
         }
 

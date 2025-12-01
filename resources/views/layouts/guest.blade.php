@@ -19,28 +19,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <style>
-            @media (max-width: 1440px) {
-                .min-h-screen {
-                    padding: 15px;
-                    overflow-x: hidden;
-                    overflow-y: auto;
-                }
-                .sm\:max-w-md {
-                    max-width: 90% !important;
-                    max-height: 90vh;
-                    overflow-y: auto;
-                }
-                .sm\:px-6 {
-                    padding-left: 1.25rem !important;
-                    padding-right: 1.25rem !important;
-                }
-                .sm\:py-6 {
-                    padding-top: 1.5rem !important;
-                    padding-bottom: 1.5rem !important;
-                }
-            }
-        </style>
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 px-4">
             <div class="mb-4 sm:mb-6">
                 <a href="/">

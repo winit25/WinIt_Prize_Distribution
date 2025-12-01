@@ -27,8 +27,6 @@
             justify-content: center;
             margin: 0;
             padding: 1rem;
-            overflow-x: hidden;
-            overflow-y: auto;
         }
 
         .password-change-container {
@@ -39,15 +37,13 @@
             backdrop-filter: blur(10px);
             max-width: 500px;
             width: 100%;
-            overflow: visible;
-            max-height: 95vh;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         .password-change-header {
             background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
             color: white;
-            padding: 1.5rem 1.25rem;
+            padding: 2rem;
             text-align: center;
         }
 
@@ -73,7 +69,7 @@
         .password-change-header h1 {
             margin: 0;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
         }
 
         .password-change-header p {
@@ -82,7 +78,7 @@
         }
 
         .password-change-body {
-            padding: 2rem 1.5rem;
+            padding: 3rem 2.5rem;
         }
 
         .form-label {
@@ -249,102 +245,35 @@
             }
         }
 
-        /* Small Laptops (13-inch screens: 1280px - 1440px) */
-        @media (min-width: 577px) and (max-width: 1440px) {
-            body {
-                padding: 15px;
-            }
-            
+        @media (min-width: 577px) and (max-width: 768px) {
             .password-change-container {
                 max-width: 90%;
-                max-height: 90vh;
             }
             
             .password-change-header {
-                padding: 1.5rem 1rem 1rem;
-            }
-            
-            .password-change-header h1 {
-                font-size: 1.35rem;
-            }
-            
-            .password-change-header p {
-                font-size: 0.85rem;
-            }
-            
-            .password-change-header .logo {
-                width: 60px;
-                height: 60px;
-                margin-bottom: 0.75rem;
+                padding: 2.5rem 1.75rem 1.75rem;
             }
             
             .password-change-body {
-                padding: 1.5rem 1.25rem;
-            }
-            
-            .password-requirements {
-                padding: 1rem;
-                margin-bottom: 1.25rem;
-            }
-            
-            .password-requirements h5 {
-                font-size: 0.95rem;
-            }
-            
-            .password-requirements ul {
-                font-size: 0.85rem;
-                padding-left: 1.25rem;
-            }
-            
-            .form-label {
-                font-size: 1rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .form-control {
-                padding: 1rem 1.25rem;
-                font-size: 1rem;
-            }
-            
-            .btn-primary {
-                padding: 0.875rem 1.25rem;
-                font-size: 1rem;
-            }
-            
-            .alert {
-                padding: 0.875rem 1rem;
-                font-size: 0.9rem;
-                margin-bottom: 1rem;
+                padding: 2.5rem 2rem;
             }
         }
 
-        /* Medium Laptops (1441px - 1600px) */
-        @media (min-width: 1441px) and (max-width: 1600px) {
+        @media (min-width: 769px) and (max-width: 992px) {
             .password-change-container {
-                max-width: 480px;
-            }
-            
-            .password-change-header {
-                padding: 2rem 1.5rem 1.5rem;
-            }
-            
-            .password-change-body {
-                padding: 2rem 2rem;
+                max-width: 550px;
             }
         }
 
-        /* Large Screens (1601px+) */
-        @media (min-width: 1601px) {
+        @media (min-width: 993px) and (max-width: 1200px) {
             .password-change-container {
                 max-width: 500px;
             }
-            
-            .password-change-header {
-                padding: 2rem;
-            }
-            
-            .password-change-body {
-                padding: 3rem 2.5rem;
+        }
+
+        @media (min-width: 1201px) {
+            .password-change-container {
+                max-width: 500px;
             }
         }
 
