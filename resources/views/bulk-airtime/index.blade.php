@@ -389,7 +389,7 @@
                             </div>
                             <div class="modal-body" style="padding: 2rem; background: var(--winit-light);">
                                 <div class="text-center mb-4">
-                                    <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="width: 120px; height: auto; margin-bottom: 1rem;">
+                                    <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" style="width: 120px; height: auto; margin-bottom: 1rem;">
                                     <h6 class="mb-2" style="color: rgb(18, 18, 104);">CSV Upload Access</h6>
                                     <p class="text-muted small">Please enter your account password to access the CSV upload page.</p>
                                 </div>
