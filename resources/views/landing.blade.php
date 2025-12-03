@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WinIt - Pay Bills & Purchase Services</title>
+    <title>WinIt Prize Distribution</title>
     
     <!-- Favicon - Same as logo -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/winit-logo-C73aMBts (2).svg') }}">
@@ -41,7 +41,7 @@
         }
 
         .logo {
-            max-width: 600px;
+            max-width: 1000px;
             height: auto;
             margin-bottom: 2rem;
             shape-rendering: crispEdges;
@@ -223,11 +223,11 @@
         </div>
 
         <div class="cards-container">
-            <!-- BuyPower Card -->
+            <!-- BuyPower Card --><br>
             <div class="card card-buypower">
                 <div class="card-icon">
                     <img src="{{ asset('images/buypower-logo.svg') }}" alt="BuyPower Logo">
-                </div>
+                </div><br><br><br>
                 <h2>BuyPower</h2>
                 <p>Purchase electricity tokens instantly. Quick, secure, and hassle-free power top-ups for your home or business.</p>
                 <button class="card-button" onclick="window.location.href='{{ route('login') }}'">Login</button>
@@ -236,7 +236,7 @@
             <!-- SureGift Card -->
             <div class="card card-suregift">
                 <div class="card-icon">
-                    <img src="{{ asset('images/suregift-logo.svg') }}" alt="SureGift Logo">
+                    <img src="{{ asset('images/suregifts_logo (2).jpeg') }}" alt="SureGifts Logo">
                 </div>
                 <h2>SureGift</h2>
                 <p>Send digital gift cards to your loved ones. Perfect for any occasion with instant delivery and multiple options.</p>
