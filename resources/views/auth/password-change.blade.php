@@ -62,6 +62,7 @@
 
         .password-change-header .logo img {
             max-width: 100%;
+            width: 100%;
             height: auto;
             object-fit: contain;
         }
@@ -414,6 +415,156 @@
             }
         }
 
+        /* 13-inch Laptop Screens (1024px - 1440px) - Optimized */
+        @media (min-width: 1024px) and (max-width: 1440px) {
+            body {
+                padding: 30px 20px;
+            }
+            
+            .password-change-container {
+                max-width: 480px;
+                border-radius: 2rem;
+            }
+            
+            .password-change-header {
+                padding: 2.5rem 2rem 1.75rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 1.85rem;
+            }
+            
+            .password-change-header p {
+                font-size: 0.95rem;
+            }
+            
+            .password-change-header .logo {
+                width: 85px;
+                height: 85px;
+                padding: 12px;
+                margin-bottom: 1.25rem;
+            }
+            
+            .password-change-body {
+                padding: 2.5rem 2rem;
+            }
+            
+            .form-label {
+                font-size: 1rem;
+                margin-bottom: 0.65rem;
+            }
+            
+            .form-control {
+                padding: 1rem 1.25rem;
+                font-size: 1rem;
+            }
+            
+            .btn-primary {
+                padding: 0.9rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .alert {
+                padding: 0.9rem 1.1rem;
+                font-size: 0.95rem;
+            }
+            
+            .password-requirements {
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .password-requirements h5 {
+                font-size: 1.05rem;
+                margin-bottom: 0.875rem;
+            }
+            
+            .password-requirements ul {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+            
+            .password-requirements li {
+                margin-bottom: 0.4rem;
+            }
+        }
+
+        /* Specific optimization for 1280 x 800 resolution */
+        @media (min-width: 1270px) and (max-width: 1290px) and (min-height: 750px) and (max-height: 850px) {
+            body {
+                padding: 25px 15px;
+            }
+            
+            .password-change-container {
+                max-width: 460px;
+                border-radius: 1.75rem;
+            }
+            
+            .password-change-header {
+                padding: 2.25rem 1.75rem 1.5rem;
+            }
+            
+            .password-change-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .password-change-header p {
+                font-size: 0.9rem;
+            }
+            
+            .password-change-header .logo {
+                width: 80px;
+                height: 80px;
+                padding: 10px;
+                margin-bottom: 1rem;
+            }
+            
+            .password-change-body {
+                padding: 2rem 1.75rem;
+            }
+            
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.6rem;
+            }
+            
+            .form-control {
+                padding: 0.9rem 1.15rem;
+                font-size: 0.95rem;
+            }
+            
+            .btn-primary {
+                padding: 0.85rem 1.4rem;
+                font-size: 0.95rem;
+            }
+            
+            .alert {
+                padding: 0.85rem 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .password-requirements {
+                padding: 1rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .password-requirements h5 {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .password-requirements ul {
+                font-size: 0.85rem;
+                line-height: 1.5;
+                padding-left: 1.25rem;
+            }
+            
+            .password-requirements li {
+                margin-bottom: 0.35rem;
+            }
+        }
+
         /* Medium Laptops (993px - 1200px) */
         @media (min-width: 993px) and (max-width: 1200px) {
             body {
@@ -551,13 +702,60 @@
         .password-change-container {
             overflow-x: hidden;
         }
+
+        /* Additional mobile improvements */
+        @media (max-width: 576px) {
+            .password-change-header .logo img {
+                max-width: 80%;
+            }
+            
+            .form-control {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .btn-primary {
+                min-height: 48px; /* Better touch target */
+            }
+            
+            .password-requirements {
+                font-size: 0.85rem;
+            }
+            
+            .password-requirements ul {
+                line-height: 1.6;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+            
+            .password-change-container {
+                max-width: 100%;
+            }
+            
+            .password-change-header {
+                padding: 1.5rem 1.25rem 1rem;
+            }
+            
+            .password-change-body {
+                padding: 1.5rem 1.25rem;
+            }
+            
+            .password-requirements {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="password-change-container">
         <div class="password-change-header">
             <div class="logo">
-                <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
+                <img src="{{ asset('images/winit-logo.svg') }}" alt="WinIt Logo" style="max-width: 100%; width: 100%; height: auto; display: block; margin: 0 auto;">
             </div>
             <h1 style="color: white;">Change Password</h1>
             <p style="color: rgba(255, 255, 255, 0.9);">Set your new secure password</p>
@@ -610,7 +808,8 @@
                            name="current_password" 
                            required 
                            autofocus
-                           placeholder="Enter your current password">
+                           placeholder="Enter your current password"
+                           style="font-size: 16px;">
                 </div>
                 @endif
 
@@ -623,7 +822,8 @@
                            name="password" 
                            required
                            @if(auth()->user()->must_change_password) autofocus @endif
-                           placeholder="Enter your new password">
+                           placeholder="Enter your new password"
+                           style="font-size: 16px;">
                 </div>
 
                 <!-- Confirm Password -->
@@ -634,7 +834,8 @@
                            class="form-control" 
                            name="password_confirmation" 
                            required
-                           placeholder="Confirm your new password">
+                           placeholder="Confirm your new password"
+                           style="font-size: 16px;">
                 </div>
 
                 <!-- Submit Button -->

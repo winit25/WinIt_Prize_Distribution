@@ -108,6 +108,7 @@
 
         .forgot-header .logo img {
             max-width: 100%;
+            width: 100%;
             height: auto;
             object-fit: contain;
             filter: contrast(1.3) brightness(1.1);
@@ -520,6 +521,155 @@
             }
         }
 
+        /* 13-inch Laptop Screens (1024px - 1440px) - Optimized */
+        @media (min-width: 1024px) and (max-width: 1440px) {
+            body {
+                padding: 30px 20px;
+            }
+            
+            .forgot-container {
+                max-width: 480px;
+                border-radius: 2rem;
+            }
+            
+            .forgot-header {
+                padding: 2.5rem 2rem 1.75rem;
+            }
+            
+            .forgot-header h1 {
+                font-size: 1.85rem;
+            }
+            
+            .forgot-header p {
+                font-size: 0.95rem;
+            }
+            
+            .forgot-header .logo {
+                width: 85px;
+                height: 85px;
+                padding: 12px;
+                margin-bottom: 1.25rem;
+            }
+            
+            .forgot-body {
+                padding: 2.5rem 2rem;
+            }
+            
+            .info-box {
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .info-box p {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            
+            .form-label {
+                font-size: 1rem;
+                margin-bottom: 0.65rem;
+            }
+            
+            .form-control {
+                padding: 1rem 1.25rem;
+                font-size: 1rem;
+            }
+            
+            .input-group .input-group-text {
+                left: 0.875rem;
+                font-size: 0.95rem;
+            }
+            
+            .input-group .form-control {
+                padding-left: 2.75rem;
+            }
+            
+            .btn {
+                padding: 0.9rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .alert {
+                padding: 0.9rem 1.1rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Specific optimization for 1280 x 800 resolution */
+        @media (min-width: 1270px) and (max-width: 1290px) and (min-height: 750px) and (max-height: 850px) {
+            body {
+                padding: 25px 15px;
+            }
+            
+            .forgot-container {
+                max-width: 460px;
+                border-radius: 1.75rem;
+            }
+            
+            .forgot-header {
+                padding: 2.25rem 1.75rem 1.5rem;
+            }
+            
+            .forgot-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .forgot-header p {
+                font-size: 0.9rem;
+            }
+            
+            .forgot-header .logo {
+                width: 80px;
+                height: 80px;
+                padding: 10px;
+                margin-bottom: 1rem;
+            }
+            
+            .forgot-body {
+                padding: 2rem 1.75rem;
+            }
+            
+            .info-box {
+                padding: 1rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .info-box p {
+                font-size: 0.85rem;
+                line-height: 1.45;
+            }
+            
+            .form-label {
+                font-size: 0.95rem;
+                margin-bottom: 0.6rem;
+            }
+            
+            .form-control {
+                padding: 0.9rem 1.15rem;
+                font-size: 0.95rem;
+            }
+            
+            .input-group .input-group-text {
+                left: 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .input-group .form-control {
+                padding-left: 2.5rem;
+            }
+            
+            .btn {
+                padding: 0.85rem 1.4rem;
+                font-size: 0.95rem;
+            }
+            
+            .alert {
+                padding: 0.85rem 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 1.25rem;
+            }
+        }
+
         /* Medium Laptops (993px - 1200px) */
         @media (min-width: 993px) and (max-width: 1200px) {
             body {
@@ -657,13 +807,52 @@
         .forgot-container {
             overflow-x: hidden;
         }
+
+        /* Additional mobile improvements */
+        @media (max-width: 576px) {
+            .forgot-header .logo img {
+                max-width: 80%;
+            }
+            
+            .input-group .form-control {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .btn {
+                min-height: 48px; /* Better touch target */
+            }
+            
+            .info-box {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+            
+            .forgot-container {
+                max-width: 100%;
+            }
+            
+            .forgot-header {
+                padding: 1.5rem 1.25rem 1rem;
+            }
+            
+            .forgot-body {
+                padding: 1.5rem 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="forgot-container">
         <div class="forgot-header">
             <div class="logo">
-                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" style="width: 200px; height: auto; display: block; margin: 0 auto;">
+                <img src="{{ asset('images/winit-logo-C73aMBts (2).svg') }}" alt="WinIt Logo" style="max-width: 100%; width: 100%; height: auto; display: block; margin: 0 auto;">
             </div>
             <h1 style="color: white;">Reset Password</h1>
             <p style="color: rgba(255, 255, 255, 0.9);">WinIt Prize Distribution</p>
@@ -711,7 +900,8 @@
                                value="{{ old('email') }}" 
                                required 
                                autofocus
-                               placeholder="Enter your email">
+                               placeholder="Enter your email"
+                               style="font-size: 16px;">
                     </div>
                 </div>
 
