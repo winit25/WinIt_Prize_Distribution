@@ -22,3 +22,60 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Security: Credentials and sensitive files
+superadmin-credentials.txt
+aurora-password.txt
+*-password.txt
+*-credentials.txt
+*-secret.txt
+*.pem
+*.key
+*.crt
+
+# Environment and configuration files with sensitive data
+frontend-env.json
+*-env.json
+*.env.local
+*.env.*.local
+
+# Session and cookie files
+cookies.txt
+*.cookies
+session-*.txt
+
+# Database files (may contain sensitive data)
+*.sqlite
+*.sqlite3
+*.db
+database/database.sqlite
+database/*.sqlite
+
+# Deployment logs (may contain sensitive info)
+deploy-*.log
+*-deploy.log
+eb-*.log
+*.deploy.log
+
+# Test files with sensitive data
+test-upload*.csv
+sample_recipients.csv
+upload.csv
+
+# Archive files that may contain sensitive data
+*.zip
+*.tar
+*.tar.gz
+*.gz
+frontend-deploy.zip
+
+# AWS and deployment sensitive files
+.elasticbeanstalk/
+*.ebextensions/*.secret
+*.ebextensions/*.key
+
+# Temporary files that may contain sensitive data
+*.tmp
+*.temp
+*~
+.#*
