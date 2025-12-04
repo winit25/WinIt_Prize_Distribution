@@ -61,10 +61,10 @@
 
         .login-container {
             background: white;
-            border-radius: 2rem;
-            box-shadow: 0 25px 50px rgba(1, 1, 51, 0.5);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(1, 1, 51, 0.4);
             overflow: hidden;
-            max-width: 500px;
+            max-width: 380px;
             width: 100%;
             position: relative;
             z-index: 1;
@@ -75,7 +75,7 @@
         .login-header {
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
-            padding: 3rem 2rem 2rem;
+            padding: 2rem 1.5rem 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -98,17 +98,17 @@
         }
 
         .login-header .logo {
-            width: 100px;
-            height: 100px;
-            border-radius: 25px;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;            
+            margin: 0 auto 1rem;            
             position: relative;
             z-index: 1;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 15px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+            padding: 12px;
         }
 
         .login-header .logo img {
@@ -122,35 +122,36 @@
         .login-header h1 {
             margin: 0;
             font-weight: 700;
-            font-size: 2rem;
+            font-size: 1.65rem;
             position: relative;
             z-index: 1;
         }
 
         .login-header p {
-            margin: 0.5rem 0 0 0;
+            margin: 0.4rem 0 0 0;
             opacity: 0.9;
             font-weight: 400;
+            font-size: 0.9rem;
             position: relative;
             z-index: 1;
         }
 
         .login-body {
-            padding: 3rem 2.5rem;
+            padding: 2rem 2rem;
         }
 
         .form-label {
             font-weight: 600;
             color: var(--winit-dark);
-            margin-bottom: 0.75rem;
-            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            font-size: 0.95rem;
         }
 
         .form-control {
             border: 2px solid var(--winit-border);
-            border-radius: 15px;
-            padding: 1.25rem 1.5rem;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            padding: 0.9rem 1.25rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             background: var(--winit-light);
             font-weight: 500;
@@ -170,29 +171,30 @@
         }
 
         .input-group .form-control {
-            padding-left: 3rem;
+            padding-left: 2.5rem;
         }
 
         .input-group .input-group-text {
             position: absolute;
-            left: 1rem;
+            left: 0.875rem;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             color: var(--winit-gray);
             z-index: 3;
+            font-size: 0.9rem;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
-            box-shadow: 0 6px 20px rgba(1, 1, 51, 0.3);
+            box-shadow: 0 5px 15px rgba(1, 1, 51, 0.3);
             border: none;
             font-weight: 700;
             letter-spacing: 0.5px;
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
+            font-size: 0.95rem;
+            padding: 0.85rem 1.5rem;
         }
 
         .btn-primary:hover {
@@ -209,8 +211,8 @@
         }
 
         .btn {
-            border-radius: 12px;
-            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            padding: 0.85rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
             display: inline-flex;
@@ -220,10 +222,11 @@
         }
 
         .alert {
-            border-radius: 12px;
+            border-radius: 10px;
             border: none;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
         }
 
         .alert-danger {
@@ -723,7 +726,7 @@
 
         /* Fix for layout shifts */
         .login-container {
-            min-height: 400px;
+            min-height: 350px;
         }
 
         /* Prevent horizontal scroll */
@@ -804,7 +807,7 @@
                 @csrf
 
                 <!-- Email Address -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -824,7 +827,7 @@
                 </div>
 
                 <!-- Password -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -842,7 +845,7 @@
                 </div>
 
                 <!-- Remember Me -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <div class="form-check">
                         <input id="remember_me" 
                                type="checkbox" 
@@ -854,7 +857,7 @@
                     </div>
                 </div>
 
-                <div class="d-grid gap-2 mb-4">
+                <div class="d-grid gap-2 mb-3">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-sign-in-alt"></i>
                         Sign In to WinIt
