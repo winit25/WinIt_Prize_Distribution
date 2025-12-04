@@ -9,6 +9,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* Cross-browser compatibility fixes */
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
         :root {
             --winit-navy: #010133;
             --winit-navy-light: #020247;
@@ -28,16 +35,38 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            /* Cross-browser gradient support */
+            background: #010133; /* Fallback */
+            background: -webkit-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -moz-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -o-linear-gradient(135deg, #010133 0%, #01011b 100%);
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             min-height: 100vh;
+            /* Cross-browser flexbox support */
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
             margin: 0;
             padding: 20px;
             position: relative;
             overflow: hidden;
+            /* Font rendering fixes for Safari/Edge */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         body::before {
@@ -47,6 +76,15 @@
             left: 0;
             right: 0;
             bottom: 0;
+            /* Cross-browser radial gradient support */
+            background: 
+                -webkit-radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                -webkit-radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                -webkit-radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            background: 
+                -moz-radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                -moz-radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                -moz-radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
             background: 
                 radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
@@ -56,21 +94,35 @@
 
         .forgot-container {
             background: white;
+            /* Cross-browser border-radius */
+            -webkit-border-radius: 1.5rem;
+            -moz-border-radius: 1.5rem;
             border-radius: 1.5rem;
+            /* Cross-browser box-shadow */
+            -webkit-box-shadow: 0 20px 40px rgba(1, 1, 51, 0.4);
+            -moz-box-shadow: 0 20px 40px rgba(1, 1, 51, 0.4);
             box-shadow: 0 20px 40px rgba(1, 1, 51, 0.4);
             overflow: hidden;
-            max-width: 380px;
+            max-width: 320px;
             width: 100%;
             position: relative;
             z-index: 1;
+            /* Cross-browser backdrop-filter with fallback */
+            background-color: rgba(255, 255, 255, 0.95); /* Fallback for browsers without backdrop-filter */
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .forgot-header {
+            /* Cross-browser gradient support */
+            background: #010133; /* Fallback */
+            background: -webkit-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -moz-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -o-linear-gradient(135deg, #010133 0%, #01011b 100%);
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
-            padding: 2rem 1.5rem 1.5rem;
+            padding: 1.5rem 1.25rem 1.25rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -83,27 +135,60 @@
             left: -50%;
             width: 200%;
             height: 200%;
+            /* Cross-browser radial gradient */
+            background: -webkit-radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            background: -moz-radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            /* Cross-browser animation */
+            -webkit-animation: float 6s ease-in-out infinite;
+            -moz-animation: float 6s ease-in-out infinite;
+            -o-animation: float 6s ease-in-out infinite;
             animation: float 6s ease-in-out infinite;
         }
 
+        /* Cross-browser keyframes */
+        @-webkit-keyframes float {
+            0%, 100% { -webkit-transform: translateY(0px) rotate(0deg); transform: translateY(0px) rotate(0deg); }
+            50% { -webkit-transform: translateY(-20px) rotate(180deg); transform: translateY(-20px) rotate(180deg); }
+        }
+        @-moz-keyframes float {
+            0%, 100% { -moz-transform: translateY(0px) rotate(0deg); transform: translateY(0px) rotate(0deg); }
+            50% { -moz-transform: translateY(-20px) rotate(180deg); transform: translateY(-20px) rotate(180deg); }
+        }
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+            0%, 100% { -webkit-transform: translateY(0px) rotate(0deg); -moz-transform: translateY(0px) rotate(0deg); transform: translateY(0px) rotate(0deg); }
+            50% { -webkit-transform: translateY(-20px) rotate(180deg); -moz-transform: translateY(-20px) rotate(180deg); transform: translateY(-20px) rotate(180deg); }
         }
 
         .forgot-header .logo {
-            width: 80px;
-            height: 80px;
+            width: 65px;
+            height: 65px;
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
             border-radius: 20px;
+            /* Cross-browser flexbox */
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            margin: 0 auto 0.75rem;
             position: relative;
             z-index: 1;
+            -webkit-box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+            -moz-box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
-            padding: 12px;
+            padding: 10px;
         }
 
         .forgot-header .logo img {
@@ -117,62 +202,77 @@
         .forgot-header h1 {
             margin: 0;
             font-weight: 700;
-            font-size: 1.65rem;
+            font-size: 1.4rem;
             position: relative;
             z-index: 1;
         }
 
         .forgot-header p {
-            margin: 0.4rem 0 0 0;
+            margin: 0.3rem 0 0 0;
             opacity: 0.9;
             font-weight: 400;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             position: relative;
             z-index: 1;
         }
 
         .forgot-body {
-            padding: 2rem 2rem;
+            padding: 1.5rem 1.5rem;
         }
 
         .info-box {
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             border-left: 4px solid #0284c7;
             border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
+            padding: 0.85rem;
+            margin-bottom: 1.25rem;
         }
 
         .info-box p {
             margin: 0;
             color: #075985;
-            font-size: 0.85rem;
-            line-height: 1.5;
+            font-size: 0.8rem;
+            line-height: 1.4;
         }
 
         .form-label {
             font-weight: 600;
             color: var(--winit-dark);
-            margin-bottom: 0.6rem;
-            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .form-control {
             border: 2px solid var(--winit-border);
+            -webkit-border-radius: 12px;
+            -moz-border-radius: 12px;
             border-radius: 12px;
-            padding: 0.9rem 1.25rem;
-            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            /* Cross-browser transition */
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
             transition: all 0.3s ease;
             background: var(--winit-light);
             font-weight: 500;
             height: auto;
+            /* Safari input fixes */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .form-control:focus {
             border-color: var(--winit-accent);
+            -webkit-box-shadow: 0 0 0 4px rgba(23, 247, 182, 0.15);
+            -moz-box-shadow: 0 0 0 4px rgba(23, 247, 182, 0.15);
             box-shadow: 0 0 0 4px rgba(23, 247, 182, 0.15);
             background: white;
             outline: none;
+            -webkit-transform: translateY(-2px);
+            -moz-transform: translateY(-2px);
+            -ms-transform: translateY(-2px);
             transform: translateY(-2px);
         }
 
@@ -188,6 +288,9 @@
             position: absolute;
             left: 0.875rem;
             top: 50%;
+            -webkit-transform: translateY(-50%);
+            -moz-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
             transform: translateY(-50%);
             background: none;
             border: none;
@@ -197,20 +300,39 @@
         }
 
         .btn-primary {
+            /* Cross-browser gradient */
+            background: #010133; /* Fallback */
+            background: -webkit-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -moz-linear-gradient(135deg, #010133 0%, #01011b 100%);
+            background: -o-linear-gradient(135deg, #010133 0%, #01011b 100%);
             background: linear-gradient(135deg, #010133 0%, #01011b 100%);
             color: white;
+            -webkit-box-shadow: 0 5px 15px rgba(1, 1, 51, 0.3);
+            -moz-box-shadow: 0 5px 15px rgba(1, 1, 51, 0.3);
             box-shadow: 0 5px 15px rgba(1, 1, 51, 0.3);
             border: none;
             font-weight: 700;
             letter-spacing: 0.5px;
-            font-size: 0.95rem;
-            padding: 0.85rem 1.5rem;
+            font-size: 0.9rem;
+            padding: 0.75rem 1.25rem;
+            /* Safari button fixes */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .btn-primary:hover {
+            background: -webkit-linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-accent-dark) 100%);
+            background: -moz-linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-accent-dark) 100%);
+            background: -o-linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-accent-dark) 100%);
             background: linear-gradient(135deg, var(--winit-accent) 0%, var(--winit-accent-dark) 100%);
             color: #010133;
+            -webkit-transform: translateY(-3px);
+            -moz-transform: translateY(-3px);
+            -ms-transform: translateY(-3px);
             transform: translateY(-3px);
+            -webkit-box-shadow: 0 12px 30px rgba(23, 247, 182, 0.5);
+            -moz-box-shadow: 0 12px 30px rgba(23, 247, 182, 0.5);
             box-shadow: 0 12px 30px rgba(23, 247, 182, 0.5);
         }
 
@@ -235,12 +357,29 @@
         }
 
         .btn {
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
             border-radius: 10px;
-            padding: 0.85rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             font-weight: 600;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
             transition: all 0.3s ease;
+            display: -webkit-inline-box;
+            display: -webkit-inline-flex;
+            display: -moz-inline-box;
+            display: -ms-inline-flexbox;
             display: inline-flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
@@ -249,9 +388,9 @@
         .alert {
             border-radius: 10px;
             border: none;
-            padding: 0.85rem 1rem;
-            margin-bottom: 1.25rem;
-            font-size: 0.9rem;
+            padding: 0.75rem 0.9rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
         }
 
         .alert-success {
@@ -531,31 +670,31 @@
             }
             
             .forgot-container {
-                max-width: 480px;
+                max-width: 400px;
                 border-radius: 2rem;
             }
             
             .forgot-header {
-                padding: 2.5rem 2rem 1.75rem;
+                padding: 1.75rem 1.5rem 1.5rem;
             }
             
             .forgot-header h1 {
-                font-size: 1.85rem;
+                font-size: 1.5rem;
             }
             
             .forgot-header p {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
             
             .forgot-header .logo {
-                width: 85px;
-                height: 85px;
-                padding: 12px;
-                margin-bottom: 1.25rem;
+                width: 70px;
+                height: 70px;
+                padding: 10px;
+                margin-bottom: 1rem;
             }
             
             .forgot-body {
-                padding: 2.5rem 2rem;
+                padding: 2rem 1.75rem;
             }
             
             .info-box {
@@ -605,31 +744,31 @@
             }
             
             .forgot-container {
-                max-width: 460px;
+                max-width: 360px;
                 border-radius: 1.75rem;
             }
             
             .forgot-header {
-                padding: 2.25rem 1.75rem 1.5rem;
+                padding: 1.5rem 1.25rem 1.25rem;
             }
             
             .forgot-header h1 {
-                font-size: 1.75rem;
+                font-size: 1.35rem;
             }
             
             .forgot-header p {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             
             .forgot-header .logo {
-                width: 80px;
-                height: 80px;
+                width: 65px;
+                height: 65px;
                 padding: 10px;
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
             }
             
             .forgot-body {
-                padding: 2rem 1.75rem;
+                padding: 1.5rem 1.5rem;
             }
             
             .info-box {
@@ -799,7 +938,7 @@
 
         /* Fix for layout shifts */
         .forgot-container {
-            min-height: 350px;
+            min-height: 300px;
         }
 
         /* Prevent horizontal scroll */
@@ -890,7 +1029,7 @@
                 @csrf
 
                 <!-- Email Address -->
-                <div class="mb-3">
+                <div class="mb-2">
                     <label for="email" class="form-label">Email Address</label>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -915,7 +1054,7 @@
                     </button>
                 </div>
 
-                <div class="d-grid gap-2">
+                <div class="d-grid gap-2 mt-2">
                     <a href="{{ route('login') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i>
                         Back to Login

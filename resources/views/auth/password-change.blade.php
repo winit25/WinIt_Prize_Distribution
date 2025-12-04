@@ -9,6 +9,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Cross-browser compatibility fixes */
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
         :root {
             --winit-navy: rgb(18, 18, 104);
             --winit-navy-light: rgb(30, 30, 120);
@@ -19,21 +26,52 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            /* Cross-browser gradient support */
+            background: rgb(18, 18, 104); /* Fallback */
+            background: -webkit-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-dark) 100%);
+            background: -moz-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-dark) 100%);
+            background: -o-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-dark) 100%);
             background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-dark) 100%);
             min-height: 100vh;
+            /* Cross-browser flexbox support */
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
             margin: 0;
             padding: 1rem;
+            /* Font rendering fixes for Safari/Edge */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         .password-change-container {
             background: white;
+            /* Cross-browser border-radius */
+            -webkit-border-radius: 1.5rem;
+            -moz-border-radius: 1.5rem;
             border-radius: 1.5rem;
+            /* Cross-browser box-shadow */
+            -webkit-box-shadow: 0 20px 40px rgba(18, 18, 104, 0.3);
+            -moz-box-shadow: 0 20px 40px rgba(18, 18, 104, 0.3);
             box-shadow: 0 20px 40px rgba(18, 18, 104, 0.3);
             border: 1px solid var(--winit-border);
+            /* Cross-browser backdrop-filter with fallback */
+            background-color: rgba(255, 255, 255, 0.95); /* Fallback for browsers without backdrop-filter */
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             max-width: 500px;
             width: 100%;
@@ -41,6 +79,11 @@
         }
 
         .password-change-header {
+            /* Cross-browser gradient support */
+            background: rgb(18, 18, 104); /* Fallback */
+            background: -webkit-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: -moz-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: -o-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
             background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
             color: white;
             padding: 2rem;
@@ -51,11 +94,28 @@
             width: 100px;
             height: 100px;
             background: rgba(255, 255, 255, 0);
+            -webkit-border-radius: 25px;
+            -moz-border-radius: 25px;
             border-radius: 25px;
+            /* Cross-browser flexbox */
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
             margin: 0 auto 1rem;
+            -webkit-box-shadow: 0 8px 25px rgba(18, 18, 104, 0.2);
+            -moz-box-shadow: 0 8px 25px rgba(18, 18, 104, 0.2);
             box-shadow: 0 8px 25px rgba(18, 18, 104, 0.2);
             padding: 15px;
         }
@@ -91,39 +151,75 @@
 
         .form-control {
             border: 2px solid var(--winit-border);
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
             border-radius: 15px;
             padding: 1.25rem 1.5rem;
             font-size: 1.1rem;
+            /* Cross-browser transition */
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
             transition: all 0.3s ease;
             background: var(--winit-gray);
             height: auto;
+            /* Safari input fixes */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .form-control:focus {
             border-color: var(--winit-navy);
+            -webkit-box-shadow: 0 0 0 4px rgba(18, 18, 104, 0.1);
+            -moz-box-shadow: 0 0 0 4px rgba(18, 18, 104, 0.1);
             box-shadow: 0 0 0 4px rgba(18, 18, 104, 0.1);
             background: white;
             outline: none;
         }
 
         .btn-primary {
+            /* Cross-browser gradient */
+            background: rgb(18, 18, 104); /* Fallback */
+            background: -webkit-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: -moz-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
+            background: -o-linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
             background: linear-gradient(135deg, var(--winit-navy) 0%, var(--winit-navy-light) 100%);
             border: none;
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
             border-radius: 15px;
             padding: 1rem 1.5rem;
             font-weight: 700;
             font-size: 1.1rem;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
             transition: all 0.3s ease;
             width: 100%;
+            /* Safari button fixes */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .btn-primary:hover {
+            -webkit-transform: translateY(-3px);
+            -moz-transform: translateY(-3px);
+            -ms-transform: translateY(-3px);
             transform: translateY(-3px);
+            -webkit-box-shadow: 0 12px 30px rgba(18, 18, 104, 0.4);
+            -moz-box-shadow: 0 12px 30px rgba(18, 18, 104, 0.4);
             box-shadow: 0 12px 30px rgba(18, 18, 104, 0.4);
+            background: -webkit-linear-gradient(135deg, var(--winit-navy-dark) 0%, var(--winit-navy) 100%);
+            background: -moz-linear-gradient(135deg, var(--winit-navy-dark) 0%, var(--winit-navy) 100%);
+            background: -o-linear-gradient(135deg, var(--winit-navy-dark) 0%, var(--winit-navy) 100%);
             background: linear-gradient(135deg, var(--winit-navy-dark) 0%, var(--winit-navy) 100%);
         }
 
         .alert {
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
             border-radius: 15px;
             border: none;
             padding: 1rem 1.25rem;
